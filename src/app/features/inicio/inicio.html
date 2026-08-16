@@ -1,0 +1,12 @@
+<div>
+  <h1>Inicio</h1>
+
+  <p-button
+    label="Cerrar sesión"
+    (onClick)="cerrarSesion()"
+  />
+
+  @if (error()) {
+    <p>{{ error() }}</p>
+  }
+</div>

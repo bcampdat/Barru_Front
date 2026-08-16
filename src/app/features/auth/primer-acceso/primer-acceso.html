@@ -1,0 +1,88 @@
+<div class="primer-acceso-page">
+
+  <div class="primer-acceso-card">
+
+    <div class="primer-acceso-header">
+      <h1>Primer acceso</h1>
+
+      <p>
+        Por seguridad, debes establecer una nueva contraseña
+        antes de acceder a Barru.
+      </p>
+    </div>
+
+    <form
+      [formGroup]="formulario"
+      (ngSubmit)="cambiarPassword()"
+      novalidate
+    >
+
+      <div class="campo">
+
+        <label for="nuevaPassword">
+          Nueva contraseña
+        </label>
+
+        <input
+          id="nuevaPassword"
+          type="password"
+          pInputText
+          formControlName="nuevaPassword"
+          autocomplete="new-password"
+        />
+
+        @if (nuevaPasswordInvalida()) {
+          <p-message
+            severity="error"
+            variant="simple"
+          >
+            La contraseña debe tener entre 8 y 100 caracteres,
+            e incluir al menos una mayúscula, una minúscula y un número.
+          </p-message>
+        }
+
+      </div>
+
+      <div class="campo">
+
+        <label for="confirmarPassword">
+          Confirmar contraseña
+        </label>
+
+        <input
+          id="confirmarPassword"
+          type="password"
+          pInputText
+          formControlName="confirmarPassword"
+          autocomplete="new-password"
+        />
+
+        @if (confirmarPasswordInvalida()) {
+          <p-message
+            severity="error"
+            variant="simple"
+          >
+            Confirma la nueva contraseña.
+          </p-message>
+        }
+
+      </div>
+
+      @if (error()) {
+        <p-message severity="error">
+          {{ error() }}
+        </p-message>
+      }
+
+      <p-button
+        type="submit"
+        label="Establecer contraseña"
+        [loading]="enviando()"
+        [disabled]="enviando()"
+      />
+
+    </form>
+
+  </div>
+
+</div>

@@ -1,0 +1,87 @@
+<div class="login-page">
+
+  <div class="login-card">
+
+    <div class="login-header">
+      <h1>Barru</h1>
+      <p>Control horario</p>
+    </div>
+
+    <form
+      [formGroup]="formulario"
+      (ngSubmit)="iniciarSesion()"
+      novalidate
+    >
+
+      <div class="campo">
+        <label for="email">
+          Correo electrónico
+        </label>
+
+        <input
+          id="email"
+          type="email"
+          pInputText
+          formControlName="email"
+          autocomplete="username"
+        />
+
+        @if (emailInvalido()) {
+          <p-message
+            severity="error"
+            variant="simple"
+          >
+            Introduce un correo electrónico válido.
+          </p-message>
+        }
+      </div>
+
+      <div class="campo">
+        <label for="password">
+          Contraseña
+        </label>
+
+        <input
+          id="password"
+          type="password"
+          pInputText
+          formControlName="password"
+          autocomplete="current-password"
+        />
+
+        @if (passwordInvalida()) {
+          <p-message
+            severity="error"
+            variant="simple"
+          >
+            La contraseña es obligatoria.
+          </p-message>
+        }
+      </div>
+
+      <div class="recuperar-link">
+        <a routerLink="/recuperar-password">
+          ¿Has olvidado tu contraseña?
+        </a>
+      </div>
+
+      @if (error()) {
+        <p-message
+          severity="error"
+        >
+          {{ error() }}
+        </p-message>
+      }
+
+      <p-button
+            type="submit"
+            label="Iniciar sesión"
+            [loading]="enviando()"
+            [disabled]="enviando()"
+            />
+
+    </form>
+
+  </div>
+
+</div>
