@@ -1,0 +1,221 @@
+<div class="metodos-fichaje-page">
+
+  <p-confirmdialog />
+
+  <h1>Métodos de fichaje</h1>
+
+  <p>
+    Gestión de los métodos de fichaje asignados a cada empresa.
+  </p>
+
+  @if (error()) {
+    <p-message severity="error">
+      {{ error() }}
+    </p-message>
+  }
+
+  @if (exito()) {
+    <p-message severity="success">
+      {{ exito() }}
+    </p-message>
+  }
+
+  <div>
+
+    <label for="empresaMetodo">
+      Empresa
+    </label>
+
+    <select
+      id="empresaMetodo"
+      [(ngModel)]="empresaId"
+      [disabled]="cargando()"
+      (ngModelChange)="seleccionarEmpresa()"
+    >
+
+      <option [ngValue]="null">
+        Selecciona una empresa
+      </option>
+
+      @for (empresa of empresas(); track empresa.id) {
+
+        @if (empresa.id !== undefined) {
+
+          <option [ngValue]="empresa.id">
+            {{ empresa.nombre }}
+            {{ empresa.activa === false ? '(Inactiva)' : '' }}
+          </option>
+
+        }
+
+      }
+
+    </select>
+
+  </div>
+
+  @if (empresaId !== null) {
+
+    <section>
+
+      <h2>Asignar método</h2>
+
+      <label for="metodoDisponible">
+        Método disponible
+      </label>
+
+      <select
+        id="metodoDisponible"
+        [(ngModel)]="codigoMetodo"
+        [disabled]="procesando() || metodosDisponibles().length === 0"
+      >
+
+        <option value="">
+          Selecciona un método
+        </option>
+
+        @for (
+          metodo of metodosDisponibles();
+          track metodo.codigoMetodo
+        ) {
+
+          <option [value]="metodo.codigoMetodo">
+            {{ metodo.nombre ?? metodo.codigoMetodo }}
+          </option>
+
+        }
+
+      </select>
+
+      <p-button
+        type="button"
+        label="Asignar"
+        [disabled]="!codigoMetodo || procesando()"
+        [loading]="procesando()"
+        (onClick)="confirmarAsignacion()"
+      />
+
+      @if (metodosDisponibles().length === 0) {
+
+        <p>
+          La empresa ya tiene asignados todos los métodos disponibles.
+        </p>
+
+      }
+
+    </section>
+
+    <section>
+
+      <h2>Métodos asignados</h2>
+
+      <div>
+
+        <p-button
+          type="button"
+          label="Todos"
+          [outlined]="filtroEstado !== 'todos'"
+          (onClick)="filtroEstado = 'todos'"
+        />
+
+        <p-button
+          type="button"
+          label="Activos"
+          [outlined]="filtroEstado !== 'activos'"
+          (onClick)="filtroEstado = 'activos'"
+        />
+
+        <p-button
+          type="button"
+          label="Inactivos"
+          [outlined]="filtroEstado !== 'inactivos'"
+          (onClick)="filtroEstado = 'inactivos'"
+        />
+
+      </div>
+
+      <p-table
+        [value]="metodosVisibles()"
+        [loading]="cargando()"
+      >
+
+        <ng-template #header>
+
+          <tr>
+            <th scope="col">Método</th>
+            <th scope="col">Código</th>
+            <th scope="col">Estado</th>
+            <th scope="col">Acción</th>
+          </tr>
+
+        </ng-template>
+
+        <ng-template
+          #body
+          let-metodo
+        >
+
+          <tr>
+
+            <td>
+              {{ metodo.nombre ?? metodo.codigoMetodo }}
+            </td>
+
+            <td>
+              {{ metodo.codigoMetodo }}
+            </td>
+
+            <td>
+              {{ metodo.activo === true ? 'Activo' : 'Inactivo' }}
+            </td>
+
+            <td>
+
+              @if (metodo.id !== undefined) {
+
+                @if (metodo.activo === true) {
+
+                  <p-button
+                    type="button"
+                    label="Desactivar"
+                    severity="secondary"
+                    [disabled]="procesando()"
+                    (onClick)="cambiarEstado(metodo)"
+                  />
+
+                } @else {
+
+                  <p-button
+                    type="button"
+                    label="Activar"
+                    [disabled]="procesando()"
+                    (onClick)="cambiarEstado(metodo)"
+                  />
+
+                }
+
+              }
+
+            </td>
+
+          </tr>
+
+        </ng-template>
+
+        <ng-template #emptymessage>
+
+          <tr>
+            <td colspan="4">
+              No hay métodos de fichaje para mostrar.
+            </td>
+          </tr>
+
+        </ng-template>
+
+      </p-table>
+
+    </section>
+
+  }
+
+</div>

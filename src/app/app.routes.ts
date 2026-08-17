@@ -12,6 +12,7 @@ import { Inicio } from './features/inicio/inicio';
 
 import { ListadoEmpresas } from './features/empresa/listado-empresas/listado-empresas';
 import { FormularioEmpresa } from './features/empresa/formulario-empresa/formulario-empresa';
+import { ListadoMetodosFichaje } from './features/metodo-fichaje/listado-metodos-fichaje/listado-metodos-fichaje';
 
 export const routes: Routes = [
   {
@@ -28,10 +29,11 @@ export const routes: Routes = [
     component: Inicio,
     canActivate: [authGuard],
   },
+
   {
-  path: 'empresas',
-  component: ListadoEmpresas,
-  canActivate: [authGuard, adminGuard],
+    path: 'empresas',
+    component: ListadoEmpresas,
+    canActivate: [authGuard, adminGuard],
   },
   {
     path: 'empresas/nueva',
@@ -43,19 +45,28 @@ export const routes: Routes = [
     component: FormularioEmpresa,
     canActivate: [authGuard, adminGuard],
   },
+
   {
-      path: 'restablecer-password',
-      component: RestablecerPassword
-  },  
+    path: 'metodos-fichaje',
+    component: ListadoMetodosFichaje,
+    canActivate: [authGuard, adminGuard],
+  },
+
   {
-  path: 'recuperar-password',
-  component: RecuperarPassword,
-  },  
+    path: 'restablecer-password',
+    component: RestablecerPassword,
+  },
+  {
+    path: 'recuperar-password',
+    component: RecuperarPassword,
+  },
+
   {
     path: '',
     redirectTo: 'login',
     pathMatch: 'full',
   },
+
   {
     path: '**',
     redirectTo: 'login',
