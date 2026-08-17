@@ -1,0 +1,249 @@
+<div class="empresa-formulario">
+
+  <h1>
+    {{ esEdicion() ? 'Modificar empresa' : 'Nueva empresa' }}
+  </h1>
+
+  @if (error()) {
+    <p-message severity="error">
+      {{ error() }}
+    </p-message>
+  }
+
+  @if (cargando()) {
+
+    <p>Cargando empresa...</p>
+
+  } @else {
+
+    <form
+      [formGroup]="formulario"
+      (ngSubmit)="guardar()"
+    >
+
+      <div>
+
+        <label for="nombre">
+          Nombre
+        </label>
+
+        <input
+          id="nombre"
+          type="text"
+          pInputText
+          formControlName="nombre"
+          maxlength="150"
+          required
+        />
+
+      </div>
+
+
+      <div>
+
+        <label for="limiteUsuarios">
+          Límite de usuarios
+        </label>
+
+        <input
+          id="limiteUsuarios"
+          type="number"
+          formControlName="limiteUsuarios"
+          min="1"
+          max="100000"
+          step="1"
+          required
+        />
+
+      </div>
+
+
+      <fieldset>
+
+        <legend>
+          Jornada diaria
+        </legend>
+
+        <div>
+
+          <label for="jornadaHoras">
+            Horas
+          </label>
+
+          <input
+            id="jornadaHoras"
+            type="number"
+            formControlName="jornadaHoras"
+            min="0"
+            max="24"
+            step="1"
+          />
+
+          <label for="jornadaMinutosResto">
+            Minutos
+          </label>
+
+          <input
+            id="jornadaMinutosResto"
+            type="number"
+            formControlName="jornadaMinutosResto"
+            min="0"
+            max="59"
+            step="1"
+          />
+
+        </div>
+
+      </fieldset>
+
+
+      <fieldset>
+
+        <legend>
+          Pausa disponible
+        </legend>
+
+        <div>
+
+          <label for="pausaHoras">
+            Horas
+          </label>
+
+          <input
+            id="pausaHoras"
+            type="number"
+            formControlName="pausaHoras"
+            min="0"
+            max="24"
+            step="1"
+          />
+
+          <label for="pausaMinutosResto">
+            Minutos
+          </label>
+
+          <input
+            id="pausaMinutosResto"
+            type="number"
+            formControlName="pausaMinutosResto"
+            min="0"
+            max="59"
+            step="1"
+          />
+
+        </div>
+
+      </fieldset>
+
+
+      <div>
+
+        <label for="latitud">
+          Latitud
+        </label>
+
+        <input
+          id="latitud"
+          type="number"
+          formControlName="latitud"
+          step="any"
+          required
+        />
+
+      </div>
+
+
+      <div>
+
+        <label for="longitud">
+          Longitud
+        </label>
+
+        <input
+          id="longitud"
+          type="number"
+          formControlName="longitud"
+          step="any"
+          required
+        />
+
+      </div>
+
+
+      <div>
+
+        <label for="radioFichaje">
+          Radio de fichaje en metros
+        </label>
+
+        <input
+          id="radioFichaje"
+          type="number"
+          formControlName="radioFichaje"
+          min="5"
+          max="500"
+          step="1"
+          required
+        />
+
+      </div>
+
+
+      <div>
+
+        <label for="logo">
+          Logo
+        </label>
+
+        @if (logoActual()) {
+
+          <img
+            [src]="logoActual()"
+            alt="Logo actual de la empresa"
+            width="80"
+            height="80"
+          />
+
+        }
+
+        <input
+          id="logo"
+          type="file"
+          accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+          (change)="seleccionarLogo($event)"
+        />
+
+        @if (esEdicion()) {
+
+          <small>
+            Si no seleccionas otro logo, se conservará el actual.
+          </small>
+
+        }
+
+      </div>
+
+
+      <div>
+
+        <p-button
+          type="button"
+          label="Cancelar"
+          severity="secondary"
+          [disabled]="guardando()"
+          (onClick)="volver()"
+        />
+
+        <p-button
+          type="submit"
+          [label]="esEdicion() ? 'Guardar cambios' : 'Crear empresa'"
+          [loading]="guardando()"
+        />
+
+      </div>
+
+    </form>
+
+  }
+
+</div>

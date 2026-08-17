@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { authGuard } from './core/auth/auth-guard';
+import { adminGuard } from './core/auth/admin-guard';
 import { firstAccessGuard } from './core/auth/first-access-guard';
 
 import { Login } from './features/auth/login/login';
@@ -8,6 +9,9 @@ import { PrimerAcceso } from './features/auth/primer-acceso/primer-acceso';
 import { RestablecerPassword } from './features/auth/restablecer-password/restablecer-password';
 import { RecuperarPassword } from './features/auth/recuperar-password/recuperar-password';
 import { Inicio } from './features/inicio/inicio';
+
+import { ListadoEmpresas } from './features/empresa/listado-empresas/listado-empresas';
+import { FormularioEmpresa } from './features/empresa/formulario-empresa/formulario-empresa';
 
 export const routes: Routes = [
   {
@@ -25,8 +29,23 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
-    path: 'restablecer-password',
-    component: RestablecerPassword
+  path: 'empresas',
+  component: ListadoEmpresas,
+  canActivate: [authGuard, adminGuard],
+  },
+  {
+    path: 'empresas/nueva',
+    component: FormularioEmpresa,
+    canActivate: [authGuard, adminGuard],
+  },
+  {
+    path: 'empresas/:id/editar',
+    component: FormularioEmpresa,
+    canActivate: [authGuard, adminGuard],
+  },
+  {
+      path: 'restablecer-password',
+      component: RestablecerPassword
   },  
   {
   path: 'recuperar-password',

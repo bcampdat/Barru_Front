@@ -1,0 +1,214 @@
+<div class="empresas-page">
+
+  <div class="empresas-header">
+
+    <div>
+      <h1>Empresas</h1>
+
+      <p>
+        Gestión de las empresas registradas en Barru.
+      </p>
+    </div>
+
+    <a
+      routerLink="/empresas/nueva"
+      pButton
+    >
+      <i class="pi pi-plus"></i>
+      <span>Nueva empresa</span>
+    </a>
+
+  </div>
+
+
+  <div class="empresas-filtros">
+
+    <p-button
+      type="button"
+      label="Todas"
+      [outlined]="filtroEstado() !== 'todas'"
+      (onClick)="cargarEmpresas('todas')"
+    />
+
+    <p-button
+      type="button"
+      label="Activas"
+      [outlined]="filtroEstado() !== 'activas'"
+      (onClick)="cargarEmpresas('activas')"
+    />
+
+    <p-button
+      type="button"
+      label="Inactivas"
+      [outlined]="filtroEstado() !== 'inactivas'"
+      (onClick)="cargarEmpresas('inactivas')"
+    />
+
+  </div>
+
+
+  @if (error()) {
+
+    <p-message severity="error">
+      {{ error() }}
+    </p-message>
+
+  }
+
+
+  <p-table
+    #tabla
+    [value]="empresas()"
+    [loading]="cargando()"
+    [paginator]="true"
+    [rows]="10"
+    [rowsPerPageOptions]="[10, 25, 50]"
+    [globalFilterFields]="['nombre']"
+  >
+
+    <ng-template #caption>
+
+      <label for="busquedaEmpresa">
+        Buscar empresa
+      </label>
+
+      <input
+        id="busquedaEmpresa"
+        #busqueda
+        type="text"
+        pInputText
+        placeholder="Buscar por nombre"
+        (input)="tabla.filterGlobal(busqueda.value, 'contains')"
+      />
+
+    </ng-template>
+
+
+    <ng-template #header>
+
+      <tr>
+        <th scope="col">Logo</th>
+        <th scope="col">Nombre</th>
+        <th scope="col">Estado</th>
+        <th scope="col">Límite usuarios</th>
+        <th scope="col">Jornada</th>
+        <th scope="col">Pausa</th>
+        <th scope="col">Radio fichaje</th>
+        <th scope="col">Acciones</th>
+      </tr>
+
+    </ng-template>
+
+
+    <ng-template
+      #body
+      let-empresa
+    >
+
+      <tr>
+
+        <td>
+
+          @if (empresa.logoUrl) {
+
+            <img
+              [src]="empresa.logoUrl"
+              [alt]="'Logo de ' + empresa.nombre"
+              width="40"
+              height="40"
+            />
+
+          } @else {
+
+            <span>Sin logo</span>
+
+          }
+
+        </td>
+
+        <td>
+          {{ empresa.nombre }}
+        </td>
+
+        <td>
+          {{ empresa.activa === true ? 'Activa' : 'Inactiva' }}
+        </td>
+
+        <td>
+          {{ empresa.limiteUsuarios }}
+        </td>
+
+        <td>
+          {{ formatearDuracion(empresa.jornadaMinutos) }}
+        </td>
+
+        <td>
+          {{ formatearDuracion(empresa.pausaMinutos ?? 30) }}
+        </td>
+
+        <td>
+          {{ empresa.radioFichaje }} m
+        </td>
+
+        <td>
+
+          @if (empresa.id !== undefined) {
+
+            <a
+              [routerLink]="[
+                '/empresas',
+                empresa.id,
+                'editar'
+              ]"
+              pButton
+              severity="secondary"
+            >
+              <i class="pi pi-pencil"></i>
+              <span>Modificar</span>
+            </a>
+
+            @if (empresa.activa === true) {
+
+              <p-button
+                type="button"
+                label="Desactivar"
+                icon="pi pi-ban"
+                severity="secondary"
+                [disabled]="cargando()"
+                (onClick)="cambiarEstado(empresa)"
+              />
+
+            } @else {
+
+              <p-button
+                type="button"
+                label="Activar"
+                icon="pi pi-check"
+                [disabled]="cargando()"
+                (onClick)="cambiarEstado(empresa)"
+              />
+
+            }
+
+          }
+
+        </td>
+
+      </tr>
+
+    </ng-template>
+
+
+    <ng-template #emptymessage>
+
+      <tr>
+        <td colspan="8">
+          No hay empresas que coincidan con los criterios seleccionados.
+        </td>
+      </tr>
+
+    </ng-template>
+
+  </p-table>
+
+</div>
