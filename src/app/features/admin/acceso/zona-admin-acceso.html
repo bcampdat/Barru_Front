@@ -1,0 +1,52 @@
+<div class="modal-fondo">
+
+  <dialog
+    class="modal"
+    open
+    aria-labelledby="zona-admin-titulo"
+  >
+
+    <button
+      type="button"
+      class="modal-cerrar"
+      aria-label="Cerrar"
+      (click)="cerrar()"
+      [disabled]="cargando()"
+    >
+      ×
+    </button>
+
+    <h2 id="zona-admin-titulo">
+      Acceso administrativo protegido
+    </h2>
+
+    <p>
+      Verifica tu identidad para acceder
+      a la zona administrativa.
+    </p>
+
+    <button
+      type="button"
+      (click)="acceder()"
+      [disabled]="cargando()"
+    >
+
+      @if (cargando()) {
+        Verificando...
+      } @else {
+        Verificar identidad
+      }
+
+    </button>
+
+    @if (error()) {
+
+      <p>
+        {{ error() }}
+      </p>
+
+    }
+
+  </dialog>
+
+</div>

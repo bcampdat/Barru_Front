@@ -1,0 +1,271 @@
+<section>
+
+  <h1>Zona administrativa</h1>
+
+  @if (comprobandoContexto()) {
+
+    <p>
+      Comprobando acceso protegido...
+    </p>
+
+  } @else if (!accesoConcedido()) {
+
+    <app-zona-admin-acceso
+      (accesoConcedido)="confirmarAcceso()"
+      (accesoDenegado)="denegarAcceso($event)">
+    </app-zona-admin-acceso>
+
+  } @else {
+
+    <p>
+      Gestión de administradores del sistema.
+    </p>
+
+    <section>
+
+      <h2>Nuevo administrador</h2>
+
+      <form
+        (ngSubmit)="crearAdministrador()">
+
+        <div>
+          <label for="nombre">
+            Nombre
+          </label>
+
+          <input
+            id="nombre"
+            name="nombre"
+            type="text"
+            [(ngModel)]="nombre"
+            required>
+        </div>
+
+        <div>
+          <label for="apellidos">
+            Apellidos
+          </label>
+
+          <input
+            id="apellidos"
+            name="apellidos"
+            type="text"
+            [(ngModel)]="apellidos"
+            required>
+        </div>
+
+        <div>
+          <label for="email">
+            Email
+          </label>
+
+          <input
+            id="email"
+            name="email"
+            type="email"
+            [(ngModel)]="email"
+            required>
+        </div>
+
+        <button
+          type="submit"
+          [disabled]="creando()">
+
+          @if (creando()) {
+            Creando...
+          } @else {
+            Crear administrador
+          }
+
+        </button>
+
+      </form>
+
+    </section>
+
+    <section>
+
+      <h2>Administradores</h2>
+
+      @if (
+        administradores().length === 0
+      ) {
+
+        <p>
+          No hay administradores registrados.
+        </p>
+
+      } @else {
+
+        <table>
+
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            @for (
+              administrador
+              of administradores();
+              track administrador.uuid
+            ) {
+
+              <tr>
+
+                <td>
+                  {{ administrador.nombre }}
+                  {{ administrador.apellidos }}
+                </td>
+
+                <td>
+                  {{ administrador.email }}
+                </td>
+
+                <td>
+                  {{ administrador.estado }}
+                </td>
+
+                <td>
+
+                  @if (
+                    administrador.estado ===
+                    'INACTIVO'
+                  ) {
+
+                    <button
+                      type="button"
+                      (click)="activar(
+                        administrador.uuid
+                      )"
+                      [disabled]="
+                        accionEnCurso() ===
+                        administrador.uuid
+                      ">
+                      Activar
+                    </button>
+
+                  }
+
+                  @if (
+                    administrador.estado ===
+                    'ACTIVO'
+                  ) {
+
+                    <button
+                      type="button"
+                      (click)="inactivar(
+                        administrador.uuid
+                      )"
+                      [disabled]="
+                        accionEnCurso() ===
+                        administrador.uuid
+                      ">
+                      Inactivar
+                    </button>
+
+                    <button
+                      type="button"
+                      (click)="bloquear(
+                        administrador.uuid
+                      )"
+                      [disabled]="
+                        accionEnCurso() ===
+                        administrador.uuid
+                      ">
+                      Bloquear
+                    </button>
+
+                  }
+
+                  @if (
+                    administrador.estado ===
+                    'BLOQUEADO'
+                  ) {
+
+                    <button
+                      type="button"
+                      (click)="desbloquear(
+                        administrador.uuid
+                      )"
+                      [disabled]="
+                        accionEnCurso() ===
+                        administrador.uuid
+                      ">
+                      Desbloquear
+                    </button>
+
+                  }
+
+                  @if (
+                    administrador.estado !==
+                    'PENDIENTE'
+                  ) {
+
+                    <button
+                      type="button"
+                      (click)="
+                        eliminarCredencialesWebAuthn(
+                          administrador.uuid
+                        )
+                      "
+                      [disabled]="
+                        accionEnCurso() ===
+                        administrador.uuid
+                      ">
+                      Restablecer WebAuthn
+                    </button>
+
+                  }
+
+                </td>
+
+              </tr>
+
+            }
+
+          </tbody>
+
+        </table>
+
+      }
+
+    </section>
+
+    <button
+      type="button"
+      (click)="salir()"
+      [disabled]="cargando()">
+
+      @if (cargando()) {
+        Saliendo...
+      } @else {
+        Salir de la zona administrativa
+      }
+
+    </button>
+
+  }
+
+  @if (mensaje()) {
+
+    <p>
+      {{ mensaje() }}
+    </p>
+
+  }
+
+  @if (error()) {
+
+    <p>
+      {{ error() }}
+    </p>
+
+  }
+
+</section>

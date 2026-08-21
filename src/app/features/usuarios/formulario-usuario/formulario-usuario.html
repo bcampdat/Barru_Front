@@ -1,0 +1,184 @@
+<div class="usuario-formulario">
+
+  <h1>
+    {{ esEdicion() ? 'Modificar usuario' : 'Nuevo usuario' }}
+  </h1>
+
+  @if (error()) {
+    <p-message severity="error">
+      {{ error() }}
+    </p-message>
+  }
+
+  @if (cargando()) {
+
+    <p>Cargando...</p>
+
+  } @else {
+
+    <form
+      #formUsuario="ngForm"
+      (ngSubmit)="guardar()"
+    >
+
+      <div>
+        <label for="nombre">
+          Nombre
+        </label>
+
+        <input
+          id="nombre"
+          name="nombre"
+          type="text"
+          pInputText
+          [(ngModel)]="nombre"
+          maxlength="80"
+          required
+        />
+      </div>
+
+      <div>
+        <label for="apellidos">
+          Apellidos
+        </label>
+
+        <input
+          id="apellidos"
+          name="apellidos"
+          type="text"
+          pInputText
+          [(ngModel)]="apellidos"
+          maxlength="120"
+          required
+        />
+      </div>
+
+      <div>
+        <label for="email">
+          Email
+        </label>
+
+        <input
+          id="email"
+          name="email"
+          type="email"
+          pInputText
+          [(ngModel)]="email"
+          maxlength="150"
+          required
+          email
+        />
+      </div>
+
+      @if (esAdmin()) {
+        <div>
+          <label for="empresa">
+            Empresa
+          </label>
+
+          <select
+            id="empresa"
+            name="empresa"
+            [(ngModel)]="empresaId"
+            required
+            (ngModelChange)="cambiarEmpresa()"
+          >
+            <option [ngValue]="null">
+              Selecciona una empresa
+            </option>
+
+            @for (
+              empresa of empresas();
+              track empresa.id ?? empresa.nombre
+            ) {
+              @if (empresa.id !== undefined) {
+                <option [ngValue]="empresa.id">
+                  {{ empresa.nombre }}
+                  {{ empresa.activa === false ? '(Inactiva)' : '' }}
+                </option>
+              }
+            }
+          </select>
+        </div>
+      }
+
+      <div>
+        <label for="rol">
+          Rol
+        </label>
+
+        <select
+          id="rol"
+          name="rol"
+          [(ngModel)]="rolId"
+          required
+        >
+          <option [ngValue]="null">
+            Selecciona un rol
+          </option>
+
+          @for (rol of rolesFormulario(); track rol.id) {
+            <option [ngValue]="rol.id">
+              {{ rol.nombre }}
+            </option>
+          }
+        </select>
+      </div>
+
+      <div>
+        <label for="metodoFichaje">
+          Método de fichaje
+        </label>
+
+        <select
+          id="metodoFichaje"
+          name="metodoFichaje"
+          [(ngModel)]="metodoFichajeId"
+          [disabled]="empresaId === null || cargandoMetodos()"
+        >
+          <option [ngValue]="null">
+            Sin asignar
+          </option>
+
+          @for (
+            metodo of metodos();
+            track metodo.id ?? metodo.codigoMetodo
+          ) {
+            @if (metodo.id !== undefined) {
+              <option
+                [ngValue]="metodo.id"
+                [disabled]="
+                  metodo.activo === false &&
+                  metodo.id !== metodoFichajeId
+                "
+              >
+                {{ metodo.nombre ?? metodo.codigoMetodo }}
+                {{ metodo.activo === false ? '(Inactivo)' : '' }}
+              </option>
+            }
+          }
+        </select>
+      </div>
+
+      <div>
+        <button
+          type="submit"
+          [disabled]="formUsuario.invalid || guardando()"
+        >
+          {{ esEdicion() ? 'Guardar cambios' : 'Crear usuario' }}
+        </button>
+
+        <button
+          type="button"
+          [disabled]="guardando()"
+          (click)="cancelar()"
+        >
+          Cancelar
+        </button>
+      </div>
+
+    </form>
+
+  }
+
+</div>

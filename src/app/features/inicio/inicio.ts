@@ -1,14 +1,13 @@
 import { Component, signal } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { ButtonModule } from 'primeng/button';
-
 import { AuthService } from '../../core/auth/auth.service';
+import { ZonaAdminAcceso } from '../admin/acceso/zona-admin-acceso';
 
 @Component({
   selector: 'app-inicio',
   imports: [
-    ButtonModule,
+    ZonaAdminAcceso,
   ],
   templateUrl: './inicio.html',
   styleUrl: './inicio.scss',
@@ -17,10 +16,53 @@ export class Inicio {
 
   readonly error = signal<string | null>(null);
 
+  readonly mostrarAccesoAdmin = signal(false);
+
   constructor(
     private readonly authService: AuthService,
     private readonly router: Router
   ) {}
+
+  get nombreUsuario(): string {
+    return this.authService.getSesion()?.nombre ?? 'Usuario';
+  }
+
+  get esAdminSistema(): boolean {
+    return this.authService.getSesion()?.rol === 'ADMIN_SISTEMA';
+  }
+
+  irAPerfil(): void {
+    void this.router.navigateByUrl('/perfil');
+  }
+
+  abrirZonaAdmin(): void {
+    this.error.set(null);
+    this.mostrarAccesoAdmin.set(true);
+  }
+
+  accesoAdminConcedido(): void {
+
+    this.mostrarAccesoAdmin.set(false);
+
+    void this.router.navigateByUrl('/admin');
+  }
+
+  accesoAdminDenegado(
+    mensaje: string
+  ): void {
+
+    this.mostrarAccesoAdmin.set(false);
+
+    this.error.set(
+      mensaje
+      || 'Acceso administrativo no autorizado.'
+    );
+  }
+
+  cerrarAccesoAdmin(): void {
+
+    this.mostrarAccesoAdmin.set(false);
+  }
 
   cerrarSesion(): void {
 
@@ -30,7 +72,10 @@ export class Inicio {
       .logout()
       .subscribe({
         next: () => {
-          this.router.navigateByUrl('/login');
+
+          void this.router.navigateByUrl(
+            '/login'
+          );
         },
 
         error: () => {

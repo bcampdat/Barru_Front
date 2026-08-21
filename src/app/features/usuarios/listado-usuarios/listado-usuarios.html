@@ -1,0 +1,223 @@
+<div class="usuarios-page">
+
+  <p-confirmdialog />
+
+  <h1>Usuarios</h1>
+
+  @if (error()) {
+    <p-message severity="error">
+      {{ error() }}
+    </p-message>
+  }
+
+  @if (exito()) {
+    <p-message severity="success">
+      {{ exito() }}
+    </p-message>
+  }
+
+  @if (esAdmin()) {
+    <div>
+      <label for="empresaUsuarios">
+        Empresa
+      </label>
+
+      <select
+        id="empresaUsuarios"
+        [(ngModel)]="empresaId"
+        [disabled]="cargando()"
+        (ngModelChange)="seleccionarEmpresa()"
+      >
+        <option [ngValue]="null">
+          Selecciona una empresa
+        </option>
+
+        @for (
+          empresa of empresas();
+          track empresa.id ?? empresa.nombre
+        ) {
+          @if (empresa.id !== undefined) {
+            <option [ngValue]="empresa.id">
+              {{ empresa.nombre }}
+              {{ empresa.activa === false ? '(Inactiva)' : '' }}
+            </option>
+          }
+        }
+      </select>
+    </div>
+  }
+
+  @if (empresaId !== null) {
+
+    <nav aria-label="Estado de los usuarios">
+      @for (estado of estados; track estado) {
+        <button
+          type="button"
+          [disabled]="cargando()"
+          [attr.aria-pressed]="estadoSeleccionado() === estado"
+          (click)="seleccionarEstado(estado)"
+        >
+          {{ etiquetaEstado(estado) }}
+        </button>
+      }
+    </nav>
+
+    <div>
+      <button
+        type="button"
+        [disabled]="cargando()"
+        (click)="nuevoUsuario()"
+      >
+        Nuevo usuario
+      </button>
+    </div>
+
+    <p-table
+      #tabla
+      [value]="usuarios()"
+      [loading]="cargando()"
+      [paginator]="true"
+      [rows]="10"
+      [rowsPerPageOptions]="[10, 25, 50]"
+      [globalFilterFields]="['nombre', 'apellidos', 'email']"
+    >
+
+      <ng-template #caption>
+        <label for="busquedaUsuario">
+          Buscar usuario
+        </label>
+
+        <input
+          id="busquedaUsuario"
+          #busqueda
+          type="text"
+          pInputText
+          placeholder="Nombre, apellidos o email"
+          (input)="tabla.filterGlobal(busqueda.value, 'contains')"
+        />
+      </ng-template>
+
+      <ng-template #header>
+        <tr>
+          <th scope="col">Foto</th>
+          <th scope="col">Nombre</th>
+          <th scope="col">Email</th>
+          <th scope="col">Rol</th>
+          <th scope="col">Método de fichaje</th>
+          <th scope="col">Estado</th>
+          <th scope="col">Acciones</th>
+        </tr>
+      </ng-template>
+
+      <ng-template #body let-usuario>
+        <tr>
+
+          <td>
+            @if (usuario.fotoPerfil) {
+              <img
+                [src]="usuario.fotoPerfil"
+                [alt]="'Foto de ' + usuario.nombre + ' ' + usuario.apellidos"
+                width="40"
+                height="40"
+              />
+            } @else {
+              <span>Sin foto</span>
+            }
+          </td>
+
+          <td>
+            {{ usuario.nombre }} {{ usuario.apellidos }}
+          </td>
+
+          <td>
+            {{ usuario.email }}
+          </td>
+
+          <td>
+            {{ nombreRol(usuario.rolId) }}
+          </td>
+
+          <td>
+            {{ nombreMetodo(usuario.metodoFichajeId) }}
+          </td>
+
+          <td>
+            {{ etiquetaEstado(estadoSeleccionado()) }}
+          </td>
+
+          <td>
+            <button
+              type="button"
+              [disabled]="cargando()"
+              (click)="modificarUsuario(usuario)"
+            >
+              Modificar
+            </button>
+
+            @switch (estadoSeleccionado()) {
+
+              @case ('PENDIENTE') {
+                <span>
+                  Pendiente de primer acceso
+                </span>
+              }
+
+              @case ('ACTIVO') {
+                <button
+                  type="button"
+                  [disabled]="cargando()"
+                  (click)="confirmarCambio(usuario, 'INACTIVAR')"
+                >
+                  Inactivar
+                </button>
+
+                <button
+                  type="button"
+                  [disabled]="cargando()"
+                  (click)="confirmarCambio(usuario, 'BLOQUEAR')"
+                >
+                  Bloquear
+                </button>
+              }
+
+              @case ('INACTIVO') {
+                <button
+                  type="button"
+                  [disabled]="cargando()"
+                  (click)="confirmarCambio(usuario, 'ACTIVAR')"
+                >
+                  Activar
+                </button>
+              }
+
+              @case ('BLOQUEADO') {
+                <button
+                  type="button"
+                  [disabled]="cargando()"
+                  (click)="confirmarCambio(usuario, 'DESBLOQUEAR')"
+                >
+                  Desbloquear
+                </button>
+              }
+
+            }
+          </td>
+
+        </tr>
+      </ng-template>
+
+      <ng-template #emptymessage>
+        <tr>
+          <td colspan="7">
+            No hay usuarios
+            {{ etiquetaEstado(estadoSeleccionado()).toLowerCase() }}
+            para mostrar.
+          </td>
+        </tr>
+      </ng-template>
+
+    </p-table>
+
+  }
+
+</div>

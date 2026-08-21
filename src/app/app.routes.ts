@@ -9,10 +9,17 @@ import { PrimerAcceso } from './features/auth/primer-acceso/primer-acceso';
 import { RestablecerPassword } from './features/auth/restablecer-password/restablecer-password';
 import { RecuperarPassword } from './features/auth/recuperar-password/recuperar-password';
 import { Inicio } from './features/inicio/inicio';
+import { Perfil } from './features/usuarios/perfil/perfil'; 
+import { ZonaAdminGestion } from './features/admin/gestion/zona-admin-gestion';
+
 
 import { ListadoEmpresas } from './features/empresa/listado-empresas/listado-empresas';
 import { FormularioEmpresa } from './features/empresa/formulario-empresa/formulario-empresa';
 import { ListadoMetodosFichaje } from './features/metodo-fichaje/listado-metodos-fichaje/listado-metodos-fichaje';
+
+import { gestionGuard } from './core/auth/gestion-guard';
+import { ListadoUsuarios } from './features/usuarios/listado-usuarios/listado-usuarios';
+import { FormularioUsuario } from './features/usuarios/formulario-usuario/formulario-usuario';
 
 export const routes: Routes = [
   {
@@ -27,6 +34,12 @@ export const routes: Routes = [
   {
     path: 'inicio',
     component: Inicio,
+    canActivate: [authGuard],
+  },
+
+  {
+    path: 'perfil',
+    component: Perfil,
     canActivate: [authGuard],
   },
 
@@ -53,6 +66,31 @@ export const routes: Routes = [
   },
 
   {
+    path: 'usuarios/nuevo',
+    component: FormularioUsuario,
+    canActivate: [
+      authGuard,
+      gestionGuard,
+    ],
+  },
+  {
+    path: 'usuarios/:uuid/editar',
+    component: FormularioUsuario,
+    canActivate: [
+      authGuard,
+      gestionGuard,
+    ],
+  },
+  {
+    path: 'usuarios',
+    component: ListadoUsuarios,
+    canActivate: [
+      authGuard,
+      gestionGuard,
+    ],
+  },
+
+  {
     path: 'restablecer-password',
     component: RestablecerPassword,
   },
@@ -65,6 +103,12 @@ export const routes: Routes = [
     path: '',
     redirectTo: 'login',
     pathMatch: 'full',
+  },
+
+  {
+    path: 'admin',
+    component: ZonaAdminGestion,
+    canActivate: [authGuard, adminGuard],
   },
 
   {

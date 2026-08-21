@@ -1,0 +1,157 @@
+<div class="perfil-page">
+
+  <header>
+
+    <button
+      type="button"
+      (click)="volver()"
+    >
+      Volver
+    </button>
+
+    <h1>Mis datos</h1>
+
+  </header>
+
+
+  @if (error()) {
+    <p-message severity="error">
+      {{ error() }}
+    </p-message>
+  }
+
+
+  @if (exito()) {
+    <p-message severity="success">
+      {{ exito() }}
+    </p-message>
+  }
+
+
+  @if (cargando()) {
+
+    <p>Cargando...</p>
+
+  } @else {
+
+    <form
+      #perfilForm="ngForm"
+      (ngSubmit)="guardar()"
+    >
+
+      <div>
+
+        @if (fotoPerfil) {
+
+          <img
+            [src]="fotoPerfil"
+            alt="Foto de perfil"
+            width="120"
+            height="120"
+          />
+
+        } @else {
+
+          <span>
+            Sin foto de perfil
+          </span>
+
+        }
+
+      </div>
+
+
+      <div>
+
+        <label for="fotoPerfil">
+          Foto de perfil
+        </label>
+
+        <input
+          id="fotoPerfil"
+          name="fotoPerfil"
+          type="file"
+          accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+          (change)="seleccionarFoto($event)"
+        />
+
+      </div>
+
+
+      <div>
+
+        <label for="nombre">
+          Nombre
+        </label>
+
+        <input
+          id="nombre"
+          name="nombre"
+          type="text"
+          pInputText
+          [(ngModel)]="nombre"
+          maxlength="80"
+          required
+        />
+
+      </div>
+
+
+      <div>
+
+        <label for="apellidos">
+          Apellidos
+        </label>
+
+        <input
+          id="apellidos"
+          name="apellidos"
+          type="text"
+          pInputText
+          [(ngModel)]="apellidos"
+          maxlength="120"
+          required
+        />
+
+      </div>
+
+
+      <div>
+
+        <label for="email">
+          Email
+        </label>
+
+        <input
+          id="email"
+          name="email"
+          type="email"
+          pInputText
+          [(ngModel)]="email"
+          maxlength="150"
+          required
+          email
+        />
+
+      </div>
+
+
+      <div>
+
+        <button
+          type="submit"
+          [disabled]="
+            perfilForm.invalid ||
+            guardando()
+          "
+        >
+          Guardar cambios
+        </button>
+
+      </div>
+
+    </form>
+
+  }
+
+</div>

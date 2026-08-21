@@ -1,12 +1,75 @@
-<div>
-  <h1>Inicio</h1>
+<div class="inicio-page">
 
-  <p-button
-    label="Cerrar sesión"
-    (onClick)="cerrarSesion()"
-  />
+  <header>
+
+    <div>
+      <strong>Barru</strong>
+    </div>
+
+    <details>
+
+      <summary>
+        {{ nombreUsuario }}
+      </summary>
+
+      <div>
+
+        <button
+          type="button"
+          (click)="irAPerfil()"
+        >
+          Mis datos
+        </button>
+
+        @if (esAdminSistema) {
+
+          <button
+            type="button"
+            (click)="abrirZonaAdmin()"
+          >
+            Zona administrativa
+          </button>
+
+        }
+
+        <button
+          type="button"
+          (click)="cerrarSesion()"
+        >
+          Cerrar sesión
+        </button>
+
+      </div>
+
+    </details>
+
+  </header>
+
 
   @if (error()) {
-    <p>{{ error() }}</p>
+
+    <p>
+      {{ error() }}
+    </p>
+
   }
+
+
+  <main>
+
+    <h1>Inicio</h1>
+
+  </main>
+
+
+  @if (mostrarAccesoAdmin()) {
+
+    <app-zona-admin-acceso
+      (accesoConcedido)="accesoAdminConcedido()"
+      (accesoDenegado)="accesoAdminDenegado($event)"
+      (cerrado)="cerrarAccesoAdmin()"
+    />
+
+  }
+
 </div>
