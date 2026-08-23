@@ -1,0 +1,294 @@
+<div class="resumen-personal-page">
+
+  <header>
+    <h1>Mi resumen</h1>
+
+    <p>
+      Consulta tu jornada de hoy o revisa jornadas anteriores.
+    </p>
+  </header>
+
+
+  <nav aria-label="Consulta de resumen">
+
+    <button
+      type="button"
+      [disabled]="cargando()"
+      [attr.aria-pressed]="modo() === 'HOY'"
+      (click)="consultarHoy()"
+    >
+      Hoy
+    </button>
+
+    <button
+      type="button"
+      [disabled]="cargando()"
+      [attr.aria-pressed]="modo() === 'HISTORICO'"
+      (click)="consultarHistorico()"
+    >
+      Histórico
+    </button>
+
+  </nav>
+
+
+  <section>
+
+    <h2>Consultar una fecha</h2>
+
+    <label for="fechaResumen">
+      Fecha
+    </label>
+
+    <input
+      id="fechaResumen"
+      name="fechaResumen"
+      type="date"
+      [(ngModel)]="fecha"
+      [disabled]="cargando()"
+    />
+
+    <button
+      type="button"
+      [disabled]="cargando() || !fecha"
+      (click)="consultarFecha()"
+    >
+      Consultar
+    </button>
+
+  </section>
+
+
+  <section>
+
+    <h2>Consultar un periodo</h2>
+
+    <div>
+
+      <label for="fechaDesde">
+        Desde
+      </label>
+
+      <input
+        id="fechaDesde"
+        name="fechaDesde"
+        type="date"
+        [(ngModel)]="desde"
+        [disabled]="cargando()"
+      />
+
+    </div>
+
+    <div>
+
+      <label for="fechaHasta">
+        Hasta
+      </label>
+
+      <input
+        id="fechaHasta"
+        name="fechaHasta"
+        type="date"
+        [(ngModel)]="hasta"
+        [disabled]="cargando()"
+      />
+
+    </div>
+
+    <button
+      type="button"
+      [disabled]="
+        cargando() ||
+        !desde ||
+        !hasta
+      "
+      (click)="consultarRango()"
+    >
+      Consultar periodo
+    </button>
+
+  </section>
+
+
+  @if (error()) {
+
+    <p-message severity="error">
+      {{ error() }}
+    </p-message>
+
+  }
+
+
+  @if (cargando()) {
+
+    <p>
+      Cargando resumen...
+    </p>
+
+  } @else {
+
+
+    @if (resumen(); as resumenActual) {
+
+      <section>
+
+        <h2>
+          Resumen del {{ resumenActual.fecha }}
+        </h2>
+
+        <dl>
+
+          <div>
+            <dt>Estado</dt>
+            <dd>
+              {{ resumenActual.situacion }}
+            </dd>
+          </div>
+
+          <div>
+            <dt>Tiempo trabajado</dt>
+            <dd>
+              {{ resumenActual.tiempoTrabajado }}
+            </dd>
+          </div>
+
+          <div>
+            <dt>Jornada</dt>
+            <dd>
+              {{ resumenActual.tiempoJornada }}
+            </dd>
+          </div>
+
+          <div>
+            <dt>Tiempo restante</dt>
+            <dd>
+              {{ resumenActual.tiempoRestante }}
+            </dd>
+          </div>
+
+          <div>
+            <dt>Tiempo de pausa</dt>
+            <dd>
+              {{ resumenActual.tiempoPausa }}
+            </dd>
+          </div>
+
+          <div>
+            <dt>Pausa disponible</dt>
+            <dd>
+              {{ resumenActual.tiempoPausaDisponible }}
+            </dd>
+          </div>
+
+          <div>
+            <dt>Horas extra</dt>
+            <dd>
+              {{ resumenActual.tiempoExtra }}
+            </dd>
+          </div>
+
+        </dl>
+
+
+        @if (
+          resumenActual.requiereConfirmacionHorasExtra
+        ) {
+
+          <p-message severity="warn">
+            La jornada ordinaria se ha completado
+            y requiere confirmación para continuar
+            con horas extra.
+          </p-message>
+
+        }
+
+      </section>
+
+    }
+
+
+    @if (
+      modo() === 'HISTORICO' ||
+      modo() === 'RANGO'
+    ) {
+
+      <section>
+
+        <h2>
+          {{ modo() === 'RANGO'
+            ? 'Resumen del periodo'
+            : 'Histórico'
+          }}
+        </h2>
+
+        <p-table
+          [value]="historico()"
+          [paginator]="true"
+          [rows]="10"
+          [rowsPerPageOptions]="[10, 25, 50]"
+        >
+
+          <ng-template #header>
+
+            <tr>
+              <th scope="col">Fecha</th>
+              <th scope="col">Trabajado</th>
+              <th scope="col">Pausa</th>
+              <th scope="col">Horas extra</th>
+              <th scope="col">Estado</th>
+            </tr>
+
+          </ng-template>
+
+
+          <ng-template
+            #body
+            let-resumen
+          >
+
+            <tr>
+
+              <td>
+                {{ resumen.fecha }}
+              </td>
+
+              <td>
+                {{ resumen.tiempoTrabajado }}
+              </td>
+
+              <td>
+                {{ resumen.tiempoPausa }}
+              </td>
+
+              <td>
+                {{ resumen.tiempoExtra }}
+              </td>
+
+              <td>
+                {{ resumen.situacion }}
+              </td>
+
+            </tr>
+
+          </ng-template>
+
+
+          <ng-template #emptymessage>
+
+            <tr>
+              <td colspan="5">
+                No hay resúmenes para mostrar.
+              </td>
+            </tr>
+
+          </ng-template>
+
+        </p-table>
+
+      </section>
+
+    }
+
+  }
+
+</div>

@@ -16,6 +16,8 @@ import { ZonaAdminGestion } from './features/admin/gestion/zona-admin-gestion';
 import { ListadoEmpresas } from './features/empresa/listado-empresas/listado-empresas';
 import { FormularioEmpresa } from './features/empresa/formulario-empresa/formulario-empresa';
 import { ListadoMetodosFichaje } from './features/metodo-fichaje/listado-metodos-fichaje/listado-metodos-fichaje';
+import { ResumenPersonal } from './features/resumenes/personal/resumen-personal/resumen-personal';
+import { ResumenEmpresa } from './features/resumenes/empresa/resumen-empresa/resumen-empresa';
 
 import { gestionGuard } from './core/auth/gestion-guard';
 import { ListadoUsuarios } from './features/usuarios/listado-usuarios/listado-usuarios';
@@ -65,6 +67,20 @@ export const routes: Routes = [
     canActivate: [authGuard, adminGuard],
   },
 
+  {
+    path: 'resumenes/mio',
+    component: ResumenPersonal,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'resumenes/empresa',
+    component: ResumenEmpresa,
+    canActivate: [
+      authGuard,
+      gestionGuard,
+    ],
+  },
+ 
   {
     path: 'usuarios/nuevo',
     component: FormularioUsuario,
