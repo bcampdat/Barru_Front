@@ -13,7 +13,7 @@
 
     <button
       type="button"
-      [disabled]="cargando()"
+      [disabled]="cargando() || descargando()"
       [attr.aria-pressed]="modo() === 'HOY'"
       (click)="consultarHoy()"
     >
@@ -22,7 +22,7 @@
 
     <button
       type="button"
-      [disabled]="cargando()"
+      [disabled]="cargando() || descargando()"
       [attr.aria-pressed]="modo() === 'HISTORICO'"
       (click)="consultarHistorico()"
     >
@@ -45,12 +45,16 @@
       name="fechaResumen"
       type="date"
       [(ngModel)]="fecha"
-      [disabled]="cargando()"
+      [disabled]="cargando() || descargando()"
     />
 
     <button
       type="button"
-      [disabled]="cargando() || !fecha"
+      [disabled]="
+        cargando() ||
+        descargando() ||
+        !fecha
+      "
       (click)="consultarFecha()"
     >
       Consultar
@@ -74,7 +78,7 @@
         name="fechaDesde"
         type="date"
         [(ngModel)]="desde"
-        [disabled]="cargando()"
+        [disabled]="cargando() || descargando()"
       />
 
     </div>
@@ -90,7 +94,7 @@
         name="fechaHasta"
         type="date"
         [(ngModel)]="hasta"
-        [disabled]="cargando()"
+        [disabled]="cargando() || descargando()"
       />
 
     </div>
@@ -99,6 +103,7 @@
       type="button"
       [disabled]="
         cargando() ||
+        descargando() ||
         !desde ||
         !hasta
       "
@@ -135,6 +140,19 @@
         <h2>
           Resumen del {{ resumenActual.fecha }}
         </h2>
+
+        <button
+          type="button"
+          [disabled]="!puedeDescargar()"
+          (click)="descargarPdf()"
+        >
+          @if (descargando()) {
+            Descargando PDF...
+          } @else {
+            Descargar PDF
+          }
+        </button>
+
 
         <dl>
 
@@ -215,11 +233,30 @@
       <section>
 
         <h2>
-          {{ modo() === 'RANGO'
-            ? 'Resumen del periodo'
-            : 'Histórico'
+          {{
+            modo() === 'RANGO'
+              ? 'Resumen del periodo'
+              : 'Histórico'
           }}
         </h2>
+
+
+        @if (modo() === 'RANGO') {
+
+          <button
+            type="button"
+            [disabled]="!puedeDescargar()"
+            (click)="descargarPdf()"
+          >
+            @if (descargando()) {
+              Descargando PDF...
+            } @else {
+              Descargar PDF
+            }
+          </button>
+
+        }
+
 
         <p-table
           [value]="historico()"

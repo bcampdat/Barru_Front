@@ -1,204 +1,123 @@
 <div class="resumen-trabajador-page">
 
   <header>
-    <h1>Resumen de trabajador</h1>
+
+    <h2>
+      {{ trabajador.nombre }}
+      {{ trabajador.apellidos }}
+    </h2>
 
     <p>
-      Consulta la jornada de un trabajador.
+      {{ trabajador.email }}
     </p>
+
   </header>
 
 
-  @if (esAdmin()) {
+  <nav aria-label="Consulta del resumen del trabajador">
 
-    <section>
+    <button
+      type="button"
+      [disabled]="cargando() || descargando()"
+      [attr.aria-pressed]="modo() === 'HOY'"
+      (click)="consultarHoy()"
+    >
+      Hoy
+    </button>
 
-      <label for="empresaResumen">
-        Empresa
-      </label>
+    <button
+      type="button"
+      [disabled]="cargando() || descargando()"
+      [attr.aria-pressed]="modo() === 'HISTORICO'"
+      (click)="consultarHistorico()"
+    >
+      Histórico
+    </button>
 
-      <select
-        id="empresaResumen"
-        name="empresaResumen"
-        [(ngModel)]="empresaId"
-        [disabled]="cargando()"
-        (ngModelChange)="seleccionarEmpresa()"
-      >
-
-        <option [ngValue]="null">
-          Selecciona una empresa
-        </option>
-
-        @for (
-          empresa of empresas();
-          track empresa.id ?? empresa.nombre
-        ) {
-
-          @if (empresa.id !== undefined) {
-
-            <option [ngValue]="empresa.id">
-              {{ empresa.nombre }}
-              {{ empresa.activa === false ? '(Inactiva)' : '' }}
-            </option>
-
-          }
-
-        }
-
-      </select>
-
-    </section>
-
-  }
+  </nav>
 
 
-  @if (empresaId !== null) {
+  <section>
 
-    <section>
+    <h3>Consultar una fecha</h3>
 
-      <label for="trabajadorResumen">
-        Trabajador
-      </label>
+    <label for="fechaResumenTrabajador">
+      Fecha
+    </label>
 
-      <select
-        id="trabajadorResumen"
-        name="trabajadorResumen"
-        [(ngModel)]="usuarioUuid"
-        [disabled]="cargando()"
-        (ngModelChange)="seleccionarTrabajador()"
-      >
+    <input
+      id="fechaResumenTrabajador"
+      name="fechaResumenTrabajador"
+      type="date"
+      [(ngModel)]="fecha"
+      [disabled]="cargando() || descargando()"
+    />
 
-        <option [ngValue]="null">
-          Selecciona un trabajador
-        </option>
+    <button
+      type="button"
+      [disabled]="
+        cargando() ||
+        descargando() ||
+        !fecha
+      "
+      (click)="consultarFecha()"
+    >
+      Consultar
+    </button>
 
-        @for (
-          trabajador of trabajadores();
-          track trabajador.uuid ?? trabajador.email
-        ) {
-
-          @if (trabajador.uuid) {
-
-            <option [ngValue]="trabajador.uuid">
-              {{ trabajador.nombre }}
-              {{ trabajador.apellidos }}
-              — {{ trabajador.email }}
-            </option>
-
-          }
-
-        }
-
-      </select>
-
-    </section>
-
-  }
+  </section>
 
 
-  @if (usuarioUuid !== null) {
+  <section>
 
-    <nav aria-label="Consulta del resumen del trabajador">
+    <h3>Consultar un periodo</h3>
 
-      <button
-        type="button"
-        [disabled]="cargando()"
-        [attr.aria-pressed]="modo() === 'HOY'"
-        (click)="consultarHoy()"
-      >
-        Hoy
-      </button>
+    <div>
 
-      <button
-        type="button"
-        [disabled]="cargando()"
-        [attr.aria-pressed]="modo() === 'HISTORICO'"
-        (click)="consultarHistorico()"
-      >
-        Histórico
-      </button>
-
-    </nav>
-
-
-    <section>
-
-      <h2>Consultar una fecha</h2>
-
-      <label for="fechaResumenTrabajador">
-        Fecha
+      <label for="fechaDesdeTrabajador">
+        Desde
       </label>
 
       <input
-        id="fechaResumenTrabajador"
-        name="fechaResumenTrabajador"
+        id="fechaDesdeTrabajador"
+        name="fechaDesdeTrabajador"
         type="date"
-        [(ngModel)]="fecha"
-        [disabled]="cargando()"
+        [(ngModel)]="desde"
+        [disabled]="cargando() || descargando()"
       />
 
-      <button
-        type="button"
-        [disabled]="cargando() || !fecha"
-        (click)="consultarFecha()"
-      >
-        Consultar
-      </button>
+    </div>
 
-    </section>
+    <div>
 
+      <label for="fechaHastaTrabajador">
+        Hasta
+      </label>
 
-    <section>
+      <input
+        id="fechaHastaTrabajador"
+        name="fechaHastaTrabajador"
+        type="date"
+        [(ngModel)]="hasta"
+        [disabled]="cargando() || descargando()"
+      />
 
-      <h2>Consultar un periodo</h2>
+    </div>
 
-      <div>
+    <button
+      type="button"
+      [disabled]="
+        cargando() ||
+        descargando() ||
+        !desde ||
+        !hasta
+      "
+      (click)="consultarRango()"
+    >
+      Consultar periodo
+    </button>
 
-        <label for="fechaDesdeTrabajador">
-          Desde
-        </label>
-
-        <input
-          id="fechaDesdeTrabajador"
-          name="fechaDesdeTrabajador"
-          type="date"
-          [(ngModel)]="desde"
-          [disabled]="cargando()"
-        />
-
-      </div>
-
-      <div>
-
-        <label for="fechaHastaTrabajador">
-          Hasta
-        </label>
-
-        <input
-          id="fechaHastaTrabajador"
-          name="fechaHastaTrabajador"
-          type="date"
-          [(ngModel)]="hasta"
-          [disabled]="cargando()"
-        />
-
-      </div>
-
-      <button
-        type="button"
-        [disabled]="
-          cargando() ||
-          !desde ||
-          !hasta
-        "
-        (click)="consultarRango()"
-      >
-        Consultar periodo
-      </button>
-
-    </section>
-
-  }
+  </section>
 
 
   @if (error()) {
@@ -223,9 +142,22 @@
 
       <section>
 
-        <h2>
+        <h3>
           Resumen del {{ resumenActual.fecha }}
-        </h2>
+        </h3>
+
+        <button
+          type="button"
+          [disabled]="!puedeDescargar()"
+          (click)="descargarPdf()"
+        >
+          @if (descargando()) {
+            Descargando PDF...
+          } @else {
+            Descargar PDF
+          }
+        </button>
+
 
         <dl>
 
@@ -304,12 +236,31 @@
 
       <section>
 
-        <h2>
-          {{ modo() === 'RANGO'
-            ? 'Resumen del periodo'
-            : 'Histórico'
+        <h3>
+          {{
+            modo() === 'RANGO'
+              ? 'Resumen del periodo'
+              : 'Histórico'
           }}
-        </h2>
+        </h3>
+
+
+        @if (modo() === 'RANGO') {
+
+          <button
+            type="button"
+            [disabled]="!puedeDescargar()"
+            (click)="descargarPdf()"
+          >
+            @if (descargando()) {
+              Descargando PDF...
+            } @else {
+              Descargar PDF
+            }
+          </button>
+
+        }
+
 
         <p-table
           [value]="historico()"

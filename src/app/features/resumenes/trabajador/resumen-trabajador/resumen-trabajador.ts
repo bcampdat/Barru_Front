@@ -1,21 +1,23 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
-  OnInit,
+  Input,
+  OnChanges,
   signal,
+  SimpleChanges,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { finalize } from 'rxjs';
+import { finalize, Observable } from 'rxjs';
 
 import { MessageModule } from 'primeng/message';
 import { TableModule } from 'primeng/table';
 
-import { AuthService } from '../../../../core/auth/auth.service';
-import { EmpresaService } from '../../../../core/empresa/empresa-service';
-import { EmpresaDTO } from '../../../../core/empresa/empresa.types';
+import {
+  DescargaPdfService,
+  DescargaPdfSolicitud,
+} from '../../../../core/descargas/descarga-pdf-service';
 import { ResumenService } from '../../../../core/resumenes/resumen-service';
 import { ResumenDiarioDTO } from '../../../../core/resumenes/resumen-types';
-import { UsuarioService } from '../../../../core/usuarios/usuario-service';
 import { UserDTO } from '../../../../core/usuarios/usuario.types';
 
 type ModoConsulta =
@@ -34,10 +36,11 @@ type ModoConsulta =
   templateUrl: './resumen-trabajador.html',
   styleUrl: './resumen-trabajador.scss',
 })
-export class ResumenTrabajador implements OnInit {
+export class ResumenTrabajador
+implements OnChanges {
 
-  readonly empresas = signal<EmpresaDTO[]>([]);
-  readonly trabajadores = signal<UserDTO[]>([]);
+  @Input({ required: true })
+  trabajador!: UserDTO;
 
   readonly resumen =
     signal<ResumenDiarioDTO | null>(null);
@@ -46,303 +49,310 @@ export class ResumenTrabajador implements OnInit {
     signal<ResumenDiarioDTO[]>([]);
 
   readonly cargando = signal(false);
+  readonly descargando = signal(false);
   readonly error = signal<string | null>(null);
-
-  readonly esAdmin = signal(false);
 
   readonly modo =
     signal<ModoConsulta>('HOY');
-
-  empresaId: number | null = null;
-  usuarioUuid: string | null = null;
 
   fecha = '';
   desde = '';
   hasta = '';
 
   constructor(
-    private readonly authService: AuthService,
-    private readonly empresaService: EmpresaService,
-    private readonly usuarioService: UsuarioService,
-    private readonly resumenService: ResumenService
+    private readonly resumenService: ResumenService,
+    private readonly descargaPdfService: DescargaPdfService
   ) {}
 
-  ngOnInit(): void {
-    const sesion = this.authService.getSesion();
+  ngOnChanges(
+    changes: SimpleChanges
+  ): void {
 
-    if (!sesion) {
-      return;
-    }
-
-    this.esAdmin.set(
-      sesion.rol === 'ADMIN_SISTEMA'
-    );
-
-    if (this.esAdmin()) {
-      this.inicializarAdmin();
-      return;
-    }
-
-    this.inicializarEncargado(
-      sesion.usuarioUuid
-    );
-  }
-
-  seleccionarEmpresa(): void {
-    this.usuarioUuid = null;
-    this.trabajadores.set([]);
-
-    this.limpiarConsulta();
-
-    if (this.empresaId === null) {
-      return;
-    }
-
-    this.cargarTrabajadores(
-      this.empresaId
-    );
-  }
-
-  seleccionarTrabajador(): void {
-    this.limpiarConsulta();
-
-    if (this.usuarioUuid !== null) {
+    if (
+      changes['trabajador'] &&
+      this.trabajador?.uuid
+    ) {
+      this.limpiarConsulta();
       this.consultarHoy();
     }
   }
 
   consultarHoy(): void {
-    const uuid = this.usuarioUuid;
-
-    if (!uuid) {
-      this.error.set(
-        'Selecciona un trabajador.'
-      );
-      return;
-    }
-
-    this.prepararConsulta('HOY');
-
-    this.resumenService
-      .obtenerResumenTrabajadorHoy(uuid)
-      .pipe(
-        finalize(() =>
-          this.cargando.set(false)
-        )
-      )
-      .subscribe({
-        next: resumen => {
-          this.resumen.set(resumen);
-        },
-        error: error => {
-          this.mostrarError(error);
-        },
-      });
+    this.consultar('HOY');
   }
 
   consultarFecha(): void {
-    const uuid = this.usuarioUuid;
+    this.consultar('FECHA');
+  }
+
+  consultarRango(): void {
+    this.consultar('RANGO');
+  }
+
+  consultarHistorico(): void {
+    this.consultar('HISTORICO');
+  }
+
+  descargarPdf(): void {
+    this.error.set(null);
+
+    const solicitud =
+      this.crearSolicitudDescarga();
+
+    if (!solicitud) {
+      return;
+    }
+
+    this.descargando.set(true);
+
+    this.descargaPdfService
+      .descargar(solicitud)
+      .pipe(
+        finalize(() =>
+          this.descargando.set(false)
+        )
+      )
+      .subscribe({
+        error: error =>
+          this.mostrarErrorDescarga(
+            error
+          ),
+      });
+  }
+
+  puedeDescargar(): boolean {
+    if (
+      this.cargando() ||
+      this.descargando()
+    ) {
+      return false;
+    }
+
+    if (
+      this.modo() === 'HOY' ||
+      this.modo() === 'FECHA'
+    ) {
+      return this.resumen() !== null;
+    }
+
+    if (this.modo() === 'RANGO') {
+      return this.historico().length > 0;
+    }
+
+    return false;
+  }
+
+  private consultar(
+    modo: ModoConsulta
+  ): void {
+
+    const uuid =
+      this.trabajador.uuid;
 
     if (!uuid) {
       this.error.set(
-        'Selecciona un trabajador.'
+        'El trabajador seleccionado no es válido.'
       );
       return;
     }
 
-    if (!this.fecha) {
+    if (
+      modo === 'FECHA' &&
+      !this.fecha
+    ) {
       this.error.set(
         'Selecciona una fecha.'
       );
       return;
     }
 
-    this.prepararConsulta('FECHA');
+    if (
+      modo === 'RANGO' &&
+      !this.validarRango()
+    ) {
+      return;
+    }
 
-    this.resumenService
-      .obtenerResumenTrabajadorPorFecha(
-        uuid,
-        this.fecha
-      )
+    this.prepararConsulta(modo);
+
+    switch (modo) {
+
+      case 'HOY':
+        this.ejecutarConsulta(
+          this.resumenService
+            .obtenerResumenTrabajadorHoy(
+              uuid
+            ),
+          resumen =>
+            this.resumen.set(
+              resumen
+            )
+        );
+        break;
+
+      case 'FECHA':
+        this.ejecutarConsulta(
+          this.resumenService
+            .obtenerResumenTrabajadorPorFecha(
+              uuid,
+              this.fecha
+            ),
+          resumen =>
+            this.resumen.set(
+              resumen
+            )
+        );
+        break;
+
+      case 'RANGO':
+        this.ejecutarConsulta(
+          this.resumenService
+            .obtenerHistoricoTrabajadorPorRango(
+              uuid,
+              this.desde,
+              this.hasta
+            ),
+          historico =>
+            this.historico.set(
+              historico
+            )
+        );
+        break;
+
+      case 'HISTORICO':
+        this.ejecutarConsulta(
+          this.resumenService
+            .obtenerHistoricoTrabajador(
+              uuid
+            ),
+          historico =>
+            this.historico.set(
+              historico
+            )
+        );
+        break;
+    }
+  }
+
+  private crearSolicitudDescarga():
+    DescargaPdfSolicitud | null {
+
+    const usuarioUuid =
+      this.trabajador.uuid;
+
+    if (!usuarioUuid) {
+      return null;
+    }
+
+    switch (this.modo()) {
+
+      case 'HOY': {
+        const fecha =
+          this.fechaDtoAIso(
+            this.resumen()?.fecha
+          );
+
+        if (!fecha) {
+          this.error.set(
+            'No hay un resumen disponible para descargar.'
+          );
+          return null;
+        }
+
+        return {
+          tipoDocumento: 'RESUMEN',
+          ambito: 'TRABAJADOR',
+          periodo: 'DIA',
+          usuarioUuid,
+          fecha,
+        };
+      }
+
+      case 'FECHA':
+        if (
+          !this.fecha ||
+          !this.resumen()
+        ) {
+          this.error.set(
+            'Consulta primero una fecha para poder descargarla.'
+          );
+          return null;
+        }
+
+        return {
+          tipoDocumento: 'RESUMEN',
+          ambito: 'TRABAJADOR',
+          periodo: 'DIA',
+          usuarioUuid,
+          fecha: this.fecha,
+        };
+
+      case 'RANGO':
+        if (
+          !this.desde ||
+          !this.hasta ||
+          this.historico().length === 0
+        ) {
+          this.error.set(
+            'Consulta primero un periodo con datos para poder descargarlo.'
+          );
+          return null;
+        }
+
+        return {
+          tipoDocumento: 'RESUMEN',
+          ambito: 'TRABAJADOR',
+          periodo: 'RANGO',
+          usuarioUuid,
+          desde: this.desde,
+          hasta: this.hasta,
+        };
+
+      case 'HISTORICO':
+        return null;
+    }
+  }
+
+  private ejecutarConsulta<T>(
+    peticion: Observable<T>,
+    guardar: (resultado: T) => void
+  ): void {
+
+    peticion
       .pipe(
         finalize(() =>
           this.cargando.set(false)
         )
       )
       .subscribe({
-        next: resumen => {
-          this.resumen.set(resumen);
-        },
-        error: error => {
-          this.mostrarError(error);
-        },
+        next: guardar,
+        error: error =>
+          this.mostrarError(error),
       });
   }
 
-  consultarRango(): void {
-    const uuid = this.usuarioUuid;
-
-    if (!uuid) {
-      this.error.set(
-        'Selecciona un trabajador.'
-      );
-      return;
-    }
-
+  private validarRango(): boolean {
     if (!this.desde || !this.hasta) {
       this.error.set(
         'Selecciona la fecha inicial y la fecha final.'
       );
-      return;
+      return false;
     }
 
     if (this.desde > this.hasta) {
       this.error.set(
         'La fecha inicial no puede ser posterior a la fecha final.'
       );
-      return;
+      return false;
     }
 
-    this.prepararConsulta('RANGO');
-
-    this.resumenService
-      .obtenerHistoricoTrabajadorPorRango(
-        uuid,
-        this.desde,
-        this.hasta
-      )
-      .pipe(
-        finalize(() =>
-          this.cargando.set(false)
-        )
-      )
-      .subscribe({
-        next: historico => {
-          this.historico.set(historico);
-        },
-        error: error => {
-          this.mostrarError(error);
-        },
-      });
-  }
-
-  consultarHistorico(): void {
-    const uuid = this.usuarioUuid;
-
-    if (!uuid) {
-      this.error.set(
-        'Selecciona un trabajador.'
-      );
-      return;
-    }
-
-    this.prepararConsulta('HISTORICO');
-
-    this.resumenService
-      .obtenerHistoricoTrabajador(uuid)
-      .pipe(
-        finalize(() =>
-          this.cargando.set(false)
-        )
-      )
-      .subscribe({
-        next: historico => {
-          this.historico.set(historico);
-        },
-        error: error => {
-          this.mostrarError(error);
-        },
-      });
-  }
-
-  private inicializarAdmin(): void {
-    this.cargando.set(true);
-
-    this.empresaService
-      .obtenerTodasLasEmpresas()
-      .pipe(
-        finalize(() =>
-          this.cargando.set(false)
-        )
-      )
-      .subscribe({
-        next: empresas => {
-          this.empresas.set(empresas);
-        },
-        error: error => {
-          this.mostrarError(error);
-        },
-      });
-  }
-
-  private inicializarEncargado(
-    usuarioUuid: string
-  ): void {
-    this.cargando.set(true);
-
-    this.usuarioService
-      .buscarPorUuid(usuarioUuid)
-      .pipe(
-        finalize(() =>
-          this.cargando.set(false)
-        )
-      )
-      .subscribe({
-        next: usuario => {
-          const empresaId =
-            usuario.empresaId;
-
-          if (empresaId == null) {
-            this.error.set(
-              'El usuario no tiene una empresa asociada.'
-            );
-            return;
-          }
-
-          this.empresaId = empresaId;
-
-          this.cargarTrabajadores(
-            empresaId
-          );
-        },
-        error: error => {
-          this.mostrarError(error);
-        },
-      });
-  }
-
-  private cargarTrabajadores(
-    empresaId: number
-  ): void {
-    this.cargando.set(true);
-
-    this.usuarioService
-      .listarPorEmpresa(empresaId)
-      .pipe(
-        finalize(() =>
-          this.cargando.set(false)
-        )
-      )
-      .subscribe({
-        next: trabajadores => {
-          this.trabajadores.set(
-            trabajadores.filter(
-              trabajador =>
-                trabajador.uuid !== null &&
-                trabajador.uuid !== undefined
-            )
-          );
-        },
-        error: error => {
-          this.trabajadores.set([]);
-          this.mostrarError(error);
-        },
-      });
+    return true;
   }
 
   private prepararConsulta(
     modo: ModoConsulta
   ): void {
+
     this.error.set(null);
     this.resumen.set(null);
     this.historico.set([]);
@@ -355,12 +365,39 @@ export class ResumenTrabajador implements OnInit {
     this.error.set(null);
     this.resumen.set(null);
     this.historico.set([]);
+
+    this.fecha = '';
+    this.desde = '';
+    this.hasta = '';
+
     this.modo.set('HOY');
+  }
+
+  private fechaDtoAIso(
+    fecha: string | undefined
+  ): string | null {
+
+    if (!fecha) {
+      return null;
+    }
+
+    const partes = fecha.split('/');
+
+    if (partes.length !== 3) {
+      return null;
+    }
+
+    const [dia, mes, anio] = partes;
+
+    return dia && mes && anio
+      ? `${anio}-${mes}-${dia}`
+      : null;
   }
 
   private mostrarError(
     error: unknown
   ): void {
+
     if (error instanceof HttpErrorResponse) {
       this.error.set(
         error.error?.message ??
@@ -372,5 +409,52 @@ export class ResumenTrabajador implements OnInit {
     this.error.set(
       'No se ha podido consultar el resumen.'
     );
+  }
+
+  private mostrarErrorDescarga(
+    error: unknown
+  ): void {
+
+    if (!(error instanceof HttpErrorResponse)) {
+      this.error.set(
+        'No se ha podido descargar el PDF.'
+      );
+      return;
+    }
+
+    if (error.error instanceof Blob) {
+      void this.leerErrorBlob(
+        error.error
+      );
+      return;
+    }
+
+    this.error.set(
+      error.error?.message ??
+      'No se ha podido descargar el PDF.'
+    );
+  }
+
+  private async leerErrorBlob(
+    blob: Blob
+  ): Promise<void> {
+
+    try {
+      const respuesta =
+        JSON.parse(
+          await blob.text()
+        ) as {
+          message?: string;
+        };
+
+      this.error.set(
+        respuesta.message ??
+        'No se ha podido descargar el PDF.'
+      );
+    } catch {
+      this.error.set(
+        'No se ha podido descargar el PDF.'
+      );
+    }
   }
 }

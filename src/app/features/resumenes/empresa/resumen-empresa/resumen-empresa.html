@@ -11,9 +11,11 @@
 
 
   @if (error()) {
+
     <p-message severity="error">
       {{ error() }}
     </p-message>
+
   }
 
 
@@ -29,7 +31,7 @@
         id="empresaResumen"
         name="empresaResumen"
         [ngModel]="empresaId()"
-        [disabled]="cargando()"
+        [disabled]="cargando() || descargando()"
         (ngModelChange)="seleccionarEmpresa($event)"
       >
 
@@ -68,7 +70,7 @@
 
         <button
           type="button"
-          [disabled]="cargando()"
+          [disabled]="cargando() || descargando()"
           [attr.aria-pressed]="modoEmpresa() === 'HOY'"
           (click)="consultarEmpresaHoy()"
         >
@@ -77,7 +79,7 @@
 
         <button
           type="button"
-          [disabled]="cargando()"
+          [disabled]="cargando() || descargando()"
           [attr.aria-pressed]="modoEmpresa() === 'HISTORICO'"
           (click)="consultarEmpresaHistorico()"
         >
@@ -100,12 +102,16 @@
           name="fechaEmpresa"
           type="date"
           [(ngModel)]="fechaEmpresa"
-          [disabled]="cargando()"
+          [disabled]="cargando() || descargando()"
         />
 
         <button
           type="button"
-          [disabled]="cargando() || !fechaEmpresa"
+          [disabled]="
+            cargando() ||
+            descargando() ||
+            !fechaEmpresa
+          "
           (click)="consultarEmpresaFecha()"
         >
           Consultar
@@ -127,9 +133,8 @@
           name="desdeEmpresa"
           type="date"
           [(ngModel)]="desdeEmpresa"
-          [disabled]="cargando()"
+          [disabled]="cargando() || descargando()"
         />
-
 
         <label for="hastaEmpresa">
           Hasta
@@ -140,14 +145,14 @@
           name="hastaEmpresa"
           type="date"
           [(ngModel)]="hastaEmpresa"
-          [disabled]="cargando()"
+          [disabled]="cargando() || descargando()"
         />
-
 
         <button
           type="button"
           [disabled]="
             cargando() ||
+            descargando() ||
             !desdeEmpresa ||
             !hastaEmpresa
           "
@@ -179,77 +184,69 @@
             — {{ resumen.fecha }}
           </h2>
 
+          <button
+            type="button"
+            [disabled]="!puedeDescargarEmpresa()"
+            (click)="descargarPdfEmpresa()"
+          >
+            @if (descargando()) {
+              Descargando PDF...
+            } @else {
+              Descargar PDF
+            }
+          </button>
+
 
           <dl>
 
             <div>
               <dt>Total trabajadores</dt>
-              <dd>
-                {{ resumen.totalTrabajadores }}
-              </dd>
+              <dd>{{ resumen.totalTrabajadores }}</dd>
             </div>
 
             <div>
               <dt>Con fichaje</dt>
-              <dd>
-                {{ resumen.trabajadoresConFichaje }}
-              </dd>
+              <dd>{{ resumen.trabajadoresConFichaje }}</dd>
             </div>
 
             <div>
               <dt>Sin fichaje</dt>
-              <dd>
-                {{ resumen.trabajadoresSinFichaje }}
-              </dd>
+              <dd>{{ resumen.trabajadoresSinFichaje }}</dd>
             </div>
 
             <div>
               <dt>Trabajando</dt>
-              <dd>
-                {{ resumen.trabajadoresTrabajando }}
-              </dd>
+              <dd>{{ resumen.trabajadoresTrabajando }}</dd>
             </div>
 
             <div>
               <dt>En pausa</dt>
-              <dd>
-                {{ resumen.trabajadoresEnPausa }}
-              </dd>
+              <dd>{{ resumen.trabajadoresEnPausa }}</dd>
             </div>
 
             <div>
               <dt>Finalizados</dt>
-              <dd>
-                {{ resumen.trabajadoresFinalizados }}
-              </dd>
+              <dd>{{ resumen.trabajadoresFinalizados }}</dd>
             </div>
 
             <div>
               <dt>Con horas extra</dt>
-              <dd>
-                {{ resumen.trabajadoresConHorasExtra }}
-              </dd>
+              <dd>{{ resumen.trabajadoresConHorasExtra }}</dd>
             </div>
 
             <div>
               <dt>Tiempo trabajado</dt>
-              <dd>
-                {{ resumen.tiempoTrabajado }}
-              </dd>
+              <dd>{{ resumen.tiempoTrabajado }}</dd>
             </div>
 
             <div>
               <dt>Tiempo de pausa</dt>
-              <dd>
-                {{ resumen.tiempoPausa }}
-              </dd>
+              <dd>{{ resumen.tiempoPausa }}</dd>
             </div>
 
             <div>
               <dt>Horas extra</dt>
-              <dd>
-                {{ resumen.tiempoExtra }}
-              </dd>
+              <dd>{{ resumen.tiempoExtra }}</dd>
             </div>
 
           </dl>
@@ -274,6 +271,24 @@
             }}
           </h2>
 
+
+          @if (modoEmpresa() === 'RANGO') {
+
+            <button
+              type="button"
+              [disabled]="!puedeDescargarEmpresa()"
+              (click)="descargarPdfEmpresa()"
+            >
+              @if (descargando()) {
+                Descargando PDF...
+              } @else {
+                Descargar PDF
+              }
+            </button>
+
+          }
+
+
           <p-table
             [value]="historicoEmpresa()"
             [paginator]="true"
@@ -296,41 +311,16 @@
             </ng-template>
 
 
-            <ng-template
-              #body
-              let-resumen
-            >
+            <ng-template #body let-resumen>
 
               <tr>
-
-                <td>
-                  {{ resumen.fecha }}
-                </td>
-
-                <td>
-                  {{ resumen.trabajadoresConFichaje }}
-                </td>
-
-                <td>
-                  {{ resumen.trabajadoresTrabajando }}
-                </td>
-
-                <td>
-                  {{ resumen.trabajadoresEnPausa }}
-                </td>
-
-                <td>
-                  {{ resumen.trabajadoresFinalizados }}
-                </td>
-
-                <td>
-                  {{ resumen.tiempoTrabajado }}
-                </td>
-
-                <td>
-                  {{ resumen.tiempoExtra }}
-                </td>
-
+                <td>{{ resumen.fecha }}</td>
+                <td>{{ resumen.trabajadoresConFichaje }}</td>
+                <td>{{ resumen.trabajadoresTrabajando }}</td>
+                <td>{{ resumen.trabajadoresEnPausa }}</td>
+                <td>{{ resumen.trabajadoresFinalizados }}</td>
+                <td>{{ resumen.tiempoTrabajado }}</td>
+                <td>{{ resumen.tiempoExtra }}</td>
               </tr>
 
             </ng-template>
@@ -382,6 +372,7 @@
               type="text"
               pInputText
               placeholder="Nombre, apellidos o email"
+              [disabled]="cargando() || descargando()"
               (input)="
                 tablaTrabajadores.filterGlobal(
                   buscarTrabajador.value,
@@ -404,10 +395,7 @@
           </ng-template>
 
 
-          <ng-template
-            #body
-            let-trabajador
-          >
+          <ng-template #body let-trabajador>
 
             <tr>
 
@@ -426,7 +414,7 @@
 
                   <button
                     type="button"
-                    [disabled]="cargando()"
+                    [disabled]="cargando() || descargando()"
                     (click)="seleccionarTrabajador(trabajador)"
                   >
                     Ver resumen
@@ -462,274 +450,9 @@
         as trabajador
       ) {
 
-        <section>
-
-          <header>
-
-            <h2>
-              {{ trabajador.nombre }}
-              {{ trabajador.apellidos }}
-            </h2>
-
-            <p>
-              {{ trabajador.email }}
-            </p>
-
-          </header>
-
-
-          <nav aria-label="Consulta del trabajador">
-
-            <button
-              type="button"
-              [disabled]="cargando()"
-              [attr.aria-pressed]="modoTrabajador() === 'HOY'"
-              (click)="consultarTrabajadorHoy()"
-            >
-              Hoy
-            </button>
-
-            <button
-              type="button"
-              [disabled]="cargando()"
-              [attr.aria-pressed]="modoTrabajador() === 'HISTORICO'"
-              (click)="consultarTrabajadorHistorico()"
-            >
-              Histórico
-            </button>
-
-          </nav>
-
-
-          <div>
-
-            <h3>Consultar una fecha</h3>
-
-            <label for="fechaTrabajador">
-              Fecha
-            </label>
-
-            <input
-              id="fechaTrabajador"
-              name="fechaTrabajador"
-              type="date"
-              [(ngModel)]="fechaTrabajador"
-              [disabled]="cargando()"
-            />
-
-            <button
-              type="button"
-              [disabled]="
-                cargando() ||
-                !fechaTrabajador
-              "
-              (click)="consultarTrabajadorFecha()"
-            >
-              Consultar
-            </button>
-
-          </div>
-
-
-          <div>
-
-            <h3>Consultar un periodo</h3>
-
-            <label for="desdeTrabajador">
-              Desde
-            </label>
-
-            <input
-              id="desdeTrabajador"
-              name="desdeTrabajador"
-              type="date"
-              [(ngModel)]="desdeTrabajador"
-              [disabled]="cargando()"
-            />
-
-
-            <label for="hastaTrabajador">
-              Hasta
-            </label>
-
-            <input
-              id="hastaTrabajador"
-              name="hastaTrabajador"
-              type="date"
-              [(ngModel)]="hastaTrabajador"
-              [disabled]="cargando()"
-            />
-
-
-            <button
-              type="button"
-              [disabled]="
-                cargando() ||
-                !desdeTrabajador ||
-                !hastaTrabajador
-              "
-              (click)="consultarTrabajadorRango()"
-            >
-              Consultar periodo
-            </button>
-
-          </div>
-
-
-          @if (
-            resumenTrabajador();
-            as resumen
-          ) {
-
-            <dl>
-
-              <div>
-                <dt>Fecha</dt>
-                <dd>
-                  {{ resumen.fecha }}
-                </dd>
-              </div>
-
-              <div>
-                <dt>Estado</dt>
-                <dd>
-                  {{ resumen.situacion }}
-                </dd>
-              </div>
-
-              <div>
-                <dt>Tiempo trabajado</dt>
-                <dd>
-                  {{ resumen.tiempoTrabajado }}
-                </dd>
-              </div>
-
-              <div>
-                <dt>Jornada</dt>
-                <dd>
-                  {{ resumen.tiempoJornada }}
-                </dd>
-              </div>
-
-              <div>
-                <dt>Tiempo restante</dt>
-                <dd>
-                  {{ resumen.tiempoRestante }}
-                </dd>
-              </div>
-
-              <div>
-                <dt>Pausa</dt>
-                <dd>
-                  {{ resumen.tiempoPausa }}
-                </dd>
-              </div>
-
-              <div>
-                <dt>Pausa disponible</dt>
-                <dd>
-                  {{ resumen.tiempoPausaDisponible }}
-                </dd>
-              </div>
-
-              <div>
-                <dt>Horas extra</dt>
-                <dd>
-                  {{ resumen.tiempoExtra }}
-                </dd>
-              </div>
-
-            </dl>
-
-
-            @if (
-              resumen.requiereConfirmacionHorasExtra
-            ) {
-
-              <p-message severity="warn">
-                Este trabajador ha completado
-                su jornada ordinaria y requiere
-                confirmación de horas extra.
-              </p-message>
-
-            }
-
-          }
-
-
-          @if (
-            modoTrabajador() === 'HISTORICO' ||
-            modoTrabajador() === 'RANGO'
-          ) {
-
-            <p-table
-              [value]="historicoTrabajador()"
-              [paginator]="true"
-              [rows]="10"
-              [rowsPerPageOptions]="[10, 25, 50]"
-            >
-
-              <ng-template #header>
-
-                <tr>
-                  <th scope="col">Fecha</th>
-                  <th scope="col">Trabajado</th>
-                  <th scope="col">Pausa</th>
-                  <th scope="col">Horas extra</th>
-                  <th scope="col">Estado</th>
-                </tr>
-
-              </ng-template>
-
-
-              <ng-template
-                #body
-                let-resumen
-              >
-
-                <tr>
-
-                  <td>
-                    {{ resumen.fecha }}
-                  </td>
-
-                  <td>
-                    {{ resumen.tiempoTrabajado }}
-                  </td>
-
-                  <td>
-                    {{ resumen.tiempoPausa }}
-                  </td>
-
-                  <td>
-                    {{ resumen.tiempoExtra }}
-                  </td>
-
-                  <td>
-                    {{ resumen.situacion }}
-                  </td>
-
-                </tr>
-
-              </ng-template>
-
-
-              <ng-template #emptymessage>
-
-                <tr>
-                  <td colspan="5">
-                    No hay resúmenes del trabajador
-                    para mostrar.
-                  </td>
-                </tr>
-
-              </ng-template>
-
-            </p-table>
-
-          }
-
-        </section>
+        <app-resumen-trabajador
+          [trabajador]="trabajador"
+        />
 
       }
 
