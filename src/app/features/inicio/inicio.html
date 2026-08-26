@@ -59,6 +59,17 @@
 
     <h1>Inicio</h1>
 
+    @if (esEncargado) {
+
+      <button
+        type="button"
+        (click)="irANotificaciones()"
+      >
+        Notificaciones
+      </button>
+
+    }
+
   </main>
 
 

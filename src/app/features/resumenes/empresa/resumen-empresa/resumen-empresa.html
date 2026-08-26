@@ -249,7 +249,117 @@
               <dd>{{ resumen.tiempoExtra }}</dd>
             </div>
 
+            <div>
+              <dt>Incidencias</dt>
+              <dd>{{ resumen.totalIncidencias }}</dd>
+            </div>
+
           </dl>
+
+
+          @if (resumen.incidencias.length > 0) {
+
+            <section>
+
+              <h3>
+                Incidencias de la jornada
+              </h3>
+
+              <p-table
+                [value]="resumen.incidencias"
+              >
+
+                <ng-template #header>
+
+                  <tr>
+                    <th scope="col">Hora</th>
+                    <th scope="col">Trabajador</th>
+                    <th scope="col">Incidencia</th>
+                    <th scope="col">Detalle</th>
+                    <th scope="col">Motivo</th>
+                  </tr>
+
+                </ng-template>
+
+
+                <ng-template
+                  #body
+                  let-incidencia
+                >
+
+                  <tr>
+
+                    <td>
+                      {{ incidencia.hora ?? '—' }}
+                    </td>
+
+                    <td>
+                      {{ incidencia.nombreTrabajador }}
+                    </td>
+
+                    <td>
+                      {{
+                        textoTipoIncidencia(
+                          incidencia.tipoIncidencia
+                        )
+                      }}
+                    </td>
+
+                    <td>
+
+                      @if (
+                        incidencia.tipoIncidencia === 'SALIDA'
+                      ) {
+
+                        {{
+                          textoTipoSalida(
+                            incidencia.tipoSalida
+                          )
+                        }}
+
+                      } @else {
+
+                        Último fichaje:
+                        {{
+                          textoTipoFichaje(
+                            incidencia.tipoFichaje
+                          )
+                        }}
+
+                      }
+
+                    </td>
+
+                    <td>
+
+                      @if (
+                        incidencia.tipoIncidencia === 'SALIDA'
+                        && incidencia.motivoSalida !== null
+                      ) {
+
+                        {{
+                          textoMotivoSalida(
+                            incidencia.motivoSalida
+                          )
+                        }}
+
+                      } @else {
+
+                        —
+
+                      }
+
+                    </td>
+
+                  </tr>
+
+                </ng-template>
+
+              </p-table>
+
+            </section>
+
+          }
 
         </section>
 
@@ -306,6 +416,7 @@
                 <th scope="col">Finalizados</th>
                 <th scope="col">Trabajado</th>
                 <th scope="col">Horas extra</th>
+                <th scope="col">Incidencias</th>
               </tr>
 
             </ng-template>
@@ -321,6 +432,7 @@
                 <td>{{ resumen.trabajadoresFinalizados }}</td>
                 <td>{{ resumen.tiempoTrabajado }}</td>
                 <td>{{ resumen.tiempoExtra }}</td>
+                <td>{{ resumen.totalIncidencias }}</td>
               </tr>
 
             </ng-template>
@@ -329,7 +441,7 @@
             <ng-template #emptymessage>
 
               <tr>
-                <td colspan="7">
+                <td colspan="8">
                   No hay resúmenes de empresa para mostrar.
                 </td>
               </tr>

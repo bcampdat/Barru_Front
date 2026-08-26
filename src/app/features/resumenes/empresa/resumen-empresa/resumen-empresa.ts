@@ -14,17 +14,29 @@ import {
 } from '../../../../core/descargas/descarga-pdf-service';
 import { EmpresaService } from '../../../../core/empresa/empresa-service';
 import { EmpresaDTO } from '../../../../core/empresa/empresa.types';
+
+import type {
+  MotivoSalida,
+  TipoFichaje,
+  TipoSalida,
+} from '../../../../core/fichaje/fichaje-types';
+
 import { ResumenService } from '../../../../core/resumenes/resumen-service';
-import { ResumenEmpresaDTO } from '../../../../core/resumenes/resumen-types';
+import {
+  ResumenEmpresaDTO,
+  TipoIncidenciaEmpresa,
+} from '../../../../core/resumenes/resumen-types';
 import { UsuarioService } from '../../../../core/usuarios/usuario-service';
 import { UserDTO } from '../../../../core/usuarios/usuario.types';
 import { ResumenTrabajador } from '../../trabajador/resumen-trabajador/resumen-trabajador';
+
 
 type ModoConsulta =
   | 'HOY'
   | 'FECHA'
   | 'RANGO'
   | 'HISTORICO';
+
 
 @Component({
   selector: 'app-resumen-empresa',
@@ -57,6 +69,7 @@ export class ResumenEmpresa implements OnInit {
   readonly error = signal<string | null>(null);
 
   readonly esAdmin = signal(false);
+
   readonly modoEmpresa =
     signal<ModoConsulta>('HOY');
 
@@ -67,6 +80,7 @@ export class ResumenEmpresa implements OnInit {
   desdeEmpresa = '';
   hastaEmpresa = '';
 
+
   constructor(
     private readonly authService: AuthService,
     private readonly empresaService: EmpresaService,
@@ -75,8 +89,11 @@ export class ResumenEmpresa implements OnInit {
     private readonly descargaPdfService: DescargaPdfService
   ) {}
 
+
   ngOnInit(): void {
-    const sesion = this.authService.getSesion();
+
+    const sesion =
+      this.authService.getSesion();
 
     if (!sesion) {
       return;
@@ -87,6 +104,7 @@ export class ResumenEmpresa implements OnInit {
     );
 
     if (this.esAdmin()) {
+
       this.inicializarAdmin();
       return;
     }
@@ -96,19 +114,25 @@ export class ResumenEmpresa implements OnInit {
     );
   }
 
+
   seleccionarEmpresa(
     empresaId: number | null
   ): void {
 
-    this.empresaId.set(empresaId);
+    this.empresaId.set(
+      empresaId
+    );
+
     this.limpiarEmpresa();
 
     if (empresaId !== null) {
+
       this.cargarContextoEmpresa(
         empresaId
       );
     }
   }
+
 
   seleccionarTrabajador(
     trabajador: UserDTO
@@ -123,23 +147,152 @@ export class ResumenEmpresa implements OnInit {
     );
   }
 
+
   consultarEmpresaHoy(): void {
-    this.consultarEmpresa('HOY');
+
+    this.consultarEmpresa(
+      'HOY'
+    );
   }
+
 
   consultarEmpresaFecha(): void {
-    this.consultarEmpresa('FECHA');
+
+    this.consultarEmpresa(
+      'FECHA'
+    );
   }
+
 
   consultarEmpresaRango(): void {
-    this.consultarEmpresa('RANGO');
+
+    this.consultarEmpresa(
+      'RANGO'
+    );
   }
+
 
   consultarEmpresaHistorico(): void {
-    this.consultarEmpresa('HISTORICO');
+
+    this.consultarEmpresa(
+      'HISTORICO'
+    );
   }
 
+
+  /*
+   * Texto visible del tipo general
+   * de incidencia.
+   */
+  textoTipoIncidencia(
+    tipo: TipoIncidenciaEmpresa
+  ): string {
+
+    switch (tipo) {
+
+      case 'SALIDA':
+        return 'Salida';
+
+      case 'JORNADA_INCOMPLETA':
+        return 'Jornada incompleta';
+    }
+  }
+
+
+  /*
+   * Texto visible del último fichaje
+   * real relacionado con la incidencia.
+   */
+  textoTipoFichaje(
+    tipo: TipoFichaje
+  ): string {
+
+    switch (tipo) {
+
+      case 'ENTRADA':
+        return 'Entrada';
+
+      case 'INICIO_PAUSA':
+        return 'Inicio de pausa';
+
+      case 'FIN_PAUSA':
+        return 'Fin de pausa';
+
+      case 'SALIDA':
+        return 'Salida';
+    }
+  }
+
+
+  /*
+   * Texto visible de la clasificación
+   * de una salida.
+   *
+   * No decide qué es una incidencia.
+   * Esa regla pertenece al backend.
+   */
+  textoTipoSalida(
+    tipo: TipoSalida | null
+  ): string {
+
+    if (tipo === null) {
+      return 'Sin clasificación de salida';
+    }
+
+    switch (tipo) {
+
+      case 'INTERMEDIA':
+        return 'Salida intermedia';
+
+      case 'ORDINARIA':
+        return 'Salida ordinaria';
+
+      case 'ANTICIPADA':
+        return 'Salida anticipada';
+
+      case 'TRAS_HORAS_EXTRA':
+        return 'Salida tras horas extra';
+    }
+  }
+
+
+  /*
+   * Texto visible del motivo declarado
+   * por el trabajador.
+   */
+  textoMotivoSalida(
+    motivo: MotivoSalida | null
+  ): string {
+
+    if (motivo === null) {
+      return 'Sin motivo indicado';
+    }
+
+    switch (motivo) {
+
+      case 'JORNADA_PARTIDA':
+        return 'Jornada partida';
+
+      case 'MEDICO':
+        return 'Médico';
+
+      case 'ESPECIALISTA':
+        return 'Especialista';
+
+      case 'PERSONAL':
+        return 'Personal';
+
+      case 'LABORAL':
+        return 'Laboral';
+
+      case 'OTRO':
+        return 'Otro';
+    }
+  }
+
+
   descargarPdfEmpresa(): void {
+
     this.error.set(null);
 
     const solicitud =
@@ -152,7 +305,9 @@ export class ResumenEmpresa implements OnInit {
     this.descargando.set(true);
 
     this.descargaPdfService
-      .descargar(solicitud)
+      .descargar(
+        solicitud
+      )
       .pipe(
         finalize(() =>
           this.descargando.set(false)
@@ -166,60 +321,78 @@ export class ResumenEmpresa implements OnInit {
       });
   }
 
+
   puedeDescargarEmpresa(): boolean {
+
     if (
-      this.cargando() ||
-      this.descargando()
+      this.cargando()
+      || this.descargando()
     ) {
+
       return false;
     }
 
     if (
-      this.modoEmpresa() === 'HOY' ||
-      this.modoEmpresa() === 'FECHA'
+      this.modoEmpresa() === 'HOY'
+      || this.modoEmpresa() === 'FECHA'
     ) {
-      return this.resumenEmpresa() !== null;
+
+      return this.resumenEmpresa()
+        !== null;
     }
 
-    if (this.modoEmpresa() === 'RANGO') {
-      return this.historicoEmpresa().length > 0;
+    if (
+      this.modoEmpresa()
+        === 'RANGO'
+    ) {
+
+      return this.historicoEmpresa()
+        .length > 0;
     }
 
     return false;
   }
 
+
   private consultarEmpresa(
     modo: ModoConsulta
   ): void {
 
-    const empresaId = this.empresaId();
+    const empresaId =
+      this.empresaId();
 
     if (empresaId === null) {
       return;
     }
 
     if (
-      modo === 'FECHA' &&
-      !this.fechaEmpresa
+      modo === 'FECHA'
+      && !this.fechaEmpresa
     ) {
+
       this.error.set(
         'Selecciona una fecha.'
       );
+
       return;
     }
 
     if (
-      modo === 'RANGO' &&
-      !this.validarRango()
+      modo === 'RANGO'
+      && !this.validarRango()
     ) {
+
       return;
     }
 
-    this.prepararConsulta(modo);
+    this.prepararConsulta(
+      modo
+    );
 
     switch (modo) {
 
       case 'HOY':
+
         this.ejecutarConsulta(
           this.obtenerResumenEmpresaHoy(
             empresaId
@@ -229,9 +402,11 @@ export class ResumenEmpresa implements OnInit {
               resumen
             )
         );
+
         break;
 
       case 'FECHA':
+
         this.ejecutarConsulta(
           this.obtenerResumenEmpresaFecha(
             empresaId,
@@ -242,9 +417,11 @@ export class ResumenEmpresa implements OnInit {
               resumen
             )
         );
+
         break;
 
       case 'RANGO':
+
         this.ejecutarConsulta(
           this.obtenerHistoricoEmpresaRango(
             empresaId,
@@ -256,9 +433,11 @@ export class ResumenEmpresa implements OnInit {
               historico
             )
         );
+
         break;
 
       case 'HISTORICO':
+
         this.ejecutarConsulta(
           this.obtenerHistoricoEmpresa(
             empresaId
@@ -268,14 +447,17 @@ export class ResumenEmpresa implements OnInit {
               historico
             )
         );
+
         break;
     }
   }
 
+
   private crearSolicitudDescarga():
     DescargaPdfSolicitud | null {
 
-    const empresaId = this.empresaId();
+    const empresaId =
+      this.empresaId();
 
     if (empresaId === null) {
       return null;
@@ -286,18 +468,24 @@ export class ResumenEmpresa implements OnInit {
         ? { empresaId }
         : {};
 
-    switch (this.modoEmpresa()) {
+    switch (
+      this.modoEmpresa()
+    ) {
 
       case 'HOY': {
+
         const fecha =
           this.fechaDtoAIso(
-            this.resumenEmpresa()?.fecha
+            this.resumenEmpresa()
+              ?.fecha
           );
 
         if (!fecha) {
+
           this.error.set(
             'No hay un resumen disponible para descargar.'
           );
+
           return null;
         }
 
@@ -311,13 +499,16 @@ export class ResumenEmpresa implements OnInit {
       }
 
       case 'FECHA':
+
         if (
-          !this.fechaEmpresa ||
-          !this.resumenEmpresa()
+          !this.fechaEmpresa
+          || !this.resumenEmpresa()
         ) {
+
           this.error.set(
             'Consulta primero una fecha para poder descargarla.'
           );
+
           return null;
         }
 
@@ -330,14 +521,18 @@ export class ResumenEmpresa implements OnInit {
         };
 
       case 'RANGO':
+
         if (
-          !this.desdeEmpresa ||
-          !this.hastaEmpresa ||
-          this.historicoEmpresa().length === 0
+          !this.desdeEmpresa
+          || !this.hastaEmpresa
+          || this.historicoEmpresa()
+            .length === 0
         ) {
+
           this.error.set(
             'Consulta primero un periodo con datos para poder descargarlo.'
           );
+
           return null;
         }
 
@@ -355,7 +550,9 @@ export class ResumenEmpresa implements OnInit {
     }
   }
 
+
   private inicializarAdmin(): void {
+
     this.cargando.set(true);
 
     this.ejecutarConsulta(
@@ -368,6 +565,7 @@ export class ResumenEmpresa implements OnInit {
     );
   }
 
+
   private inicializarEncargado(
     usuarioUuid: string
   ): void {
@@ -375,18 +573,23 @@ export class ResumenEmpresa implements OnInit {
     this.cargando.set(true);
 
     this.usuarioService
-      .buscarPorUuid(usuarioUuid)
+      .buscarPorUuid(
+        usuarioUuid
+      )
       .subscribe({
         next: usuario => {
+
           const empresaId =
             usuario.empresaId;
 
           if (empresaId == null) {
+
             this.cargando.set(false);
 
             this.error.set(
               'El usuario no tiene una empresa asociada.'
             );
+
             return;
           }
 
@@ -398,12 +601,18 @@ export class ResumenEmpresa implements OnInit {
             empresaId
           );
         },
+
         error: error => {
+
           this.cargando.set(false);
-          this.mostrarError(error);
+
+          this.mostrarError(
+            error
+          );
         },
       });
   }
+
 
   private cargarContextoEmpresa(
     empresaId: number
@@ -417,6 +626,7 @@ export class ResumenEmpresa implements OnInit {
         this.obtenerResumenEmpresaHoy(
           empresaId
         ),
+
       trabajadores:
         this.usuarioService
           .listarPorEmpresa(
@@ -430,6 +640,7 @@ export class ResumenEmpresa implements OnInit {
       )
       .subscribe({
         next: respuesta => {
+
           this.resumenEmpresa.set(
             respuesta.resumen
           );
@@ -442,10 +653,14 @@ export class ResumenEmpresa implements OnInit {
             'HOY'
           );
         },
+
         error: error =>
-          this.mostrarError(error),
+          this.mostrarError(
+            error
+          ),
       });
   }
+
 
   private obtenerResumenEmpresaHoy(
     empresaId: number
@@ -459,6 +674,7 @@ export class ResumenEmpresa implements OnInit {
       : this.resumenService
           .obtenerResumenMiEmpresaHoy();
   }
+
 
   private obtenerResumenEmpresaFecha(
     empresaId: number,
@@ -477,6 +693,7 @@ export class ResumenEmpresa implements OnInit {
           );
   }
 
+
   private obtenerHistoricoEmpresa(
     empresaId: number
   ): Observable<ResumenEmpresaDTO[]> {
@@ -489,6 +706,7 @@ export class ResumenEmpresa implements OnInit {
       : this.resumenService
           .obtenerHistoricoMiEmpresa();
   }
+
 
   private obtenerHistoricoEmpresaRango(
     empresaId: number,
@@ -510,9 +728,12 @@ export class ResumenEmpresa implements OnInit {
           );
   }
 
+
   private ejecutarConsulta<T>(
     peticion: Observable<T>,
-    guardar: (resultado: T) => void
+    guardar: (
+      resultado: T
+    ) => void
   ): void {
 
     peticion
@@ -523,62 +744,98 @@ export class ResumenEmpresa implements OnInit {
       )
       .subscribe({
         next: guardar,
+
         error: error =>
-          this.mostrarError(error),
+          this.mostrarError(
+            error
+          ),
       });
   }
 
+
   private validarRango(): boolean {
+
     if (
-      !this.desdeEmpresa ||
-      !this.hastaEmpresa
+      !this.desdeEmpresa
+      || !this.hastaEmpresa
     ) {
+
       this.error.set(
         'Selecciona la fecha inicial y la fecha final.'
       );
+
       return false;
     }
 
     if (
-      this.desdeEmpresa >
-      this.hastaEmpresa
+      this.desdeEmpresa
+      > this.hastaEmpresa
     ) {
+
       this.error.set(
         'La fecha inicial no puede ser posterior a la fecha final.'
       );
+
       return false;
     }
 
     return true;
   }
 
+
   private prepararConsulta(
     modo: ModoConsulta
   ): void {
 
     this.error.set(null);
-    this.resumenEmpresa.set(null);
-    this.historicoEmpresa.set([]);
 
-    this.modoEmpresa.set(modo);
-    this.cargando.set(true);
+    this.resumenEmpresa.set(
+      null
+    );
+
+    this.historicoEmpresa.set(
+      []
+    );
+
+    this.modoEmpresa.set(
+      modo
+    );
+
+    this.cargando.set(
+      true
+    );
   }
 
+
   private limpiarEmpresa(): void {
+
     this.error.set(null);
 
-    this.resumenEmpresa.set(null);
-    this.historicoEmpresa.set([]);
+    this.resumenEmpresa.set(
+      null
+    );
 
-    this.trabajadores.set([]);
-    this.trabajadorSeleccionado.set(null);
+    this.historicoEmpresa.set(
+      []
+    );
+
+    this.trabajadores.set(
+      []
+    );
+
+    this.trabajadorSeleccionado.set(
+      null
+    );
 
     this.fechaEmpresa = '';
     this.desdeEmpresa = '';
     this.hastaEmpresa = '';
 
-    this.modoEmpresa.set('HOY');
+    this.modoEmpresa.set(
+      'HOY'
+    );
   }
+
 
   private fechaDtoAIso(
     fecha: string | undefined
@@ -588,28 +845,42 @@ export class ResumenEmpresa implements OnInit {
       return null;
     }
 
-    const partes = fecha.split('/');
+    const partes =
+      fecha.split('/');
 
-    if (partes.length !== 3) {
+    if (
+      partes.length !== 3
+    ) {
+
       return null;
     }
 
-    const [dia, mes, anio] = partes;
+    const [
+      dia,
+      mes,
+      anio,
+    ] = partes;
 
     return dia && mes && anio
       ? `${anio}-${mes}-${dia}`
       : null;
   }
 
+
   private mostrarError(
     error: unknown
   ): void {
 
-    if (error instanceof HttpErrorResponse) {
+    if (
+      error
+      instanceof HttpErrorResponse
+    ) {
+
       this.error.set(
-        error.error?.message ??
-        'No se ha podido consultar el resumen.'
+        error.error?.message
+        ?? 'No se ha podido consultar el resumen.'
       );
+
       return;
     }
 
@@ -618,35 +889,50 @@ export class ResumenEmpresa implements OnInit {
     );
   }
 
+
   private mostrarErrorDescarga(
     error: unknown
   ): void {
 
-    if (!(error instanceof HttpErrorResponse)) {
+    if (
+      !(
+        error
+        instanceof HttpErrorResponse
+      )
+    ) {
+
       this.error.set(
         'No se ha podido descargar el PDF.'
       );
+
       return;
     }
 
-    if (error.error instanceof Blob) {
+    if (
+      error.error
+      instanceof Blob
+    ) {
+
       void this.leerErrorBlob(
         error.error
       );
+
       return;
     }
 
     this.error.set(
-      error.error?.message ??
-      'No se ha podido descargar el PDF.'
+      error.error?.message
+      ?? 'No se ha podido descargar el PDF.'
     );
   }
+
 
   private async leerErrorBlob(
     blob: Blob
   ): Promise<void> {
 
     try {
+
       const respuesta =
         JSON.parse(
           await blob.text()
@@ -655,10 +941,12 @@ export class ResumenEmpresa implements OnInit {
         };
 
       this.error.set(
-        respuesta.message ??
-        'No se ha podido descargar el PDF.'
+        respuesta.message
+        ?? 'No se ha podido descargar el PDF.'
       );
+
     } catch {
+
       this.error.set(
         'No se ha podido descargar el PDF.'
       );

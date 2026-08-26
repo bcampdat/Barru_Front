@@ -1,0 +1,252 @@
+<div class="notificaciones-page">
+
+  <header>
+
+    <h1>
+      Notificaciones
+    </h1>
+
+    <p>
+      Solicitudes de horas extra pendientes
+      de autorización.
+    </p>
+
+  </header>
+
+
+  @if (error()) {
+
+    <p>
+      {{ error() }}
+    </p>
+
+  }
+
+
+  @if (mensaje()) {
+
+    <p>
+      {{ mensaje() }}
+    </p>
+
+  }
+
+
+  @if (
+    cargando()
+    && solicitudes().length === 0
+  ) {
+
+    <p>
+      Cargando solicitudes...
+    </p>
+
+  } @else {
+
+
+    @if (solicitudes().length === 0) {
+
+      <p>
+        No tienes solicitudes pendientes.
+      </p>
+
+    } @else {
+
+      <section>
+
+        <div>
+
+          <input
+            id="seleccionarTodasSolicitudes"
+            type="checkbox"
+            [checked]="todasSeleccionadas()"
+            [disabled]="procesando()"
+            (change)="seleccionarTodas()"
+          />
+
+          <label for="seleccionarTodasSolicitudes">
+            Seleccionar todas
+          </label>
+
+        </div>
+
+
+        <div>
+
+          <button
+            type="button"
+            [disabled]="
+              procesando()
+              || !haySeleccionadas()
+            "
+            (click)="autorizarSeleccionadas()"
+          >
+            Autorizar seleccionados
+          </button>
+
+
+          <button
+            type="button"
+            [disabled]="
+              procesando()
+              || !haySeleccionadas()
+            "
+            (click)="rechazarSeleccionadas()"
+          >
+            Rechazar seleccionados
+          </button>
+
+        </div>
+
+
+        <table>
+
+          <thead>
+
+            <tr>
+
+              <th>
+                Seleccionar
+              </th>
+
+              <th>
+                Trabajador
+              </th>
+
+              <th>
+                Fecha
+              </th>
+
+              <th>
+                Solicitud
+              </th>
+
+              <th>
+                Límite
+              </th>
+
+              <th>
+                Estado
+              </th>
+
+              <th>
+                Acciones
+              </th>
+
+            </tr>
+
+          </thead>
+
+
+          <tbody>
+
+            @for (
+              solicitud of solicitudes();
+              track solicitud.id
+            ) {
+
+              <tr>
+
+                <td>
+
+                  <input
+                    [id]="
+                      'solicitudHorasExtra-'
+                      + solicitud.id
+                    "
+                    type="checkbox"
+                    [checked]="
+                      estaSeleccionada(
+                        solicitud.id
+                      )
+                    "
+                    [disabled]="procesando()"
+                    (change)="
+                      alternarSeleccion(
+                        solicitud.id
+                      )
+                    "
+                  />
+
+                  <label
+                    [for]="
+                      'solicitudHorasExtra-'
+                      + solicitud.id
+                    "
+                  >
+                    Seleccionar
+                    {{ solicitud.nombreTrabajador }}
+                  </label>
+
+                </td>
+
+
+                <td>
+                  {{ solicitud.nombreTrabajador }}
+                </td>
+
+
+                <td>
+                  {{ solicitud.fecha }}
+                </td>
+
+
+                <td>
+                  {{ solicitud.fechaSolicitud }}
+                </td>
+
+
+                <td>
+                  {{ solicitud.fechaLimite }}
+                </td>
+
+
+                <td>
+                  {{ solicitud.estado }}
+                </td>
+
+
+                <td>
+
+                  <button
+                    type="button"
+                    [disabled]="procesando()"
+                    (click)="
+                      autorizar(
+                        solicitud.id
+                      )
+                    "
+                  >
+                    Autorizar
+                  </button>
+
+
+                  <button
+                    type="button"
+                    [disabled]="procesando()"
+                    (click)="
+                      rechazar(
+                        solicitud.id
+                      )
+                    "
+                  >
+                    Rechazar
+                  </button>
+
+                </td>
+
+              </tr>
+
+            }
+
+          </tbody>
+
+        </table>
+
+      </section>
+
+    }
+
+  }
+
+</div>

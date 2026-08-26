@@ -1,0 +1,45 @@
+@if (salidas.length > 0) {
+
+  <section class="resumen-salidas">
+
+    <h3>
+      Salidas registradas
+    </h3>
+
+    <ul>
+
+      @for (
+        salida of salidas;
+        track $index
+      ) {
+
+        <li>
+
+          <strong>
+            {{ salida.hora }}
+          </strong>
+
+          <span>
+            {{ textoTipo(salida.tipoSalida) }}
+          </span>
+
+          @if (
+            textoMotivo(salida.motivoSalida);
+            as motivo
+          ) {
+
+            <span>
+              — {{ motivo }}
+            </span>
+
+          }
+
+        </li>
+
+      }
+
+    </ul>
+
+  </section>
+
+}

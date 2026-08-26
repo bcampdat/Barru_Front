@@ -16,6 +16,7 @@ import {
 } from '../../../../core/descargas/descarga-pdf-service';
 import { ResumenService } from '../../../../core/resumenes/resumen-service';
 import { ResumenDiarioDTO } from '../../../../core/resumenes/resumen-types';
+import { ResumenSalidas } from '../../resumen-salidas/resumen-salidas';
 
 type ModoConsulta =
   | 'HOY'
@@ -29,6 +30,7 @@ type ModoConsulta =
     FormsModule,
     MessageModule,
     TableModule,
+    ResumenSalidas,
   ],
   templateUrl: './resumen-personal.html',
   styleUrl: './resumen-personal.scss',
@@ -67,23 +69,35 @@ export class ResumenPersonal implements OnInit {
   }
 
   consultarHoy(): void {
-    this.prepararConsulta('HOY');
+  this.prepararConsulta('HOY');
 
-    this.resumenService
-      .obtenerMiResumenHoy()
-      .pipe(
-        finalize(() =>
-          this.cargando.set(false)
-        )
+  this.resumenService
+    .obtenerMiResumenHoy()
+    .pipe(
+      finalize(() =>
+        this.cargando.set(false)
       )
-      .subscribe({
-        next: resumen => {
-          this.resumen.set(resumen);
-        },
-        error: error => {
-          this.mostrarError(error);
-        },
-      });
+    )
+    .subscribe({
+      next: resumen => {
+        this.resumen.set(resumen);
+      },
+
+      error: error => {
+
+        if (
+          error instanceof HttpErrorResponse
+          && error.status === 404
+        ) {
+
+          this.resumen.set(null);
+
+          return;
+        }
+
+        this.mostrarError(error);
+      },
+    });
   }
 
   consultarFecha(): void {

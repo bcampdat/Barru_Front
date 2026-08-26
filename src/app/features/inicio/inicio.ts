@@ -31,8 +31,15 @@ export class Inicio {
     return this.authService.getSesion()?.rol === 'ADMIN_SISTEMA';
   }
 
+  get esEncargado(): boolean {
+    return this.authService.getSesion()?.rol === 'ENCARGADO';
+  }
   irAPerfil(): void {
     void this.router.navigateByUrl('/perfil');
+  }
+
+  irANotificaciones(): void {
+    void this.router.navigateByUrl('/notificaciones');
   }
 
   abrirZonaAdmin(): void {

@@ -1,0 +1,562 @@
+<div class="fichar-page">
+
+  <header class="fichar-header">
+
+    <h1>Mi jornada</h1>
+
+    <p>
+      Registra y consulta el estado de tu jornada de hoy.
+    </p>
+
+  </header>
+
+
+  @if (error()) {
+
+    <p-message severity="error">
+      {{ error() }}
+    </p-message>
+
+  }
+
+
+  @if (mensaje()) {
+
+    <p-message severity="success">
+      {{ mensaje() }}
+    </p-message>
+
+  }
+
+
+  @if (
+    cargando()
+    && !resumen()
+  ) {
+
+    <p>
+      Cargando jornada...
+    </p>
+
+  } @else {
+
+    <main>
+
+
+      <section class="jornada-principal">
+
+        <div class="jornada-estado">
+
+          <span>
+            Estado actual
+          </span>
+
+          <strong>
+            {{ estadoTexto() }}
+          </strong>
+
+        </div>
+
+
+        <div class="jornada-reloj">
+
+          <span>
+            Tiempo transcurrido
+          </span>
+
+          <strong>
+            {{ tiempoTranscurrido() }}
+          </strong>
+
+        </div>
+
+
+        @if (resumen()) {
+
+          <div class="jornada-progreso">
+
+            <div>
+
+              <span>
+                Progreso de jornada
+              </span>
+
+              <strong>
+                {{ progresoJornada() }} %
+              </strong>
+
+            </div>
+
+            <progress
+              [value]="progresoJornada()"
+              max="100"
+            >
+              {{ progresoJornada() }} %
+            </progress>
+
+          </div>
+
+        }
+
+
+        <div class="jornada-datos">
+
+          <article>
+
+            <span>
+              Trabajado
+            </span>
+
+            <strong>
+              {{ tiempoTrabajado() }}
+            </strong>
+
+          </article>
+
+
+          <article>
+
+            <span>
+              Pausas
+            </span>
+
+            <strong>
+              {{ tiempoPausa() }}
+            </strong>
+
+          </article>
+
+
+          <article>
+
+            <span>
+              Pausa disponible
+            </span>
+
+            <strong>
+              {{ tiempoPausaRestante() }}
+            </strong>
+
+          </article>
+
+
+          <article>
+
+            <span>
+              Jornada
+            </span>
+
+            <strong>
+              {{ tiempoJornada() }}
+            </strong>
+
+          </article>
+
+
+          <article>
+
+            <span>
+              Tiempo restante
+            </span>
+
+            <strong>
+              {{ tiempoRestante() }}
+            </strong>
+
+          </article>
+
+
+          <article>
+
+            <span>
+              Horas extra
+            </span>
+
+            <strong>
+              {{ tiempoExtra() }}
+            </strong>
+
+          </article>
+
+        </div>
+
+
+        @if (ubicacionRequerida()) {
+
+          <section class="aviso-ubicacion">
+
+            <p-message severity="warn">
+              {{ avisoUbicacion() }}
+            </p-message>
+
+            <p>
+              Si has bloqueado el acceso a la ubicación,
+              habilítalo desde los permisos de este sitio
+              en el navegador y vuelve a intentarlo.
+            </p>
+
+            <button
+              type="button"
+              [disabled]="fichando()"
+              (click)="reintentarFichaje()"
+            >
+
+              @if (fichando()) {
+
+                Comprobando ubicación...
+
+              } @else {
+
+                Reintentar fichaje
+
+              }
+
+            </button>
+
+          </section>
+
+        } @else {
+
+          <div class="jornada-acciones">
+
+
+            @if (mostrarEntrada()) {
+
+              <button
+                type="button"
+                [disabled]="accionesBloqueadas()"
+                (click)="registrarEntrada()"
+              >
+
+                @if (fichando()) {
+                  Registrando...
+                } @else {
+                  Entrada
+                }
+
+              </button>
+
+            }
+
+
+            @if (mostrarAccionesTrabajo()) {
+
+              <button
+                type="button"
+                [disabled]="accionesBloqueadas()"
+                (click)="registrarPausa()"
+              >
+
+                @if (fichando()) {
+                  Registrando...
+                } @else {
+                  Iniciar pausa
+                }
+
+              </button>
+
+
+              <button
+                type="button"
+                [disabled]="accionesBloqueadas()"
+                (click)="registrarSalida()"
+              >
+
+                @if (fichando()) {
+                  Registrando...
+                } @else {
+                  Salida
+                }
+
+              </button>
+
+            }
+
+
+            @if (mostrarReanudar()) {
+
+              <button
+                type="button"
+                [disabled]="accionesBloqueadas()"
+                (click)="registrarReanudacion()"
+              >
+
+                @if (fichando()) {
+                  Registrando...
+                } @else {
+                  Reanudar
+                }
+
+              </button>
+
+            }
+
+          </div>
+
+        }
+
+      </section>
+
+
+      @if (resumen(); as resumenActual) {
+
+        <section class="jornada-resumen">
+
+          <h2>
+            Resumen de hoy
+          </h2>
+
+          <dl>
+
+            <div>
+              <dt>Fecha</dt>
+              <dd>
+                {{ resumenActual.fecha }}
+              </dd>
+            </div>
+
+            <div>
+              <dt>Situación</dt>
+              <dd>
+                {{ estadoTexto() }}
+              </dd>
+            </div>
+
+            <div>
+              <dt>Tiempo trabajado</dt>
+              <dd>
+                {{ tiempoTrabajado() }}
+              </dd>
+            </div>
+
+            <div>
+              <dt>Jornada</dt>
+              <dd>
+                {{ tiempoJornada() }}
+              </dd>
+            </div>
+
+            <div>
+              <dt>Tiempo restante</dt>
+              <dd>
+                {{ tiempoRestante() }}
+              </dd>
+            </div>
+
+            <div>
+              <dt>Tiempo de pausa</dt>
+              <dd>
+                {{ tiempoPausa() }}
+              </dd>
+            </div>
+
+            <div>
+              <dt>Pausa disponible</dt>
+              <dd>
+                {{ tiempoPausaRestante() }}
+              </dd>
+            </div>
+
+            <div>
+              <dt>Horas extra</dt>
+              <dd>
+                {{ tiempoExtra() }}
+              </dd>
+            </div>
+
+          </dl>
+
+
+          @if (
+            resumenActual.ultimaActualizacion
+          ) {
+
+            <p>
+              Última sincronización:
+              {{ resumenActual.ultimaActualizacion }}
+            </p>
+
+          }
+
+        </section>
+
+      }
+
+    </main>
+
+  }
+
+
+  <!--
+    Confirmación previa de salida.
+
+    Aquí todavía no se registra ningún fichaje.
+
+    El trabajador decide si continúa trabajando,
+    sale con intención de volver durante el mismo día
+    o finaliza definitivamente su jornada.
+  -->
+  <p-dialog
+    header="Registrar salida"
+    [modal]="true"
+    [closable]="false"
+    [draggable]="false"
+    [resizable]="false"
+    [visible]="dialogoSalidaVisible()"
+  >
+
+    <p>
+      ¿Qué quieres hacer?
+    </p>
+
+    <p>
+      Si vas a salir, indica si volverás a trabajar
+      hoy o si finalizas tu jornada.
+    </p>
+
+
+    @if (
+      (resumen()?.minutosRestantes ?? 0) > 0
+    ) {
+
+      <p>
+        Todavía te queda tiempo para completar
+        tu jornada:
+        <strong>
+          {{ tiempoRestante() }}
+        </strong>
+      </p>
+
+    }
+
+
+    <div class="salida-acciones">
+
+      <button
+        type="button"
+        [disabled]="fichando()"
+        (click)="seguirTrabajando()"
+      >
+        Seguir trabajando
+      </button>
+
+
+      <button
+        type="button"
+        [disabled]="fichando()"
+        (click)="seleccionarSalidaIntermedia()"
+      >
+        Salir y volver hoy
+      </button>
+
+
+      <button
+        type="button"
+        [disabled]="fichando()"
+        (click)="finalizarJornada()"
+      >
+        Finalizar jornada
+      </button>
+
+    </div>
+
+  </p-dialog>
+
+
+  <!--
+    Motivo requerido cuando la salida
+    necesita contexto.
+
+    La clasificación definitiva de la salida
+    sigue siendo responsabilidad del backend.
+  -->
+  <p-dialog
+    header="Motivo de la salida"
+    [modal]="true"
+    [closable]="false"
+    [draggable]="false"
+    [resizable]="false"
+    [visible]="dialogoMotivoVisible()"
+  >
+
+    @if (
+      modoSalida() === 'FINALIZAR'
+    ) {
+
+      <p>
+        Vas a finalizar la jornada antes de
+        completar el tiempo previsto.
+        Indica el motivo de la salida.
+      </p>
+
+    } @else {
+
+      <p>
+        Vas a salir y tienes previsto volver
+        a trabajar hoy.
+        Indica el motivo de la salida.
+      </p>
+
+    }
+
+
+    <div class="salida-motivo">
+
+      <label for="motivoSalida">
+        Motivo
+      </label>
+
+      <select
+        id="motivoSalida"
+        name="motivoSalida"
+        [ngModel]="motivoSalidaSeleccionado()"
+        (ngModelChange)="actualizarMotivoSalida($event)"
+      >
+
+        <option [ngValue]="null">
+          Selecciona un motivo
+        </option>
+
+        @for (
+          motivo of motivosSalidaDisponibles();
+          track motivo.valor
+        ) {
+
+          <option [ngValue]="motivo.valor">
+            {{ motivo.texto }}
+          </option>
+
+        }
+
+      </select>
+
+    </div>
+
+
+    <div class="salida-acciones">
+
+      <button
+        type="button"
+        [disabled]="fichando()"
+        (click)="cancelarMotivoSalida()"
+      >
+        Cancelar
+      </button>
+
+
+      <button
+        type="button"
+        [disabled]="
+          fichando()
+          || !motivoSalidaSeleccionado()
+        "
+        (click)="confirmarMotivoSalida()"
+      >
+        Continuar
+      </button>
+
+    </div>
+
+  </p-dialog>
+
+</div>

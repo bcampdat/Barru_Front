@@ -6,12 +6,20 @@ import {
 
 import { AuthService } from './auth.service';
 
-export const authGuard: CanActivateFn = () => {
+export const authGuard: CanActivateFn = (
+  _route,
+  state
+) => {
 
-  const authService = inject(AuthService);
-  const router = inject(Router);
+  const authService =
+    inject(AuthService);
 
-  const sesion = authService.getSesion();
+  const router =
+    inject(Router);
+
+  const sesion =
+    authService.getSesion();
+
 
   if (
     authService.estaAutenticado()
@@ -20,5 +28,20 @@ export const authGuard: CanActivateFn = () => {
     return true;
   }
 
-  return router.createUrlTree(['/login']);
+  if (
+    state.url === '/notificaciones'
+  ) {
+
+    return router.createUrlTree(
+      ['/login'],
+      {
+        queryParams: {
+          returnUrl: '/notificaciones',
+        },
+      }
+    );
+  }
+  return router.createUrlTree([
+    '/login',
+  ]);
 };

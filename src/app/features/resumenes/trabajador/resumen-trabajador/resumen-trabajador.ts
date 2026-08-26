@@ -18,6 +18,7 @@ import {
 } from '../../../../core/descargas/descarga-pdf-service';
 import { ResumenService } from '../../../../core/resumenes/resumen-service';
 import { ResumenDiarioDTO } from '../../../../core/resumenes/resumen-types';
+import { ResumenSalidas } from '../../resumen-salidas/resumen-salidas';
 import { UserDTO } from '../../../../core/usuarios/usuario.types';
 
 type ModoConsulta =
@@ -32,6 +33,7 @@ type ModoConsulta =
     FormsModule,
     MessageModule,
     TableModule,
+    ResumenSalidas,
   ],
   templateUrl: './resumen-trabajador.html',
   styleUrl: './resumen-trabajador.scss',
