@@ -1,19 +1,27 @@
 <div class="resumen-empresa-page">
 
-  <header>
-    <h1>Resumen de empresa</h1>
+  <header class="resumen-empresa-header">
 
-    <p>
-      Consulta el estado de la empresa y el resumen
-      de sus trabajadores.
-    </p>
+    <div>
+      <h1>
+        Resumen de empresa
+      </h1>
+
+      <p>
+        Visión general del estado y actividad
+        de la empresa.
+      </p>
+    </div>
+
   </header>
 
 
   @if (error()) {
 
-    <p-message severity="error">
-      {{ error() }}
+    <p-message
+      severity="error"
+      [text]="error() ?? ''"
+    >
     </p-message>
 
   }
@@ -21,7 +29,7 @@
 
   @if (esAdmin()) {
 
-    <section>
+    <section class="empresa-selector">
 
       <label for="empresaResumen">
         Empresa
@@ -47,8 +55,13 @@
           @if (empresa.id !== undefined) {
 
             <option [ngValue]="empresa.id">
+
               {{ empresa.nombre }}
-              {{ empresa.activa === false ? '(Inactiva)' : '' }}
+
+              @if (empresa.activa === false) {
+                (Inactiva)
+              }
+
             </option>
 
           }
@@ -64,102 +77,145 @@
 
   @if (empresaId() !== null) {
 
-    <section>
+    <section
+      class="consulta-panel"
+      aria-labelledby="consultaEmpresaTitulo"
+    >
 
-      <nav aria-label="Consulta del resumen de empresa">
+      <div class="consulta-panel__cabecera">
 
-        <button
-          type="button"
-          [disabled]="cargando() || descargando()"
-          [attr.aria-pressed]="modoEmpresa() === 'HOY'"
-          (click)="consultarEmpresaHoy()"
+        <h2 id="consultaEmpresaTitulo">
+          Consulta
+        </h2>
+
+        <nav
+          class="consulta-modos"
+          aria-label="Modo de consulta del resumen de empresa"
         >
-          Hoy
-        </button>
 
-        <button
-          type="button"
-          [disabled]="cargando() || descargando()"
-          [attr.aria-pressed]="modoEmpresa() === 'HISTORICO'"
-          (click)="consultarEmpresaHistorico()"
-        >
-          Histórico
-        </button>
+          <button
+            type="button"
+            [disabled]="cargando() || descargando()"
+            [attr.aria-pressed]="modoEmpresa() === 'HOY'"
+            (click)="consultarEmpresaHoy()"
+          >
+            Hoy
+          </button>
 
-      </nav>
+          <button
+            type="button"
+            [disabled]="cargando() || descargando()"
+            [attr.aria-pressed]="modoEmpresa() === 'HISTORICO'"
+            (click)="consultarEmpresaHistorico()"
+          >
+            Histórico
+          </button>
 
-
-      <div>
-
-        <h2>Consultar una fecha</h2>
-
-        <label for="fechaEmpresa">
-          Fecha
-        </label>
-
-        <input
-          id="fechaEmpresa"
-          name="fechaEmpresa"
-          type="date"
-          [(ngModel)]="fechaEmpresa"
-          [disabled]="cargando() || descargando()"
-        />
-
-        <button
-          type="button"
-          [disabled]="
-            cargando() ||
-            descargando() ||
-            !fechaEmpresa
-          "
-          (click)="consultarEmpresaFecha()"
-        >
-          Consultar
-        </button>
+        </nav>
 
       </div>
 
 
-      <div>
+      <div class="consulta-panel__opciones">
 
-        <h2>Consultar un periodo</h2>
+        <div class="consulta-bloque">
 
-        <label for="desdeEmpresa">
-          Desde
-        </label>
+          <h3>
+            Por fecha
+          </h3>
 
-        <input
-          id="desdeEmpresa"
-          name="desdeEmpresa"
-          type="date"
-          [(ngModel)]="desdeEmpresa"
-          [disabled]="cargando() || descargando()"
-        />
+          <div class="consulta-campos">
 
-        <label for="hastaEmpresa">
-          Hasta
-        </label>
+            <div class="campo">
 
-        <input
-          id="hastaEmpresa"
-          name="hastaEmpresa"
-          type="date"
-          [(ngModel)]="hastaEmpresa"
-          [disabled]="cargando() || descargando()"
-        />
+              <label for="fechaEmpresa">
+                Fecha
+              </label>
 
-        <button
-          type="button"
-          [disabled]="
-            cargando() ||
-            descargando() ||
-            !desdeEmpresa ||
-            !hastaEmpresa
-          "
-          (click)="consultarEmpresaRango()"
-        >
-          Consultar periodo
-        </button>
+              <input
+                id="fechaEmpresa"
+                name="fechaEmpresa"
+                type="date"
+                [(ngModel)]="fechaEmpresa"
+                [disabled]="cargando() || descargando()"
+              />
+
+            </div>
+
+            <button
+              type="button"
+              [disabled]="
+                cargando()
+                || descargando()
+                || !fechaEmpresa
+              "
+              (click)="consultarEmpresaFecha()"
+            >
+              Consultar
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <div class="consulta-bloque consulta-bloque--rango">
+
+          <h3>
+            Por periodo
+          </h3>
+
+          <div class="consulta-campos">
+
+            <div class="campo">
+
+              <label for="desdeEmpresa">
+                Desde
+              </label>
+
+              <input
+                id="desdeEmpresa"
+                name="desdeEmpresa"
+                type="date"
+                [(ngModel)]="desdeEmpresa"
+                [disabled]="cargando() || descargando()"
+              />
+
+            </div>
+
+
+            <div class="campo">
+
+              <label for="hastaEmpresa">
+                Hasta
+              </label>
+
+              <input
+                id="hastaEmpresa"
+                name="hastaEmpresa"
+                type="date"
+                [(ngModel)]="hastaEmpresa"
+                [disabled]="cargando() || descargando()"
+              />
+
+            </div>
+
+            <button
+              type="button"
+              [disabled]="
+                cargando()
+                || descargando()
+                || !desdeEmpresa
+                || !hastaEmpresa
+              "
+              (click)="consultarEmpresaRango()"
+            >
+              Consultar periodo
+            </button>
+
+          </div>
+
+        </div>
 
       </div>
 
@@ -168,198 +224,403 @@
 
     @if (cargando()) {
 
-      <p>
+      <output class="estado-carga">
         Cargando resumen...
-      </p>
+      </output>      
 
     } @else {
 
-
       @if (resumenEmpresa(); as resumen) {
 
-        <section>
+        <section
+          class="resumen-actual"
+          aria-labelledby="resumenActualTitulo"
+        >
 
-          <h2>
-            {{ resumen.nombreEmpresa }}
-            — {{ resumen.fecha }}
-          </h2>
+          <header class="resumen-actual__cabecera">
 
-          <button
-            type="button"
-            [disabled]="!puedeDescargarEmpresa()"
-            (click)="descargarPdfEmpresa()"
-          >
-            @if (descargando()) {
-              Descargando PDF...
-            } @else {
-              Descargar PDF
+            <div>
+
+              <h2 id="resumenActualTitulo">
+                {{ resumen.nombreEmpresa }}
+              </h2>
+
+              <p>
+                Estado de la empresa
+                · {{ resumen.fecha }}
+              </p>
+
+            </div>
+
+
+            <button
+              type="button"
+              class="accion-principal"
+              [disabled]="!puedeDescargarEmpresa()"
+              (click)="descargarPdfEmpresa()"
+            >
+
+              @if (descargando()) {
+                Descargando PDF...
+              } @else {
+                Descargar PDF
+              }
+
+            </button>
+
+          </header>
+
+
+          <div class="dashboard">
+
+
+            <article class="dashboard-card dashboard-card--plantilla">
+
+              <header class="dashboard-card__header">
+
+                <div>
+
+                  <span class="dashboard-card__eyebrow">
+                    Plantilla
+                  </span>
+
+                  <h3>
+                    Situación actual
+                  </h3>
+
+                </div>
+
+              </header>
+
+
+              <div class="kpi-principal">
+
+                <strong>
+                  {{ resumen.totalTrabajadores }}
+                </strong>
+
+                <span>
+                  trabajadores
+                </span>
+
+              </div>
+
+
+              <dl class="metricas">
+
+                <div>
+                  <dt>Con fichaje</dt>
+                  <dd>
+                    {{ resumen.trabajadoresConFichaje }}
+                  </dd>
+                </div>
+
+                <div>
+                  <dt>Sin fichaje</dt>
+                  <dd>
+                    {{ resumen.trabajadoresSinFichaje }}
+                  </dd>
+                </div>
+
+                <div>
+                  <dt>Trabajando</dt>
+                  <dd>
+                    {{ resumen.trabajadoresTrabajando }}
+                  </dd>
+                </div>
+
+                <div>
+                  <dt>En pausa</dt>
+                  <dd>
+                    {{ resumen.trabajadoresEnPausa }}
+                  </dd>
+                </div>
+
+                <div>
+                  <dt>Finalizados</dt>
+                  <dd>
+                    {{ resumen.trabajadoresFinalizados }}
+                  </dd>
+                </div>
+
+              </dl>
+
+            </article>
+
+
+            <article class="dashboard-card dashboard-card--actividad">
+
+              <header class="dashboard-card__header">
+
+                <div>
+
+                  <span class="dashboard-card__eyebrow">
+                    Actividad
+                  </span>
+
+                  <h3>
+                    Tiempos de la jornada
+                  </h3>
+
+                </div>
+
+              </header>
+
+
+              <div class="kpi-principal kpi-principal--tiempo">
+
+                <strong>
+                  {{ resumen.tiempoTrabajado }}
+                </strong>
+
+                <span>
+                  tiempo trabajado
+                </span>
+
+              </div>
+
+
+              <dl class="metricas">
+
+                <div>
+                  <dt>Tiempo de pausa</dt>
+                  <dd>
+                    {{ resumen.tiempoPausa }}
+                  </dd>
+                </div>
+
+                <div>
+                  <dt>Horas extra</dt>
+                  <dd>
+                    {{ resumen.tiempoExtra }}
+                  </dd>
+                </div>
+
+                <div>
+                  <dt>Con horas extra</dt>
+                  <dd>
+                    {{ resumen.trabajadoresConHorasExtra }}
+                  </dd>
+                </div>
+
+              </dl>
+
+            </article>
+
+
+            @if (
+              !esAdmin()
+              && modoEmpresa() === 'HOY'
+            ) {
+
+              <div class="dashboard-card dashboard-card--notificaciones">
+
+                <div class="dashboard-card__header">
+
+                  <div>
+
+                    <span class="dashboard-card__eyebrow">
+                      Control
+                    </span>
+
+                    <h3>
+                      Notificaciones
+                    </h3>
+
+                  </div>
+
+                </div>
+
+                <div class="notificaciones-contenido">
+
+                  <app-notificaciones>
+                  </app-notificaciones>
+
+                </div>
+
+              </div>
+
             }
-          </button>
+
+          </div>
 
 
-          <dl>
+          <section
+            class="incidencias-panel"
+            aria-labelledby="incidenciasTitulo"
+          >
 
-            <div>
-              <dt>Total trabajadores</dt>
-              <dd>{{ resumen.totalTrabajadores }}</dd>
-            </div>
+            <header class="seccion-header">
 
-            <div>
-              <dt>Con fichaje</dt>
-              <dd>{{ resumen.trabajadoresConFichaje }}</dd>
-            </div>
+              <div>
 
-            <div>
-              <dt>Sin fichaje</dt>
-              <dd>{{ resumen.trabajadoresSinFichaje }}</dd>
-            </div>
+                <span class="seccion-eyebrow">
+                  Seguimiento
+                </span>
 
-            <div>
-              <dt>Trabajando</dt>
-              <dd>{{ resumen.trabajadoresTrabajando }}</dd>
-            </div>
+                <h3 id="incidenciasTitulo">
+                  Incidencias de la jornada
+                </h3>
 
-            <div>
-              <dt>En pausa</dt>
-              <dd>{{ resumen.trabajadoresEnPausa }}</dd>
-            </div>
-
-            <div>
-              <dt>Finalizados</dt>
-              <dd>{{ resumen.trabajadoresFinalizados }}</dd>
-            </div>
-
-            <div>
-              <dt>Con horas extra</dt>
-              <dd>{{ resumen.trabajadoresConHorasExtra }}</dd>
-            </div>
-
-            <div>
-              <dt>Tiempo trabajado</dt>
-              <dd>{{ resumen.tiempoTrabajado }}</dd>
-            </div>
-
-            <div>
-              <dt>Tiempo de pausa</dt>
-              <dd>{{ resumen.tiempoPausa }}</dd>
-            </div>
-
-            <div>
-              <dt>Horas extra</dt>
-              <dd>{{ resumen.tiempoExtra }}</dd>
-            </div>
-
-            <div>
-              <dt>Incidencias</dt>
-              <dd>{{ resumen.totalIncidencias }}</dd>
-            </div>
-
-          </dl>
+              </div>
 
 
-          @if (resumen.incidencias.length > 0) {
+              <div class="contador-incidencias">
 
-            <section>
+                <strong>
+                  {{ resumen.totalIncidencias }}
+                </strong>
 
-              <h3>
-                Incidencias de la jornada
-              </h3>
+                <span>
 
-              <p-table
-                [value]="resumen.incidencias"
-              >
+                  {{
+                    resumen.totalIncidencias === 1
+                      ? 'incidencia'
+                      : 'incidencias'
+                  }}
 
-                <ng-template #header>
+                </span>
 
-                  <tr>
-                    <th scope="col">Hora</th>
-                    <th scope="col">Trabajador</th>
-                    <th scope="col">Incidencia</th>
-                    <th scope="col">Detalle</th>
-                    <th scope="col">Motivo</th>
-                  </tr>
+              </div>
 
-                </ng-template>
+            </header>
 
 
-                <ng-template
-                  #body
-                  let-incidencia
+            @if (resumen.incidencias.length > 0) {
+
+              <div class="tabla-scroll">
+
+                <p-table
+                  [value]="resumen.incidencias"
                 >
 
-                  <tr>
+                  <ng-template #header>
 
-                    <td>
-                      {{ incidencia.hora ?? '—' }}
-                    </td>
+                    <tr>
 
-                    <td>
-                      {{ incidencia.nombreTrabajador }}
-                    </td>
+                      <th scope="col">
+                        Hora
+                      </th>
 
-                    <td>
-                      {{
-                        textoTipoIncidencia(
-                          incidencia.tipoIncidencia
-                        )
-                      }}
-                    </td>
+                      <th scope="col">
+                        Trabajador
+                      </th>
 
-                    <td>
+                      <th scope="col">
+                        Incidencia
+                      </th>
 
-                      @if (
-                        incidencia.tipoIncidencia === 'SALIDA'
-                      ) {
+                      <th scope="col">
+                        Detalle
+                      </th>
+
+                      <th scope="col">
+                        Motivo
+                      </th>
+
+                    </tr>
+
+                  </ng-template>
+
+
+                  <ng-template
+                    #body
+                    let-incidencia
+                  >
+
+                    <tr>
+
+                      <td>
+                        {{ incidencia.hora ?? '—' }}
+                      </td>
+
+                      <td>
+                        {{ incidencia.nombreTrabajador }}
+                      </td>
+
+                      <td>
 
                         {{
-                          textoTipoSalida(
-                            incidencia.tipoSalida
+                          textoTipoIncidencia(
+                            incidencia.tipoIncidencia
                           )
                         }}
 
-                      } @else {
+                      </td>
 
-                        Último fichaje:
-                        {{
-                          textoTipoFichaje(
-                            incidencia.tipoFichaje
-                          )
-                        }}
+                      <td>
 
-                      }
+                        @if (
+                          incidencia.tipoIncidencia === 'SALIDA'
+                        ) {
 
-                    </td>
+                          {{
+                            textoTipoSalida(
+                              incidencia.tipoSalida
+                            )
+                          }}
 
-                    <td>
+                        } @else {
 
-                      @if (
-                        incidencia.tipoIncidencia === 'SALIDA'
-                        && incidencia.motivoSalida !== null
-                      ) {
+                          Último fichaje:
 
-                        {{
-                          textoMotivoSalida(
-                            incidencia.motivoSalida
-                          )
-                        }}
+                          {{
+                            textoTipoFichaje(
+                              incidencia.tipoFichaje
+                            )
+                          }}
 
-                      } @else {
+                        }
 
-                        —
+                      </td>
 
-                      }
+                      <td>
 
-                    </td>
+                        @if (
+                          incidencia.tipoIncidencia === 'SALIDA'
+                          && incidencia.motivoSalida !== null
+                        ) {
 
-                  </tr>
+                          {{
+                            textoMotivoSalida(
+                              incidencia.motivoSalida
+                            )
+                          }}
 
-                </ng-template>
+                        } @else {
 
-              </p-table>
+                          —
 
-            </section>
+                        }
 
-          }
+                      </td>
+
+                    </tr>
+
+                  </ng-template>
+
+                </p-table>
+
+              </div>
+
+            } @else {
+
+              <div class="estado-vacio">
+
+                <strong>
+                  Sin incidencias
+                </strong>
+
+                <span>
+                  No hay incidencias registradas
+                  para esta jornada.
+                </span>
+
+              </div>
+
+            }
+
+          </section>
 
         </section>
 
@@ -367,72 +628,328 @@
 
 
       @if (
-        modoEmpresa() === 'HISTORICO' ||
-        modoEmpresa() === 'RANGO'
+        modoEmpresa() === 'HISTORICO'
+        || modoEmpresa() === 'RANGO'
       ) {
 
-        <section>
+        <section
+          class="historico-panel"
+          aria-labelledby="historicoEmpresaTitulo"
+        >
 
-          <h2>
-            {{
-              modoEmpresa() === 'RANGO'
-                ? 'Resumen del periodo'
-                : 'Histórico de la empresa'
-            }}
-          </h2>
+          <header class="seccion-header">
+
+            <div>
+
+              <span class="seccion-eyebrow">
+                Evolución
+              </span>
+
+              <h2 id="historicoEmpresaTitulo">
+
+                {{
+                  modoEmpresa() === 'RANGO'
+                    ? 'Resumen del periodo'
+                    : 'Histórico de la empresa'
+                }}
+
+              </h2>
+
+            </div>
 
 
-          @if (modoEmpresa() === 'RANGO') {
+            @if (modoEmpresa() === 'RANGO') {
 
-            <button
-              type="button"
-              [disabled]="!puedeDescargarEmpresa()"
-              (click)="descargarPdfEmpresa()"
+              <button
+                type="button"
+                class="accion-principal"
+                [disabled]="!puedeDescargarEmpresa()"
+                (click)="descargarPdfEmpresa()"
+              >
+
+                @if (descargando()) {
+                  Descargando PDF...
+                } @else {
+                  Descargar PDF
+                }
+
+              </button>
+
+            }
+
+          </header>
+
+
+          <div class="tabla-scroll">
+
+            <p-table
+              [value]="historicoEmpresa()"
+              [paginator]="true"
+              [rows]="10"
+              [rowsPerPageOptions]="[
+                10,
+                25,
+                50
+              ]"
             >
-              @if (descargando()) {
-                Descargando PDF...
-              } @else {
-                Descargar PDF
-              }
-            </button>
 
-          }
+              <ng-template #header>
+
+                <tr>
+
+                  <th scope="col">
+                    Fecha
+                  </th>
+
+                  <th scope="col">
+                    Con fichaje
+                  </th>
+
+                  <th scope="col">
+                    Trabajando
+                  </th>
+
+                  <th scope="col">
+                    En pausa
+                  </th>
+
+                  <th scope="col">
+                    Finalizados
+                  </th>
+
+                  <th scope="col">
+                    Trabajado
+                  </th>
+
+                  <th scope="col">
+                    Horas extra
+                  </th>
+
+                  <th scope="col">
+                    Incidencias
+                  </th>
+
+                </tr>
+
+              </ng-template>
+
+
+              <ng-template
+                #body
+                let-resumen
+              >
+
+                <tr>
+
+                  <td>
+                    {{ resumen.fecha }}
+                  </td>
+
+                  <td>
+                    {{ resumen.trabajadoresConFichaje }}
+                  </td>
+
+                  <td>
+                    {{ resumen.trabajadoresTrabajando }}
+                  </td>
+
+                  <td>
+                    {{ resumen.trabajadoresEnPausa }}
+                  </td>
+
+                  <td>
+                    {{ resumen.trabajadoresFinalizados }}
+                  </td>
+
+                  <td>
+                    {{ resumen.tiempoTrabajado }}
+                  </td>
+
+                  <td>
+                    {{ resumen.tiempoExtra }}
+                  </td>
+
+                  <td>
+                    {{ resumen.totalIncidencias }}
+                  </td>
+
+                </tr>
+
+              </ng-template>
+
+
+              <ng-template #emptymessage>
+
+                <tr>
+
+                  <td colspan="8">
+                    No hay resúmenes de empresa
+                    para mostrar.
+                  </td>
+
+                </tr>
+
+              </ng-template>
+
+            </p-table>
+
+          </div>
+
+        </section>
+
+      }
+
+
+      <section
+        class="trabajadores-layout"
+        aria-labelledby="trabajadoresTitulo"
+      >
+
+        <div class="trabajadores-panel">
+
+          <header class="seccion-header">
+
+            <div>
+
+              <span class="seccion-eyebrow">
+                Plantilla
+              </span>
+
+              <h2 id="trabajadoresTitulo">
+                Trabajadores
+              </h2>
+
+              <p>
+                Selecciona un trabajador
+                para consultar su resumen.
+              </p>
+
+            </div>
+
+          </header>
 
 
           <p-table
-            [value]="historicoEmpresa()"
+            #tablaTrabajadores
+            [value]="trabajadores()"
             [paginator]="true"
             [rows]="10"
-            [rowsPerPageOptions]="[10, 25, 50]"
+            [rowsPerPageOptions]="[
+              10,
+              25,
+              50
+            ]"
+            [globalFilterFields]="[
+              'nombre',
+              'apellidos',
+              'email'
+            ]"
           >
+
+            <ng-template #caption>
+
+              <div class="buscador-trabajador">
+
+                <label for="buscarTrabajador">
+                  Buscar trabajador
+                </label>
+
+                <input
+                  id="buscarTrabajador"
+                  #buscarTrabajador
+                  type="text"
+                  pInputText
+                  placeholder="Nombre, apellidos o email"
+                  [disabled]="cargando() || descargando()"
+                  (input)="
+                    tablaTrabajadores.filterGlobal(
+                      buscarTrabajador.value,
+                      'contains'
+                    )
+                  "
+                />
+
+              </div>
+
+            </ng-template>
+
 
             <ng-template #header>
 
               <tr>
-                <th scope="col">Fecha</th>
-                <th scope="col">Con fichaje</th>
-                <th scope="col">Trabajando</th>
-                <th scope="col">En pausa</th>
-                <th scope="col">Finalizados</th>
-                <th scope="col">Trabajado</th>
-                <th scope="col">Horas extra</th>
-                <th scope="col">Incidencias</th>
+
+                <th scope="col">
+                  Trabajador
+                </th>
+
+                <th scope="col">
+                  Email
+                </th>
+
+                <th scope="col">
+                  Acción
+                </th>
+
               </tr>
 
             </ng-template>
 
 
-            <ng-template #body let-resumen>
+            <ng-template
+              #body
+              let-trabajador
+            >
 
-              <tr>
-                <td>{{ resumen.fecha }}</td>
-                <td>{{ resumen.trabajadoresConFichaje }}</td>
-                <td>{{ resumen.trabajadoresTrabajando }}</td>
-                <td>{{ resumen.trabajadoresEnPausa }}</td>
-                <td>{{ resumen.trabajadoresFinalizados }}</td>
-                <td>{{ resumen.tiempoTrabajado }}</td>
-                <td>{{ resumen.tiempoExtra }}</td>
-                <td>{{ resumen.totalIncidencias }}</td>
+              <tr
+                [class.trabajador-seleccionado]="
+                  trabajadorSeleccionado()?.uuid
+                  === trabajador.uuid
+                "
+              >
+
+                <td>
+
+                  <strong>
+                    {{ trabajador.nombre }}
+                    {{ trabajador.apellidos }}
+                  </strong>
+
+                </td>
+
+                <td>
+                  {{ trabajador.email }}
+                </td>
+
+                <td>
+
+                  @if (trabajador.uuid) {
+
+                    <button
+                      type="button"
+                      [disabled]="
+                        cargando()
+                        || descargando()
+                      "
+                      (click)="
+                        seleccionarTrabajador(
+                          trabajador
+                        )
+                      "
+                    >
+
+                      {{
+                        trabajadorSeleccionado()?.uuid
+                        === trabajador.uuid
+                          ? 'Seleccionado'
+                          : 'Ver resumen'
+                      }}
+
+                    </button>
+
+                  }
+
+                </td>
+
               </tr>
 
             </ng-template>
@@ -441,132 +958,58 @@
             <ng-template #emptymessage>
 
               <tr>
-                <td colspan="8">
-                  No hay resúmenes de empresa para mostrar.
+
+                <td colspan="3">
+                  No hay trabajadores que coincidan
+                  con la búsqueda.
                 </td>
+
               </tr>
 
             </ng-template>
 
           </p-table>
 
-        </section>
-
-      }
+        </div>
 
 
-      <section>
+        <div class="trabajador-detalle">
 
-        <h2>Trabajadores</h2>
+          @if (
+            trabajadorSeleccionado();
+            as trabajador
+          ) {
 
-        <p-table
-          #tablaTrabajadores
-          [value]="trabajadores()"
-          [paginator]="true"
-          [rows]="10"
-          [rowsPerPageOptions]="[10, 25, 50]"
-          [globalFilterFields]="[
-            'nombre',
-            'apellidos',
-            'email'
-          ]"
-        >
+            <app-resumen-trabajador
+              [trabajador]="trabajador"
+            >
+            </app-resumen-trabajador>
 
-          <ng-template #caption>
+          } @else {
 
-            <label for="buscarTrabajador">
-              Buscar trabajador
-            </label>
+            <div class="trabajador-detalle__vacio">
 
-            <input
-              id="buscarTrabajador"
-              #buscarTrabajador
-              type="text"
-              pInputText
-              placeholder="Nombre, apellidos o email"
-              [disabled]="cargando() || descargando()"
-              (input)="
-                tablaTrabajadores.filterGlobal(
-                  buscarTrabajador.value,
-                  'contains'
-                )
-              "
-            />
+              <span class="seccion-eyebrow">
+                Detalle
+              </span>
 
-          </ng-template>
+              <h2>
+                Resumen del trabajador
+              </h2>
 
+              <p>
+                Selecciona un trabajador para consultar
+                su jornada, histórico y descargar
+                su resumen.
+              </p>
 
-          <ng-template #header>
+            </div>
 
-            <tr>
-              <th scope="col">Nombre</th>
-              <th scope="col">Email</th>
-              <th scope="col">Acción</th>
-            </tr>
+          }
 
-          </ng-template>
-
-
-          <ng-template #body let-trabajador>
-
-            <tr>
-
-              <td>
-                {{ trabajador.nombre }}
-                {{ trabajador.apellidos }}
-              </td>
-
-              <td>
-                {{ trabajador.email }}
-              </td>
-
-              <td>
-
-                @if (trabajador.uuid) {
-
-                  <button
-                    type="button"
-                    [disabled]="cargando() || descargando()"
-                    (click)="seleccionarTrabajador(trabajador)"
-                  >
-                    Ver resumen
-                  </button>
-
-                }
-
-              </td>
-
-            </tr>
-
-          </ng-template>
-
-
-          <ng-template #emptymessage>
-
-            <tr>
-              <td colspan="3">
-                No hay trabajadores que coincidan
-                con la búsqueda.
-              </td>
-            </tr>
-
-          </ng-template>
-
-        </p-table>
+        </div>
 
       </section>
-
-
-      @if (
-        trabajadorSeleccionado();
-        as trabajador
-      ) {
-
-        <app-resumen-trabajador
-          [trabajador]="trabajador"
-        />
-
-      }
 
     }
 

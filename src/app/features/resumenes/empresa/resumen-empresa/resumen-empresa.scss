@@ -1,0 +1,914 @@
+:host {
+  display: block;
+
+  --resumen-bg:
+    var(--p-surface-ground, #f5f7fa);
+
+  --resumen-panel:
+    var(--p-content-background, #ffffff);
+
+  --resumen-border:
+    var(--p-content-border-color, #d7dce3);
+
+  --resumen-text:
+    var(--p-text-color, #1f2937);
+
+  --resumen-muted:
+    var(--p-text-muted-color, #667085);
+
+  --resumen-primary:
+    var(--p-primary-color, #2563eb);
+
+  --resumen-soft:
+    var(--p-surface-50, #f8fafc);
+}
+
+
+.resumen-empresa-page {
+  width: min(100%, 1500px);
+
+  margin-inline: auto;
+
+  padding: clamp(
+    1rem,
+    2vw,
+    2rem
+  );
+
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+
+  color: var(--resumen-text);
+}
+
+
+.resumen-empresa-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+
+  h1 {
+    margin: 0;
+
+    font-size: clamp(
+      1.5rem,
+      2vw,
+      2rem
+    );
+  }
+
+  p {
+    margin: 0.35rem 0 0;
+
+    color: var(--resumen-muted);
+  }
+}
+
+
+.empresa-selector,
+.consulta-panel,
+.resumen-actual__cabecera,
+.dashboard-card,
+.incidencias-panel,
+.historico-panel,
+.trabajadores-panel,
+.trabajador-detalle {
+  background: var(--resumen-panel);
+
+  border:
+    1px solid
+    var(--resumen-border);
+
+  border-radius: 0.85rem;
+}
+
+
+.empresa-selector {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  padding: 1rem 1.25rem;
+
+  label {
+    font-weight: 650;
+  }
+
+  select {
+    width: min(
+      100%,
+      360px
+    );
+
+    min-height: 2.6rem;
+
+    padding: 0.5rem 0.75rem;
+
+    border:
+      1px solid
+      var(--resumen-border);
+
+    border-radius: 0.5rem;
+
+    background: var(--resumen-panel);
+    color: var(--resumen-text);
+  }
+}
+
+
+.consulta-panel {
+  padding: 1rem 1.25rem;
+
+  display: grid;
+  gap: 1rem;
+}
+
+
+.consulta-panel__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+
+  h2 {
+    margin: 0;
+
+    font-size: 1.05rem;
+  }
+}
+
+
+.consulta-modos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+
+.consulta-panel__opciones {
+  display: grid;
+
+  grid-template-columns:
+    minmax(260px, 0.8fr)
+    minmax(480px, 1.2fr);
+
+  gap: 1rem;
+}
+
+
+.consulta-bloque {
+  min-width: 0;
+
+  padding: 0.9rem;
+
+  border-radius: 0.7rem;
+
+  background:
+    var(--resumen-soft);
+
+  h3 {
+    margin: 0 0 0.75rem;
+
+    font-size: 0.92rem;
+  }
+}
+
+
+.consulta-campos {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+
+  min-width: 145px;
+
+  label {
+    font-size: 0.8rem;
+    font-weight: 650;
+
+    color: var(--resumen-muted);
+  }
+
+  input {
+    min-height: 2.5rem;
+
+    padding: 0.45rem 0.65rem;
+
+    border:
+      1px solid
+      var(--resumen-border);
+
+    border-radius: 0.5rem;
+
+    background:
+      var(--resumen-panel);
+
+    color:
+      var(--resumen-text);
+  }
+}
+
+
+.resumen-empresa-page button {
+  min-height: 2.5rem;
+
+  padding:
+    0.5rem
+    0.85rem;
+
+  border:
+    1px solid
+    var(--resumen-border);
+
+  border-radius:
+    0.5rem;
+
+  background:
+    var(--resumen-panel);
+
+  color:
+    var(--resumen-text);
+
+  font: inherit;
+  font-weight: 650;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+
+.resumen-empresa-page button:hover:not(:disabled) {
+  border-color:
+    var(--resumen-primary);
+
+  background:
+    var(--resumen-soft);
+}
+
+
+.resumen-empresa-page button:active:not(:disabled) {
+  transform:
+    translateY(1px);
+}
+
+
+.resumen-empresa-page button:focus-visible {
+  outline:
+    3px solid
+    color-mix(
+      in srgb,
+      var(--resumen-primary) 28%,
+      transparent
+    );
+
+  outline-offset:
+    2px;
+}
+
+
+.resumen-empresa-page button:disabled {
+  opacity: 0.55;
+
+  cursor: not-allowed;
+}
+
+
+.resumen-empresa-page
+button[aria-pressed='true'],
+.accion-principal {
+  border-color:
+    var(--resumen-primary);
+
+  background:
+    var(--resumen-primary);
+
+  color:
+    var(--p-primary-contrast-color, #ffffff);
+}
+
+
+.resumen-empresa-page
+.accion-principal:hover:not(:disabled) {
+  background:
+    var(--resumen-primary);
+
+  filter: brightness(0.96);
+}
+
+
+.estado-carga {
+  padding: 1.25rem;
+
+  border:
+    1px solid
+    var(--resumen-border);
+
+  border-radius:
+    0.85rem;
+
+  background:
+    var(--resumen-panel);
+
+  text-align: center;
+
+  color:
+    var(--resumen-muted);
+}
+
+
+.resumen-actual {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+
+.resumen-actual__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+
+  padding: 1rem 1.25rem;
+
+  h2 {
+    margin: 0;
+
+    font-size:
+      clamp(
+        1.25rem,
+        1.7vw,
+        1.55rem
+      );
+  }
+
+  p {
+    margin:
+      0.3rem 0 0;
+
+    color:
+      var(--resumen-muted);
+  }
+}
+
+
+.dashboard {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(270px, 1fr)
+    );
+
+  gap: 1rem;
+}
+
+
+.dashboard-card {
+  position: relative;
+
+  min-width: 0;
+
+  padding: 1.15rem 1.2rem;
+
+  overflow: hidden;
+}
+
+
+.dashboard-card::before {
+  content: '';
+
+  position: absolute;
+
+  top: 0;
+  left: 0;
+  right: 0;
+
+  height: 3px;
+
+  background:
+    var(--resumen-primary);
+}
+
+
+.dashboard-card--actividad::before {
+  opacity: 0.65;
+}
+
+
+.dashboard-card--notificaciones::before {
+  background:
+    var(--p-orange-500, #f59e0b);
+}
+
+
+.dashboard-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  margin-bottom: 1rem;
+
+  h3 {
+    margin: 0.15rem 0 0;
+
+    font-size: 1.05rem;
+  }
+}
+
+
+.dashboard-card__eyebrow,
+.seccion-eyebrow {
+  display: block;
+
+  font-size: 0.72rem;
+  font-weight: 750;
+
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+
+  color:
+    var(--resumen-muted);
+}
+
+
+.kpi-principal {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+
+  padding-bottom: 1rem;
+
+  strong {
+    font-size:
+      clamp(
+        2rem,
+        3vw,
+        2.75rem
+      );
+
+    line-height: 1;
+  }
+
+  span {
+    color:
+      var(--resumen-muted);
+  }
+}
+
+
+.kpi-principal--tiempo {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.3rem;
+
+  strong {
+    font-size:
+      clamp(
+        1.65rem,
+        2.4vw,
+        2.25rem
+      );
+  }
+}
+
+
+.metricas {
+  margin: 0;
+
+  display: grid;
+  gap: 0;
+
+
+  > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+
+    min-height: 2.35rem;
+
+    border-top:
+      1px solid
+      var(--resumen-border);
+  }
+
+
+  dt {
+    color:
+      var(--resumen-muted);
+  }
+
+
+  dd {
+    margin: 0;
+
+    flex-shrink: 0;
+
+    font-weight: 700;
+  }
+}
+
+
+.notificaciones-contenido {
+  min-height: 160px;
+
+  display: flex;
+  flex-direction: column;
+
+  app-notificaciones {
+    display: block;
+    width: 100%;
+  }
+}
+
+
+.incidencias-panel,
+.historico-panel {
+  padding:
+    1rem
+    1.2rem;
+}
+
+
+.incidencias-panel {
+  border-left:
+    4px solid
+    var(--p-orange-500, #f59e0b);
+}
+
+
+.seccion-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+
+  margin-bottom: 1rem;
+
+
+  h2,
+  h3 {
+    margin:
+      0.15rem 0 0;
+  }
+
+
+  p {
+    margin:
+      0.35rem 0 0;
+
+    color:
+      var(--resumen-muted);
+  }
+}
+
+
+.contador-incidencias {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+
+  padding:
+    0.45rem 0.7rem;
+
+  border-radius:
+    999px;
+
+  background:
+    var(--resumen-soft);
+
+
+  strong {
+    font-size:
+      1.1rem;
+  }
+
+
+  span {
+    color:
+      var(--resumen-muted);
+
+    font-size:
+      0.85rem;
+  }
+}
+
+
+.estado-vacio {
+  min-height: 100px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 0.25rem;
+
+  padding: 1rem;
+
+  border-radius: 0.65rem;
+
+  background:
+    var(--resumen-soft);
+
+  text-align: center;
+
+
+  span {
+    color:
+      var(--resumen-muted);
+  }
+}
+
+
+.trabajadores-layout {
+  display: grid;
+
+  grid-template-columns:
+    minmax(330px, 0.8fr)
+    minmax(0, 1.2fr);
+
+  gap: 1rem;
+
+  align-items: start;
+}
+
+
+.trabajadores-panel,
+.trabajador-detalle {
+  min-width: 0;
+
+  padding:
+    1rem
+    1.15rem;
+}
+
+
+.buscador-trabajador {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+
+
+  label {
+    font-size:
+      0.85rem;
+
+    font-weight:
+      650;
+  }
+
+
+  input {
+    width: 100%;
+  }
+}
+
+
+.trabajador-seleccionado {
+  background:
+    color-mix(
+      in srgb,
+      var(--resumen-primary) 8%,
+      transparent
+    );
+}
+
+
+.trabajador-detalle {
+  position: sticky;
+
+  top: 1rem;
+}
+
+
+.trabajador-detalle__vacio {
+  min-height: 300px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  padding: 2rem;
+
+  text-align: center;
+
+
+  h2 {
+    margin:
+      0.3rem 0
+      0.5rem;
+  }
+
+
+  p {
+    max-width: 420px;
+
+    margin: 0;
+
+    color:
+      var(--resumen-muted);
+  }
+}
+
+
+.tabla-scroll {
+  width: 100%;
+
+  overflow-x: auto;
+}
+
+
+app-resumen-trabajador {
+  display: block;
+
+  width: 100%;
+}
+
+
+:host ::ng-deep {
+
+  .resumen-empresa-page {
+
+    .p-message {
+      width: 100%;
+    }
+
+
+    .p-inputtext {
+      width: 100%;
+    }
+
+
+    .p-datatable {
+      width: 100%;
+    }
+
+
+    .p-datatable-table {
+      width: 100%;
+    }
+
+
+    .p-datatable-thead
+    > tr
+    > th {
+      white-space: nowrap;
+
+      font-size: 0.82rem;
+
+      font-weight: 700;
+
+      color:
+        var(--resumen-muted);
+    }
+
+
+    .p-datatable-tbody
+    > tr
+    > td {
+      vertical-align: middle;
+    }
+
+
+    .p-datatable-tbody
+    > tr {
+      transition:
+        background-color
+        0.15s ease;
+    }
+
+
+    .p-datatable-tbody
+    > tr:hover {
+      background:
+        var(--resumen-soft);
+    }
+
+
+    .p-paginator {
+      border-top:
+        1px solid
+        var(--resumen-border);
+    }
+
+  }
+
+}
+
+
+@media (max-width: 1100px) {
+
+  .consulta-panel__opciones {
+    grid-template-columns:
+      1fr;
+  }
+
+
+  .trabajadores-layout {
+    grid-template-columns:
+      1fr;
+  }
+
+
+  .trabajador-detalle {
+    position: static;
+  }
+
+}
+
+
+@media (max-width: 720px) {
+
+  .resumen-empresa-page {
+    padding: 0.85rem;
+  }
+
+
+  .resumen-empresa-header,
+  .resumen-actual__cabecera,
+  .consulta-panel__cabecera,
+  .seccion-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+
+  .empresa-selector {
+    flex-direction: column;
+    align-items: stretch;
+
+
+    select {
+      width: 100%;
+    }
+  }
+
+
+  .consulta-modos {
+    display: grid;
+
+    grid-template-columns:
+      1fr 1fr;
+
+
+    button {
+      width: 100%;
+    }
+  }
+
+
+  .consulta-campos {
+    flex-direction: column;
+    align-items: stretch;
+
+
+    .campo,
+    input,
+    button {
+      width: 100%;
+    }
+  }
+
+
+  .dashboard {
+    grid-template-columns:
+      1fr;
+  }
+
+
+  .kpi-principal {
+
+    strong {
+      font-size:
+        2rem;
+    }
+
+  }
+
+
+  .trabajadores-panel,
+  .trabajador-detalle,
+  .incidencias-panel,
+  .historico-panel {
+    padding:
+      0.85rem;
+  }
+
+}

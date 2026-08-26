@@ -24,10 +24,9 @@ import { FormularioEmpresa } from './features/empresa/formulario-empresa/formula
 import { ListadoMetodosFichaje } from './features/metodo-fichaje/listado-metodos-fichaje/listado-metodos-fichaje';
 import { ResumenPersonal } from './features/resumenes/personal/resumen-personal/resumen-personal';
 import { ResumenEmpresa } from './features/resumenes/empresa/resumen-empresa/resumen-empresa';
-
 import { Fichar } from './features/fichaje/fichar/fichar';
-
 import { Notificaciones } from './features/notificaciones/notificaciones';
+import { Auditoria } from './features/auditoria/auditoria';
 
 
 export const routes: Routes = [
@@ -110,6 +109,15 @@ export const routes: Routes = [
   {
     path: 'resumenes/empresa',
     component: ResumenEmpresa,
+    canActivate: [
+      authGuard,
+      gestionGuard,
+    ],
+  },
+
+  {
+    path: 'auditoria',
+    component: Auditoria,
     canActivate: [
       authGuard,
       gestionGuard,

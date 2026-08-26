@@ -28,6 +28,8 @@ import {
 } from '../../../../core/resumenes/resumen-types';
 import { UsuarioService } from '../../../../core/usuarios/usuario-service';
 import { UserDTO } from '../../../../core/usuarios/usuario.types';
+
+import { Notificaciones } from '../../../notificaciones/notificaciones';
 import { ResumenTrabajador } from '../../trabajador/resumen-trabajador/resumen-trabajador';
 
 
@@ -44,8 +46,9 @@ type ModoConsulta =
     FormsModule,
     InputTextModule,
     MessageModule,
-    TableModule,
+    TableModule,    
     ResumenTrabajador,
+    Notificaciones,
   ],
   templateUrl: './resumen-empresa.html',
   styleUrl: './resumen-empresa.scss',
@@ -180,10 +183,6 @@ export class ResumenEmpresa implements OnInit {
   }
 
 
-  /*
-   * Texto visible del tipo general
-   * de incidencia.
-   */
   textoTipoIncidencia(
     tipo: TipoIncidenciaEmpresa
   ): string {
@@ -199,10 +198,6 @@ export class ResumenEmpresa implements OnInit {
   }
 
 
-  /*
-   * Texto visible del último fichaje
-   * real relacionado con la incidencia.
-   */
   textoTipoFichaje(
     tipo: TipoFichaje
   ): string {
@@ -224,13 +219,6 @@ export class ResumenEmpresa implements OnInit {
   }
 
 
-  /*
-   * Texto visible de la clasificación
-   * de una salida.
-   *
-   * No decide qué es una incidencia.
-   * Esa regla pertenece al backend.
-   */
   textoTipoSalida(
     tipo: TipoSalida | null
   ): string {
@@ -256,10 +244,6 @@ export class ResumenEmpresa implements OnInit {
   }
 
 
-  /*
-   * Texto visible del motivo declarado
-   * por el trabajador.
-   */
   textoMotivoSalida(
     motivo: MotivoSalida | null
   ): string {

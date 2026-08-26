@@ -23,12 +23,9 @@ export type PeriodoPdf =
   | 'RANGO';
 
 export interface FiltrosAuditoriaPdf {
-  usuarioActorUuid?: string | null;
   usuarioUuid?: string | null;
-  accion?: string | null;
   resultado?: string | null;
   tipoEntidad?: string | null;
-  usuarioActorRolNombre?: string | null;
 }
 
 export interface DescargaPdfSolicitud {
@@ -73,7 +70,9 @@ export class DescargaPdfService {
       )
       .pipe(
         tap((respuesta) =>
-          this.guardarArchivo(respuesta)
+          this.guardarArchivo(
+            respuesta
+          )
         )
       );
   }
@@ -104,14 +103,18 @@ export class DescargaPdfService {
     const enlace =
       document.createElement('a');
 
-    enlace.href = url;
-    enlace.download = nombreArchivo;
+    enlace.href =
+      url;
+
+    enlace.download =
+      nombreArchivo;
 
     document.body.appendChild(
       enlace
     );
 
     enlace.click();
+
     enlace.remove();
 
     URL.revokeObjectURL(
@@ -121,35 +124,36 @@ export class DescargaPdfService {
 
   private obtenerNombreArchivo(
     contentDisposition: string | null
-    ): string {
+  ): string {
 
     if (!contentDisposition) {
-        return 'barru_documento.pdf';
+      return 'barru_documento.pdf';
     }
 
     const utf8Pattern =
-        /filename\*=UTF-8''([^;]+)/;
+      /filename\*=UTF-8''([^;]+)/;
 
     const utf8 =
-        utf8Pattern.exec(
+      utf8Pattern.exec(
         contentDisposition
-        );
+      );
 
     if (utf8?.[1]) {
-        return decodeURIComponent(
+
+      return decodeURIComponent(
         utf8[1]
-        );
+      );
     }
 
     const filenamePattern =
-        /filename="?([^";]+)"?/;
+      /filename="?([^";]+)"?/;
 
     const normal =
-        filenamePattern.exec(
+      filenamePattern.exec(
         contentDisposition
-        );
+      );
 
     return normal?.[1]
-        ?? 'barru_documento.pdf';
-    }
+      ?? 'barru_documento.pdf';
+  }
 }
