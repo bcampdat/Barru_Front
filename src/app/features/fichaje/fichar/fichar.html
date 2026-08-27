@@ -42,7 +42,6 @@
 
     <main>
 
-
       <section class="jornada-principal">
 
         <div class="jornada-estado">
@@ -219,7 +218,6 @@
 
           <div class="jornada-acciones">
 
-
             @if (mostrarEntrada()) {
 
               <button
@@ -229,9 +227,13 @@
               >
 
                 @if (fichando()) {
+
                   Registrando...
+
                 } @else {
+
                   Entrada
+
                 }
 
               </button>
@@ -248,9 +250,13 @@
               >
 
                 @if (fichando()) {
+
                   Registrando...
+
                 } @else {
+
                   Iniciar pausa
+
                 }
 
               </button>
@@ -263,9 +269,36 @@
               >
 
                 @if (fichando()) {
+
                   Registrando...
+
                 } @else {
+
                   Salida
+
+                }
+
+              </button>
+
+            }
+
+
+            @if (mostrarFinalizarJornada()) {
+
+              <button
+                type="button"
+                [disabled]="accionesBloqueadas()"
+                (click)="finalizarJornada()"
+              >
+
+                @if (fichando()) {
+
+                  Finalizando...
+
+                } @else {
+
+                  Finalizar jornada
+
                 }
 
               </button>
@@ -282,9 +315,13 @@
               >
 
                 @if (fichando()) {
+
                   Registrando...
+
                 } @else {
+
                   Reanudar
+
                 }
 
               </button>
@@ -309,59 +346,106 @@
           <dl>
 
             <div>
-              <dt>Fecha</dt>
+
+              <dt>
+                Fecha
+              </dt>
+
               <dd>
                 {{ resumenActual.fecha }}
               </dd>
+
             </div>
 
+
             <div>
-              <dt>Situación</dt>
+
+              <dt>
+                Situación
+              </dt>
+
               <dd>
                 {{ estadoTexto() }}
               </dd>
+
             </div>
 
+
             <div>
-              <dt>Tiempo trabajado</dt>
+
+              <dt>
+                Tiempo trabajado
+              </dt>
+
               <dd>
                 {{ tiempoTrabajado() }}
               </dd>
+
             </div>
 
+
             <div>
-              <dt>Jornada</dt>
+
+              <dt>
+                Jornada
+              </dt>
+
               <dd>
                 {{ tiempoJornada() }}
               </dd>
+
             </div>
 
+
             <div>
-              <dt>Tiempo restante</dt>
+
+              <dt>
+                Tiempo restante
+              </dt>
+
               <dd>
                 {{ tiempoRestante() }}
               </dd>
+
             </div>
 
+
             <div>
-              <dt>Tiempo de pausa</dt>
+
+              <dt>
+                Tiempo de pausa
+              </dt>
+
               <dd>
                 {{ tiempoPausa() }}
               </dd>
+
             </div>
 
+
             <div>
-              <dt>Pausa disponible</dt>
+
+              <dt>
+                Pausa disponible
+              </dt>
+
               <dd>
                 {{ tiempoPausaRestante() }}
               </dd>
+
             </div>
 
+
             <div>
-              <dt>Horas extra</dt>
+
+              <dt>
+                Horas extra
+              </dt>
+
               <dd>
                 {{ tiempoExtra() }}
               </dd>
+
             </div>
 
           </dl>

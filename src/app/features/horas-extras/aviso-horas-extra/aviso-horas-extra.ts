@@ -1,47 +1,44 @@
 import { HttpErrorResponse } from '@angular/common/http';
-
 import {
   Component,
   OnDestroy,
   OnInit,
   signal,
 } from '@angular/core';
-
 import {
   NavigationEnd,
   Router,
 } from '@angular/router';
-
 import {
   filter,
   finalize,
   Subscription,
 } from 'rxjs';
 
+import { DialogModule } from 'primeng/dialog';
+
 import { AuthService } from '../../../core/auth/auth.service';
-
-import {
-  HorasExtraService,
-} from '../../../core/fichaje/horas-extras/horas-extra.service';
-
-import {
-  SolicitudHorasExtraDTO,
-} from '../../../core/fichaje/horas-extras/horas-extra-types';
-
+import { FichajeService } from '../../../core/fichaje/fichaje-service';
+import { HorasExtraService } from '../../../core/fichaje/horas-extras/horas-extra.service';
+import { SolicitudHorasExtraDTO } from '../../../core/fichaje/horas-extras/horas-extra-types';
 import { ResumenService } from '../../../core/resumenes/resumen-service';
-
-import {
-  ResumenDiarioDTO,
-} from '../../../core/resumenes/resumen-types';
+import { ResumenDiarioDTO } from '../../../core/resumenes/resumen-types';
 
 
 @Component({
   selector: 'app-aviso-horas-extra',
-
+  imports: [
+    DialogModule,
+  ],
   templateUrl: './aviso-horas-extra.html',
 })
 export class AvisoHorasExtra
 implements OnInit, OnDestroy {
+
+  private static readonly POLLING_MS = 15000;
+  private static readonly CUENTA_ATRAS_MS = 1000;
+  private static readonly MARGEN_FIN_MS = 2000;
+  private static readonly REINTENTO_FIN_MS = 5000;
 
   readonly resumen =
     signal<ResumenDiarioDTO | null>(null);
@@ -55,11 +52,23 @@ implements OnInit, OnDestroy {
   readonly error =
     signal<string | null>(null);
 
+  private readonly ahora =
+    signal(Date.now());
 
   private consultando = false;
+  private ocultarParaFinalizar = false;
+  private caducidadComprobada = false;
 
-  private intervalo:
+  private polling:
     ReturnType<typeof setInterval> | null =
+      null;
+
+  private cuentaAtras:
+    ReturnType<typeof setInterval> | null =
+      null;
+
+  private temporizadorFin:
+    ReturnType<typeof setTimeout> | null =
       null;
 
   private readonly suscripciones =
@@ -68,6 +77,7 @@ implements OnInit, OnDestroy {
 
   constructor(
     private readonly authService: AuthService,
+    private readonly fichajeService: FichajeService,
     private readonly resumenService: ResumenService,
     private readonly horasExtraService: HorasExtraService,
     private readonly router: Router
@@ -76,22 +86,9 @@ implements OnInit, OnDestroy {
 
   ngOnInit(): void {
 
-    /*
-     * Comprobación inicial.
-     */
     this.actualizarEstado();
 
-
-    /*
-     * Al cambiar de página se vuelve
-     * a comprobar inmediatamente.
-     *
-     * De esta forma el aviso pertenece
-     * a la aplicación y no a una página
-     * concreta.
-     */
     this.suscripciones.add(
-
       this.router.events
         .pipe(
           filter(
@@ -99,42 +96,34 @@ implements OnInit, OnDestroy {
               evento instanceof NavigationEnd
           )
         )
+        .subscribe(evento => {
+
+          if (
+            !evento.urlAfterRedirects
+              .startsWith('/fichar')
+          ) {
+            this.ocultarParaFinalizar =
+              false;
+          }
+
+          this.actualizarEstado();
+        })
+    );
+
+    this.suscripciones.add(
+      this.fichajeService
+        .fichajeRegistrado$
         .subscribe(() =>
           this.actualizarEstado()
         )
     );
-
-
-    /*
-     * Mientras el usuario permanezca
-     * dentro de Barru comprobamos:
-     *
-     * - finalización de jornada;
-     * - autorización;
-     * - rechazo;
-     * - cancelación;
-     * - caducidad.
-     */
-    this.intervalo =
-      setInterval(
-        () =>
-          this.actualizarEstado(),
-        15000
-      );
   }
 
 
   ngOnDestroy(): void {
 
-    if (this.intervalo !== null) {
-
-      clearInterval(
-        this.intervalo
-      );
-
-      this.intervalo =
-        null;
-    }
+    this.detenerSeguimientoSolicitud();
+    this.detenerTemporizadorFin();
 
     this.suscripciones.unsubscribe();
   }
@@ -144,6 +133,18 @@ implements OnInit, OnDestroy {
 
   mostrarAviso(): boolean {
 
+    if (
+      this.esEncargado()
+      &&
+      this.esRutaNotificaciones()
+    ) {
+      return false;
+    }
+
+    if (this.ocultarParaFinalizar) {
+      return false;
+    }
+
     const resumen =
       this.resumen();
 
@@ -151,37 +152,75 @@ implements OnInit, OnDestroy {
       return false;
     }
 
-    /*
-     * Jornada terminada:
-     * no queda ninguna actuación pendiente.
-     */
     if (
-      resumen.situacion ===
-      'FINALIZADA'
+      resumen.situacion === 'FINALIZADA'
+      ||
+      resumen.situacion === 'HORAS_EXTRA'
+      ||
+      this.solicitud()?.estado === 'AUTORIZADA'
     ) {
       return false;
     }
 
-    /*
-     * Acaba de completar la jornada
-     * y todavía no ha solicitado
-     * horas extra.
-     */
-    if (
-      resumen.requiereConfirmacionHorasExtra
-    ) {
-      return true;
-    }
-
-    /*
-     * Si existe solicitud, el aviso
-     * muestra su estado actual.
-     */
-    return this.solicitud() !== null;
+    return (
+      this.solicitud() !== null
+      ||
+      Boolean(
+        resumen.requiereConfirmacionHorasExtra
+      )
+    );
   }
 
 
-  /* TRABAJADOR */
+  mostrarGestionSolicitudes(): boolean {
+
+    return this.esEncargado();
+  }
+
+
+  /* CUENTA ATRÁS */
+
+  tiempoRestanteSolicitud(): string {
+
+    const limite =
+      this.obtenerFechaLimite();
+
+    if (limite === null) {
+      return '--:--';
+    }
+
+    const total =
+      Math.max(
+        0,
+        Math.ceil(
+          (
+            limite
+            - this.ahora()
+          ) / 1000
+        )
+      );
+
+    const minutos =
+      Math.floor(
+        total / 60
+      );
+
+    const segundos =
+      total % 60;
+
+    return (
+      String(minutos)
+        .padStart(2, '0')
+      +
+      ':'
+      +
+      String(segundos)
+        .padStart(2, '0')
+    );
+  }
+
+
+  /* ACCIONES */
 
   continuarTrabajando(): void {
 
@@ -190,7 +229,6 @@ implements OnInit, OnDestroy {
     }
 
     this.error.set(null);
-
     this.procesando.set(true);
 
     this.horasExtraService
@@ -201,19 +239,12 @@ implements OnInit, OnDestroy {
         )
       )
       .subscribe({
-
         next: solicitud => {
 
-          this.solicitud.set(
+          this.aplicarSolicitud(
             solicitud
           );
 
-          /*
-           * Refrescamos también el resumen
-           * para obtener inmediatamente:
-           *
-           * ESPERANDO_AUTORIZACION_HORAS_EXTRA
-           */
           this.actualizarEstado();
         },
 
@@ -230,38 +261,13 @@ implements OnInit, OnDestroy {
   }
 
 
-  /*
-   * El aviso global no replica
-   * la lógica de SALIDA.
-   *
-   * La finalización real continúa
-   * realizándose desde el flujo
-   * existente de fichaje.
-   */
-  finalizarJornada(): void {
-
-    void this.router.navigateByUrl(
-      '/fichar'
-    );
-  }
-
-
-  /*
-   * El trabajador puede abandonar
-   * voluntariamente la espera.
-   *
-   * Primero cancela la solicitud
-   * y después accede al flujo normal
-   * de salida.
-   */
-  cancelarYFinalizar(): void {
+  cancelarSolicitud(): void {
 
     if (this.procesando()) {
       return;
     }
 
     this.error.set(null);
-
     this.procesando.set(true);
 
     this.horasExtraService
@@ -272,17 +278,10 @@ implements OnInit, OnDestroy {
         )
       )
       .subscribe({
-
-        next: solicitud => {
-
-          this.solicitud.set(
+        next: solicitud =>
+          this.aplicarSolicitud(
             solicitud
-          );
-
-          void this.router.navigateByUrl(
-            '/fichar'
-          );
-        },
+          ),
 
         error: error => {
 
@@ -297,123 +296,104 @@ implements OnInit, OnDestroy {
   }
 
 
-  /*
-   * =========================================================
-   * ACTUALIZACIÓN GLOBAL
-   * =========================================================
-   */
+  finalizarJornada(): void {
 
-  private actualizarEstado(): void {
+    this.ocultarParaFinalizar =
+      true;
 
-    /*
-     * No hacemos llamadas:
-     *
-     * - sin sesión;
-     * - con FIRST_ACCESS;
-     * - como ADMIN_SISTEMA.
-     */
-    if (!this.puedeConsultar()) {
-
-      this.limpiarEstado();
-
+    if (
+      this.router.url
+        .startsWith('/fichar')
+    ) {
       return;
     }
 
-    /*
-     * Evita solapar peticiones si una
-     * consulta tarda más que el intervalo.
-     */
+    void this.router.navigateByUrl(
+      '/fichar'
+    );
+  }
+
+
+  gestionarSolicitudes(): void {
+
+    if (!this.esEncargado()) {
+      return;
+    }
+
+    void this.router.navigateByUrl(
+      '/notificaciones'
+    );
+  }
+
+
+  /* ESTADO */
+
+  private actualizarEstado(): void {
+
+    if (!this.puedeConsultar()) {
+      this.limpiarEstado();
+      return;
+    }
+
     if (this.consultando) {
       return;
     }
 
     this.consultando = true;
 
+    this.detenerTemporizadorFin();
+
     this.resumenService
       .obtenerMiResumenHoy()
       .subscribe({
-
         next: resumen => {
 
           this.resumen.set(
             resumen
           );
 
-          /*
-           * Jornada completamente finalizada.
-           */
-          if (
-            resumen.situacion ===
-            'FINALIZADA'
-          ) {
+          switch (resumen.situacion) {
 
-            this.solicitud.set(null);
+            case 'FINALIZADA':
+            case 'HORAS_EXTRA':
+              this.limpiarSeguimientoJornada();
+              break;
 
-            this.consultando = false;
+            case 'TRABAJANDO':
+              this.limpiarSolicitud();
+              this.programarFinJornada(
+                resumen
+              );
+              break;
 
-            return;
+            case 'EN_PAUSA':
+            case 'SIN_INICIAR':
+              this.limpiarSolicitud();
+              break;
+
+            case 'JORNADA_COMPLETADA':
+            case 'ESPERANDO_AUTORIZACION_HORAS_EXTRA':
+              this.cargarSolicitud();
+              return;
+
+            default:
+              this.limpiarSolicitud();
           }
 
-          /*
-           * En una jornada ordinaria que todavía
-           * no ha alcanzado su final no existe
-           * ninguna actuación de horas extra.
-           *
-           * Evitamos una segunda llamada HTTP
-           * innecesaria.
-           */
-          if (
-            !resumen.requiereConfirmacionHorasExtra
-            &&
-            resumen.situacion !==
-              'JORNADA_COMPLETADA'
-            &&
-            resumen.situacion !==
-              'ESPERANDO_AUTORIZACION_HORAS_EXTRA'
-            &&
-            resumen.situacion !==
-              'HORAS_EXTRA'
-          ) {
-
-            this.solicitud.set(null);
-
-            this.consultando = false;
-
-            return;
-          }
-
-          /*
-           * En los estados relacionados con
-           * horas extra necesitamos conocer
-           * el estado de la solicitud.
-           */
-          this.cargarSolicitud();
+          this.consultando = false;
         },
 
         error: error => {
 
           this.consultando = false;
 
-          /*
-           * Antes del primer fichaje puede no
-           * existir todavía resumen diario.
-           *
-           * Eso no es un error visual.
-           */
           if (
             error instanceof HttpErrorResponse
             &&
             error.status === 404
           ) {
-
             this.limpiarEstado();
           }
-
-          /*
-           * Esta consulta es automática.
-           * No mostramos un aviso global
-           * por un fallo puntual de refresco.
-           */
         },
       });
   }
@@ -424,10 +404,9 @@ implements OnInit, OnDestroy {
     this.horasExtraService
       .obtenerMiSolicitudHoy()
       .subscribe({
-
         next: solicitud => {
 
-          this.solicitud.set(
+          this.aplicarSolicitud(
             solicitud
           );
 
@@ -435,23 +414,278 @@ implements OnInit, OnDestroy {
         },
 
         error: () => {
-
-          /*
-           * Un fallo puntual del polling
-           * no debe interrumpir la página
-           * que el usuario está utilizando.
-           */
           this.consultando = false;
         },
       });
   }
 
 
-  /*
-   * =========================================================
-   * SEGURIDAD DE PRESENTACIÓN
-   * =========================================================
-   */
+  private aplicarSolicitud(
+    solicitud: SolicitudHorasExtraDTO | null
+  ): void {
+
+    this.solicitud.set(
+      solicitud
+    );
+
+    if (
+      solicitud?.estado === 'SOLICITADA'
+    ) {
+      this.iniciarSeguimientoSolicitud();
+      return;
+    }
+
+    this.detenerSeguimientoSolicitud();
+  }
+
+
+  private limpiarSolicitud(): void {
+
+    this.solicitud.set(null);
+    this.detenerSeguimientoSolicitud();
+  }
+
+
+  private limpiarSeguimientoJornada(): void {
+
+    this.limpiarSolicitud();
+
+    this.ocultarParaFinalizar =
+      false;
+  }
+
+
+  /* FIN DE JORNADA */
+
+  private programarFinJornada(
+    resumen: ResumenDiarioDTO
+  ): void {
+
+    const minutos =
+      Math.max(
+        0,
+        resumen.minutosRestantes ?? 0
+      );
+
+    const espera =
+      minutos > 0
+        ? (
+          minutos * 60000
+          + AvisoHorasExtra.MARGEN_FIN_MS
+        )
+        : AvisoHorasExtra.REINTENTO_FIN_MS;
+
+    this.temporizadorFin =
+      setTimeout(
+        () => {
+
+          this.temporizadorFin =
+            null;
+
+          this.actualizarEstado();
+        },
+        espera
+      );
+  }
+
+
+  private detenerTemporizadorFin(): void {
+
+    if (this.temporizadorFin === null) {
+      return;
+    }
+
+    clearTimeout(
+      this.temporizadorFin
+    );
+
+    this.temporizadorFin =
+      null;
+  }
+
+
+  /* SOLICITUD PENDIENTE */
+
+  private iniciarSeguimientoSolicitud(): void {
+
+    this.iniciarPolling();
+    this.iniciarCuentaAtras();
+  }
+
+
+  private iniciarPolling(): void {
+
+    if (this.polling !== null) {
+      return;
+    }
+
+    this.polling =
+      setInterval(
+        () =>
+          this.comprobarSolicitudPendiente(),
+        AvisoHorasExtra.POLLING_MS
+      );
+  }
+
+
+  private iniciarCuentaAtras(): void {
+
+    if (this.cuentaAtras !== null) {
+      return;
+    }
+
+    this.caducidadComprobada =
+      false;
+
+    this.ahora.set(
+      Date.now()
+    );
+
+    this.cuentaAtras =
+      setInterval(
+        () => {
+
+          this.ahora.set(
+            Date.now()
+          );
+
+          this.comprobarCaducidad();
+        },
+        AvisoHorasExtra.CUENTA_ATRAS_MS
+      );
+  }
+
+
+  private comprobarCaducidad(): void {
+
+    if (
+      this.caducidadComprobada
+      ||
+      this.consultando
+    ) {
+      return;
+    }
+
+    const limite =
+      this.obtenerFechaLimite();
+
+    if (
+      limite === null
+      ||
+      Date.now() < limite
+    ) {
+      return;
+    }
+
+    this.caducidadComprobada =
+      true;
+
+    this.comprobarSolicitudPendiente();
+  }
+
+
+  private comprobarSolicitudPendiente(): void {
+
+    if (!this.puedeConsultar()) {
+      this.detenerSeguimientoSolicitud();
+      return;
+    }
+
+    if (this.consultando) {
+      return;
+    }
+
+    this.consultando = true;
+
+    this.horasExtraService
+      .obtenerMiSolicitudHoy()
+      .subscribe({
+        next: solicitud => {
+
+          this.consultando = false;
+
+          this.aplicarSolicitud(
+            solicitud
+          );
+
+          if (
+            solicitud?.estado !== 'SOLICITADA'
+          ) {
+            this.actualizarEstado();
+          }
+        },
+
+        error: () => {
+          this.consultando = false;
+        },
+      });
+  }
+
+
+  private detenerSeguimientoSolicitud(): void {
+
+    if (this.polling !== null) {
+      clearInterval(
+        this.polling
+      );
+
+      this.polling = null;
+    }
+
+    if (this.cuentaAtras !== null) {
+      clearInterval(
+        this.cuentaAtras
+      );
+
+      this.cuentaAtras = null;
+    }
+
+    this.caducidadComprobada =
+      false;
+  }
+
+
+  private obtenerFechaLimite():
+    number | null {
+
+    const fecha =
+      this.solicitud()?.fechaLimite;
+
+    if (!fecha) {
+      return null;
+    }
+
+    const valor =
+      new Date(fecha)
+        .getTime();
+
+    return Number.isNaN(valor)
+      ? null
+      : valor;
+  }
+
+
+  /* SESIÓN */
+
+  private esEncargado(): boolean {
+
+    const sesion =
+      this.authService.getSesion();
+
+    return (
+      sesion?.tipoToken === 'ACCESS'
+      &&
+      sesion.rol === 'ENCARGADO'
+    );
+  }
+
+
+  private esRutaNotificaciones(): boolean {
+
+    return this.router.url
+      .startsWith('/notificaciones');
+  }
+
 
   private puedeConsultar(): boolean {
 
@@ -465,41 +699,28 @@ implements OnInit, OnDestroy {
     const sesion =
       this.authService.getSesion();
 
-    if (!sesion) {
-      return false;
-    }
-
-    /*
-     * El token de primer acceso no puede
-     * entrar en el flujo operativo.
-     */
-    if (
-      sesion.tipoToken !==
-      'ACCESS'
-    ) {
-      return false;
-    }
-
-    /*
-     * Tanto EMPLEADO como ENCARGADO
-     * pueden tener jornada propia.
-     *
-     * ADMIN_SISTEMA queda fuera.
-     */
     return (
-      sesion.rol === 'EMPLEADO'
-      ||
-      sesion.rol === 'ENCARGADO'
+      sesion?.tipoToken === 'ACCESS'
+      &&
+      (
+        sesion.rol === 'EMPLEADO'
+        ||
+        sesion.rol === 'ENCARGADO'
+      )
     );
   }
 
 
   private limpiarEstado(): void {
 
+    this.detenerSeguimientoSolicitud();
+    this.detenerTemporizadorFin();
+
+    this.consultando = false;
+    this.ocultarParaFinalizar = false;
+
     this.resumen.set(null);
-
     this.solicitud.set(null);
-
     this.error.set(null);
   }
 
@@ -518,10 +739,8 @@ implements OnInit, OnDestroy {
       &&
       'message' in error.error
       &&
-      typeof error.error.message ===
-        'string'
+      typeof error.error.message === 'string'
     ) {
-
       return error.error.message;
     }
 

@@ -1,174 +1,306 @@
 @if (mostrarAviso()) {
 
-  <section
-    class="aviso-horas-extra"
-    aria-live="polite"
+  <p-dialog
+    header="Horas extra"
+    [modal]="true"
+    [closable]="false"
+    [closeOnEscape]="false"
+    [draggable]="false"
+    [resizable]="false"
+    [visible]="true"
+    [style]="{
+      width: '32rem',
+      maxWidth: 'calc(100vw - 2rem)'
+    }"
   >
 
-    @if (error()) {
+    <div class="aviso-horas-extra">
 
-      <p>
-        {{ error() }}
-      </p>
+      @if (error()) {
 
-    }
+        <div class="aviso-horas-extra__error">
 
+          <p>
+            {{ error() }}
+          </p>
 
-    @if (
-      solicitud()?.estado === 'SOLICITADA'
-    ) {
+        </div>
 
-      <h2>
-        Esperando autorización
-      </h2>
-
-      <p>
-        Tu solicitud de horas extra
-        está pendiente de autorización.
-      </p>
-
-      <p>
-        El tiempo de espera no cuenta
-        como tiempo trabajado,
-        pausa ni horas extra.
-      </p>
-
-      <button
-        type="button"
-        [disabled]="procesando()"
-        (click)="cancelarYFinalizar()"
-      >
-        Cancelar y finalizar jornada
-      </button>
+      }
 
 
-    } @else if (
-      solicitud()?.estado === 'AUTORIZADA'
-    ) {
+      @if (
+        solicitud()?.estado === 'SOLICITADA'
+      ) {
 
-      <h2>
-        Horas extra autorizadas
-      </h2>
+        <div class="aviso-horas-extra__contenido">
 
-      <p>
-        Puedes continuar trabajando.
-      </p>
+          <h2>
+            Esperando autorización
+          </h2>
 
-      <p>
-        Las horas extra se contabilizan
-        desde el momento de la autorización.
-      </p>
+          <p>
+            Tu solicitud de horas extra
+            ha sido enviada correctamente.
+          </p>
 
+          <p>
+            Un encargado dispone de 15 minutos
+            para autorizarla o rechazarla.
+          </p>
 
-    } @else if (
-      solicitud()?.estado === 'RECHAZADA'
-    ) {
+          <div class="aviso-horas-extra__cuenta-atras">
 
-      <h2>
-        Solicitud rechazada
-      </h2>
+            <span>
+              Tiempo restante
+            </span>
 
-      <p>
-        La solicitud de horas extra
-        ha sido rechazada.
-      </p>
+            <strong>
+              {{ tiempoRestanteSolicitud() }}
+            </strong>
 
-      <p>
-        Debes finalizar tu jornada.
-      </p>
+          </div>
 
-      <button
-        type="button"
-        (click)="finalizarJornada()"
-      >
-        Finalizar jornada
-      </button>
+          <p>
+            Durante esta espera el tiempo
+            no cuenta como trabajo ordinario,
+            pausa ni horas extra.
+          </p>
 
+          <div class="aviso-horas-extra__acciones">
 
-    } @else if (
-      solicitud()?.estado === 'CADUCADA'
-    ) {
+            <button
+              type="button"
+              [disabled]="procesando()"
+              (click)="cancelarSolicitud()"
+            >
 
-      <h2>
-        Solicitud caducada
-      </h2>
+              @if (procesando()) {
 
-      <p>
-        Han transcurrido los 15 minutos
-        sin autorización.
-      </p>
+                Cancelando...
 
-      <p>
-        Debes finalizar tu jornada.
-      </p>
+              } @else {
 
-      <button
-        type="button"
-        (click)="finalizarJornada()"
-      >
-        Finalizar jornada
-      </button>
+                Cancelar solicitud
+
+              }
+
+            </button>
+
+          </div>
+
+        </div>
 
 
-    } @else if (
-      solicitud()?.estado === 'CANCELADA'
-    ) {
+      } @else if (
+        solicitud()?.estado === 'AUTORIZADA'
+      ) {
 
-      <h2>
-        Solicitud cancelada
-      </h2>
+        <div class="aviso-horas-extra__contenido">
 
-      <p>
-        Has cancelado la solicitud
-        de horas extra.
-      </p>
+          <h2>
+            Horas extra autorizadas
+          </h2>
 
-      <p>
-        Debes finalizar tu jornada.
-      </p>
+          <p>
+            Tu solicitud ha sido autorizada.
+          </p>
 
-      <button
-        type="button"
-        (click)="finalizarJornada()"
-      >
-        Finalizar jornada
-      </button>
+          <p>
+            Puedes continuar trabajando.
+            Las horas extra se contabilizan
+            desde el momento exacto
+            de la autorización.
+          </p>
+
+        </div>
 
 
-    } @else if (
-      resumen()?.requiereConfirmacionHorasExtra
-    ) {
+      } @else if (
+        solicitud()?.estado === 'RECHAZADA'
+      ) {
 
-      <h2>
-        Jornada completada
-      </h2>
+        <div class="aviso-horas-extra__contenido">
 
-      <p>
-        Has completado tu jornada ordinaria.
-      </p>
+          <h2>
+            Solicitud rechazada
+          </h2>
 
-      <p>
-        ¿Deseas continuar trabajando?
-      </p>
+          <p>
+            Un encargado ha rechazado
+            tu solicitud de horas extra.
+          </p>
 
-      <button
-        type="button"
-        [disabled]="procesando()"
-        (click)="finalizarJornada()"
-      >
-        Finalizar jornada
-      </button>
+          <p>
+            Tu jornada ordinaria ya está completada.
+            Debes registrar la salida para finalizarla.
+          </p>
 
-      <button
-        type="button"
-        [disabled]="procesando()"
-        (click)="continuarTrabajando()"
-      >
-        Continuar trabajando
-      </button>
+          <div class="aviso-horas-extra__acciones">
 
-    }
+            <button
+              type="button"
+              [disabled]="procesando()"
+              (click)="finalizarJornada()"
+            >
+              Finalizar jornada
+            </button>
 
-  </section>
+          </div>
+
+        </div>
+
+
+      } @else if (
+        solicitud()?.estado === 'CADUCADA'
+      ) {
+
+        <div class="aviso-horas-extra__contenido">
+
+          <h2>
+            Solicitud caducada
+          </h2>
+
+          <p>
+            Han transcurrido los 15 minutos
+            sin que ningún encargado haya
+            autorizado la solicitud.
+          </p>
+
+          <p>
+            La solicitud ya no puede ser aprobada.
+            Debes finalizar tu jornada.
+          </p>
+
+          <div class="aviso-horas-extra__acciones">
+
+            <button
+              type="button"
+              [disabled]="procesando()"
+              (click)="finalizarJornada()"
+            >
+              Finalizar jornada
+            </button>
+
+          </div>
+
+        </div>
+
+
+      } @else if (
+        solicitud()?.estado === 'CANCELADA'
+      ) {
+
+        <div class="aviso-horas-extra__contenido">
+
+          <h2>
+            Solicitud cancelada
+          </h2>
+
+          <p>
+            Has cancelado tu solicitud
+            de horas extra.
+          </p>
+
+          <p>
+            Tu jornada ordinaria ya está completada.
+            Debes registrar la salida para finalizarla.
+          </p>
+
+          <div class="aviso-horas-extra__acciones">
+
+            <button
+              type="button"
+              [disabled]="procesando()"
+              (click)="finalizarJornada()"
+            >
+              Finalizar jornada
+            </button>
+
+          </div>
+
+        </div>
+
+
+      } @else if (
+        resumen()?.requiereConfirmacionHorasExtra
+      ) {
+
+        <div class="aviso-horas-extra__contenido">
+
+          <h2>
+            Jornada completada
+          </h2>
+
+          <p>
+            Has completado tu jornada ordinaria.
+          </p>
+
+          <p>
+            ¿Quieres finalizar tu jornada
+            o solicitar autorización
+            para continuar trabajando?
+          </p>
+
+          <div class="aviso-horas-extra__acciones">
+
+            <button
+              type="button"
+              [disabled]="procesando()"
+              (click)="finalizarJornada()"
+            >
+              Finalizar jornada
+            </button>
+
+            <button
+              type="button"
+              [disabled]="procesando()"
+              (click)="continuarTrabajando()"
+            >
+
+              @if (procesando()) {
+
+                Solicitando...
+
+              } @else {
+
+                Solicitar horas extra
+
+              }
+
+            </button>
+
+          </div>
+
+        </div>
+
+      }
+
+
+      @if (mostrarGestionSolicitudes()) {
+
+        <div class="aviso-horas-extra__gestion">
+
+          <p>
+            Como encargado, puedes gestionar
+            las solicitudes pendientes de tu equipo
+            antes de resolver tu propia jornada.
+          </p>
+
+          <button
+            type="button"
+            [disabled]="procesando()"
+            (click)="gestionarSolicitudes()"
+          >
+            Gestionar solicitudes
+          </button>
+
+        </div>
+
+      }
+
+    </div>
+
+  </p-dialog>
 
 }

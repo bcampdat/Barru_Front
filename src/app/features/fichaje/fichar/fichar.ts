@@ -7,11 +7,13 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { DialogModule } from 'primeng/dialog';
 import { MessageModule } from 'primeng/message';
 
+import { AuthService } from '../../../core/auth/auth.service';
 import { FichajeService } from '../../../core/fichaje/fichaje-service';
 import {
   FicharDTO,
@@ -25,6 +27,7 @@ import {
   SituacionJornada,
 } from '../../../core/resumenes/resumen-types';
 
+
 interface Ubicacion {
   lat: number | null;
   lng: number | null;
@@ -36,15 +39,16 @@ interface FichajePendiente {
   motivoSalida: MotivoSalida | null;
 }
 
+interface OpcionMotivoSalida {
+  valor: MotivoSalida;
+  texto: string;
+}
+
 type ModoSalida =
   | 'INTERMEDIA'
   | 'FINALIZAR'
   | null;
 
-interface OpcionMotivoSalida {
-  valor: MotivoSalida;
-  texto: string;
-}
 
 @Component({
   selector: 'app-fichar',
@@ -59,6 +63,9 @@ interface OpcionMotivoSalida {
 export class Fichar
 implements OnInit, OnDestroy {
 
+  private readonly authService =
+    inject(AuthService);
+
   private readonly fichajeService =
     inject(FichajeService);
 
@@ -67,6 +74,10 @@ implements OnInit, OnDestroy {
 
   private readonly resumenService =
     inject(ResumenService);
+
+  private readonly router =
+    inject(Router);
+
 
   readonly resumen =
     signal<ResumenDiarioDTO | null>(null);
@@ -83,18 +94,12 @@ implements OnInit, OnDestroy {
   readonly mensaje =
     signal<string | null>(null);
 
-  /*
-   * Control de geolocalización.
-   */
   readonly ubicacionRequerida =
     signal(false);
 
   readonly avisoUbicacion =
     signal<string | null>(null);
 
-  /*
-   * Control de los diálogos de salida.
-   */
   readonly dialogoSalidaVisible =
     signal(false);
 
@@ -135,14 +140,12 @@ implements OnInit, OnDestroy {
       },
     ];
 
-  /*
-   * Reloj en caliente.
-   */
   private readonly ahora =
     signal(Date.now());
 
   private reloj:
-    ReturnType<typeof setInterval> | null = null;
+    ReturnType<typeof setInterval> | null =
+      null;
 
   private sincronizadoEn =
     Date.now();
@@ -154,55 +157,53 @@ implements OnInit, OnDestroy {
   private basePausaDisponible = 0;
   private baseExtra = 0;
 
-  /*
-   * Se conserva cuando el backend exige
-   * geolocalización y debe repetirse el fichaje.
-   */
   private fichajePendiente:
-    FichajePendiente | null = null;
+    FichajePendiente | null =
+      null;
+
 
   ngOnInit(): void {
     this.cargarResumenHoy();
     this.iniciarReloj();
   }
 
+
   ngOnDestroy(): void {
+
     if (this.reloj !== null) {
       clearInterval(this.reloj);
     }
   }
 
-  /*
-   * ==========================
-   * ACCIONES DE FICHAJE
-   * ==========================
-   */
+
+  /* FICHAJES */
 
   registrarEntrada(): void {
+
     void this.registrarFichaje(
       'ENTRADA'
     );
   }
 
+
   registrarPausa(): void {
+
     void this.registrarFichaje(
       'INICIO_PAUSA'
     );
   }
 
+
   registrarReanudacion(): void {
+
     void this.registrarFichaje(
       'FIN_PAUSA'
     );
   }
 
-  /*
-   * SALIDA ya no registra directamente.
-   *
-   * Primero se pide al usuario que confirme
-   * qué pretende hacer.
-   */
+
   registrarSalida(): void {
+
     if (this.accionesBloqueadas()) {
       return;
     }
@@ -217,24 +218,14 @@ implements OnInit, OnDestroy {
     );
   }
 
-  /*
-   * El usuario pulsó salida por error
-   * o decide continuar trabajando.
-   */
+
   seguirTrabajando(): void {
     this.cerrarDialogosSalida();
   }
 
-  /*
-   * Salida que no cierra definitivamente
-   * la jornada.
-   *
-   * Ejemplos:
-   * - jornada partida;
-   * - médico y posterior regreso;
-   * - asunto personal y posterior regreso.
-   */
+
   seleccionarSalidaIntermedia(): void {
+
     this.dialogoSalidaVisible.set(
       false
     );
@@ -252,11 +243,9 @@ implements OnInit, OnDestroy {
     );
   }
 
-  /*
-   * El trabajador quiere cerrar
-   * definitivamente su jornada.
-   */
+
   finalizarJornada(): void {
+
     this.dialogoSalidaVisible.set(
       false
     );
@@ -268,11 +257,8 @@ implements OnInit, OnDestroy {
           null
         );
 
-    /*
-     * Jornada completada:
-     * no necesita motivo.
-     */
     if (datos !== null) {
+
       this.ejecutarSalida(
         datos.finalizarJornada,
         datos.motivoSalida
@@ -281,10 +267,6 @@ implements OnInit, OnDestroy {
       return;
     }
 
-    /*
-     * Queda jornada pendiente:
-     * debe indicar el motivo.
-     */
     this.modoSalida.set(
       'FINALIZAR'
     );
@@ -298,94 +280,81 @@ implements OnInit, OnDestroy {
     );
   }
 
+
   confirmarMotivoSalida(): void {
+
     const motivo =
       this.motivoSalidaSeleccionado();
-
-    if (motivo === null) {
-      return;
-    }
 
     const modo =
       this.modoSalida();
 
-    if (modo === 'INTERMEDIA') {
-      const datos =
-        this.salidaService
-          .prepararSalidaIntermedia(
-            motivo
-          );
-
-      this.cerrarDialogosSalida();
-
-      this.ejecutarSalida(
-        datos.finalizarJornada,
-        datos.motivoSalida
-      );
-
+    if (
+      motivo === null
+      ||
+      modo === null
+    ) {
       return;
     }
 
-    if (modo === 'FINALIZAR') {
-      const datos =
-        this.salidaService
-          .prepararFinalizacion(
-            this.resumen(),
-            motivo
-          );
+    const datos =
+      modo === 'INTERMEDIA'
+        ? this.salidaService
+            .prepararSalidaIntermedia(
+              motivo
+            )
+        : this.salidaService
+            .prepararFinalizacion(
+              this.resumen(),
+              motivo
+            );
 
-      if (datos === null) {
-        return;
-      }
-
-      this.cerrarDialogosSalida();
-
-      this.ejecutarSalida(
-        datos.finalizarJornada,
-        datos.motivoSalida
-      );
+    if (datos === null) {
+      return;
     }
+
+    this.cerrarDialogosSalida();
+
+    this.ejecutarSalida(
+      datos.finalizarJornada,
+      datos.motivoSalida
+    );
   }
+
 
   cancelarMotivoSalida(): void {
     this.cerrarDialogosSalida();
   }
 
+
   actualizarMotivoSalida(
     motivo: MotivoSalida | null
   ): void {
+
     this.motivoSalidaSeleccionado.set(
       motivo
     );
   }
 
-  /*
-   * JORNADA_PARTIDA únicamente tiene sentido
-   * cuando el trabajador va a volver.
-   */
+
   motivosSalidaDisponibles():
     readonly OpcionMotivoSalida[] {
 
     if (
       this.modoSalida()
-      === 'FINALIZAR'
+      !== 'FINALIZAR'
     ) {
-      return this.motivosSalida.filter(
-        motivo =>
-          motivo.valor !==
-          'JORNADA_PARTIDA'
-      );
+      return this.motivosSalida;
     }
 
-    return this.motivosSalida;
+    return this.motivosSalida.filter(
+      motivo =>
+        motivo.valor !==
+        'JORNADA_PARTIDA'
+    );
   }
 
-  /*
-   * Centraliza la ejecución real de una SALIDA.
-   *
-   * Así los distintos caminos del diálogo
-   * no repiten la llamada a registrarFichaje().
-   */
+
   private ejecutarSalida(
     finalizarJornada: boolean,
     motivoSalida: MotivoSalida | null
@@ -398,14 +367,23 @@ implements OnInit, OnDestroy {
     );
   }
 
+
   private cerrarDialogosSalida(): void {
-    this.dialogoSalidaVisible.set(false);
-    this.dialogoMotivoVisible.set(false);
+
+    this.dialogoSalidaVisible.set(
+      false
+    );
+
+    this.dialogoMotivoVisible.set(
+      false
+    );
 
     this.limpiarSeleccionSalida();
   }
 
+
   private limpiarSeleccionSalida(): void {
+
     this.modoSalida.set(null);
 
     this.motivoSalidaSeleccionado.set(
@@ -413,19 +391,17 @@ implements OnInit, OnDestroy {
     );
   }
 
-  /*
-   * ==========================
-   * REINTENTO GPS
-   * ==========================
-   */
+
+  /* GPS */
 
   reintentarFichaje(): void {
-    if (!this.fichajePendiente) {
-      return;
-    }
 
     const pendiente =
       this.fichajePendiente;
+
+    if (!pendiente) {
+      return;
+    }
 
     void this.registrarFichaje(
       pendiente.tipo,
@@ -434,13 +410,11 @@ implements OnInit, OnDestroy {
     );
   }
 
-  /*
-   * ==========================
-   * ESTADO Y PRESENTACIÓN
-   * ==========================
-   */
+
+  /* ESTADO */
 
   estadoTexto(): string {
+
     switch (this.situacion()) {
 
       case 'TRABAJANDO':
@@ -466,32 +440,42 @@ implements OnInit, OnDestroy {
     }
   }
 
+
   tiempoTranscurrido(): string {
+
     return this.formatear(
       this.segundosTrabajados()
       + this.segundosPausa()
     );
   }
 
+
   tiempoTrabajado(): string {
+
     return this.formatear(
       this.segundosTrabajados()
     );
   }
 
+
   tiempoPausa(): string {
+
     return this.formatear(
       this.segundosPausa()
     );
   }
 
+
   tiempoJornada(): string {
+
     return this.formatear(
       this.baseJornada
     );
   }
 
+
   tiempoRestante(): string {
+
     let segundos =
       this.baseRestante;
 
@@ -508,7 +492,9 @@ implements OnInit, OnDestroy {
     );
   }
 
+
   tiempoPausaRestante(): string {
+
     let segundos =
       this.basePausaDisponible;
 
@@ -525,7 +511,9 @@ implements OnInit, OnDestroy {
     );
   }
 
+
   tiempoExtra(): string {
+
     let segundos =
       this.baseExtra;
 
@@ -542,7 +530,9 @@ implements OnInit, OnDestroy {
     );
   }
 
+
   progresoJornada(): number {
+
     if (this.baseJornada === 0) {
       return 0;
     }
@@ -558,38 +548,46 @@ implements OnInit, OnDestroy {
     );
   }
 
-  mostrarEntrada(): boolean {
-    const estado =
-      this.situacion();
 
-    return estado === 'SIN_INICIAR'
-      || estado === 'FINALIZADA';
+  mostrarEntrada(): boolean {
+
+    return this.situacion()
+      === 'SIN_INICIAR';
   }
 
+
   mostrarAccionesTrabajo(): boolean {
+
     const estado =
       this.situacion();
 
     return estado === 'TRABAJANDO'
-      || estado === 'JORNADA_COMPLETADA'
       || estado === 'HORAS_EXTRA';
   }
 
+
+  mostrarFinalizarJornada(): boolean {
+
+    return this.situacion()
+      === 'JORNADA_COMPLETADA';
+  }
+
+
   mostrarReanudar(): boolean {
+
     return this.situacion()
       === 'EN_PAUSA';
   }
 
+
   accionesBloqueadas(): boolean {
+
     return this.cargando()
       || this.fichando();
   }
 
-  /*
-   * ==========================
-   * RESUMEN
-   * ==========================
-   */
+
+  /* RESUMEN */
 
   private cargarResumenHoy(
     conservarTiempo = false
@@ -606,8 +604,8 @@ implements OnInit, OnDestroy {
         )
       )
       .subscribe({
-
         next: resumen => {
+
           this.aplicarResumen(
             resumen,
             conservarTiempo
@@ -615,9 +613,11 @@ implements OnInit, OnDestroy {
         },
 
         error: error => {
+
           if (
             error instanceof HttpErrorResponse
-            && error.status === 404
+            &&
+            error.status === 404
           ) {
             this.reiniciar();
             return;
@@ -633,11 +633,8 @@ implements OnInit, OnDestroy {
       });
   }
 
-  /*
-   * ==========================
-   * REGISTRO CENTRAL
-   * ==========================
-   */
+
+  /* REGISTRO CENTRAL */
 
   private async registrarFichaje(
     tipo: TipoFichaje,
@@ -659,6 +656,10 @@ implements OnInit, OnDestroy {
 
     const esSalida =
       tipo === 'SALIDA';
+
+    const salidaFinal =
+      esSalida
+      && finalizarJornada;
 
     const datos: FicharDTO = {
       tipo,
@@ -685,8 +686,8 @@ implements OnInit, OnDestroy {
         )
       )
       .subscribe({
-
         next: () => {
+
           this.ubicacionRequerida.set(
             false
           );
@@ -698,6 +699,13 @@ implements OnInit, OnDestroy {
           this.fichajePendiente =
             null;
 
+          if (salidaFinal) {
+
+            this.cerrarSesionTrasFinalizar();
+
+            return;
+          }
+
           this.mensaje.set(
             'Fichaje registrado correctamente.'
           );
@@ -708,6 +716,7 @@ implements OnInit, OnDestroy {
         },
 
         error: error => {
+
           const mensaje =
             this.mensajeError(
               error,
@@ -719,6 +728,7 @@ implements OnInit, OnDestroy {
               mensaje
             )
           ) {
+
             this.ubicacionRequerida.set(
               true
             );
@@ -745,11 +755,39 @@ implements OnInit, OnDestroy {
       });
   }
 
-  /*
-   * ==========================
-   * SINCRONIZACIÓN DEL RELOJ
-   * ==========================
-   */
+
+  private cerrarSesionTrasFinalizar(): void {
+
+    this.authService
+      .logout()
+      .subscribe({
+        next: () => {
+
+          void this.router.navigateByUrl(
+            '/login'
+          );
+        },
+
+        error: () => {
+
+          /*
+           * La SALIDA ya está registrada.
+           * Solo ha fallado el logout.
+           */
+          this.cargarResumenHoy(
+            true
+          );
+
+          this.error.set(
+            'La jornada ha finalizado correctamente, '
+            + 'pero no se ha podido cerrar la sesión.'
+          );
+        },
+      });
+  }
+
+
+  /* SINCRONIZACIÓN */
 
   private aplicarResumen(
     resumen: ResumenDiarioDTO,
@@ -757,16 +795,14 @@ implements OnInit, OnDestroy {
   ): void {
 
     const trabajado =
-      Math.max(
-        0,
-        resumen.minutosTrabajados ?? 0
-      ) * 60;
+      this.aSegundos(
+        resumen.minutosTrabajados
+      );
 
     const pausa =
-      Math.max(
-        0,
-        resumen.minutosPausa ?? 0
-      ) * 60;
+      this.aSegundos(
+        resumen.minutosPausa
+      );
 
     if (conservarTiempo) {
 
@@ -792,28 +828,24 @@ implements OnInit, OnDestroy {
     }
 
     this.baseJornada =
-      Math.max(
-        0,
-        resumen.minutosJornada ?? 0
-      ) * 60;
+      this.aSegundos(
+        resumen.minutosJornada
+      );
 
     this.baseRestante =
-      Math.max(
-        0,
-        resumen.minutosRestantes ?? 0
-      ) * 60;
+      this.aSegundos(
+        resumen.minutosRestantes
+      );
 
     this.basePausaDisponible =
-      Math.max(
-        0,
-        resumen.minutosPausaDisponibles ?? 0
-      ) * 60;
+      this.aSegundos(
+        resumen.minutosPausaDisponibles
+      );
 
     this.baseExtra =
-      Math.max(
-        0,
-        resumen.minutosExtra ?? 0
-      ) * 60;
+      this.aSegundos(
+        resumen.minutosExtra
+      );
 
     this.resumen.set(
       resumen
@@ -827,7 +859,9 @@ implements OnInit, OnDestroy {
     );
   }
 
+
   private reiniciar(): void {
+
     this.resumen.set(null);
 
     this.baseTrabajado = 0;
@@ -845,7 +879,9 @@ implements OnInit, OnDestroy {
     );
   }
 
+
   private iniciarReloj(): void {
+
     this.reloj =
       setInterval(
         () =>
@@ -856,7 +892,9 @@ implements OnInit, OnDestroy {
       );
   }
 
+
   private segundosTrabajados(): number {
+
     let segundos =
       this.baseTrabajado;
 
@@ -865,7 +903,8 @@ implements OnInit, OnDestroy {
 
     if (
       estado === 'TRABAJANDO'
-      || estado === 'HORAS_EXTRA'
+      ||
+      estado === 'HORAS_EXTRA'
     ) {
       segundos +=
         this.segundosDesdeSincronizacion();
@@ -874,7 +913,9 @@ implements OnInit, OnDestroy {
     return segundos;
   }
 
+
   private segundosPausa(): number {
+
     let segundos =
       this.basePausa;
 
@@ -889,6 +930,7 @@ implements OnInit, OnDestroy {
     return segundos;
   }
 
+
   private segundosDesdeSincronizacion():
     number {
 
@@ -902,6 +944,7 @@ implements OnInit, OnDestroy {
       )
     );
   }
+
 
   private situacion():
     SituacionJornada {
@@ -924,16 +967,25 @@ implements OnInit, OnDestroy {
     }
   }
 
-  /*
-   * ==========================
-   * GEOLOCALIZACIÓN
-   * ==========================
-   */
+
+  private aSegundos(
+    minutos: number | null | undefined
+  ): number {
+
+    return Math.max(
+      0,
+      minutos ?? 0
+    ) * 60;
+  }
+
+
+  /* GEOLOCALIZACIÓN */
 
   private obtenerUbicacion():
     Promise<Ubicacion> {
 
     if (!navigator.geolocation) {
+
       return Promise.resolve({
         lat: null,
         lng: null,
@@ -944,8 +996,8 @@ implements OnInit, OnDestroy {
 
       navigator.geolocation
         .getCurrentPosition(
-
           posicion => {
+
             resolve({
               lat:
                 posicion.coords.latitude,
@@ -955,6 +1007,7 @@ implements OnInit, OnDestroy {
           },
 
           () => {
+
             resolve({
               lat: null,
               lng: null,
@@ -970,6 +1023,7 @@ implements OnInit, OnDestroy {
     });
   }
 
+
   private esErrorGps(
     mensaje: string
   ): boolean {
@@ -980,16 +1034,14 @@ implements OnInit, OnDestroy {
     return texto.includes(
       'geolocalización'
     )
-      || texto.includes(
+      ||
+      texto.includes(
         'geolocalizacion'
       );
   }
 
-  /*
-   * ==========================
-   * UTILIDADES
-   * ==========================
-   */
+
+  /* UTILIDADES */
 
   private formatear(
     segundosTotales: number
@@ -1031,6 +1083,7 @@ implements OnInit, OnDestroy {
       .join(':');
   }
 
+
   private mensajeError(
     error: unknown,
     fallback: string
@@ -1038,15 +1091,20 @@ implements OnInit, OnDestroy {
 
     if (
       error instanceof HttpErrorResponse
-      && error.error
-      && typeof error.error === 'object'
-      && 'message' in error.error
-      && typeof error.error.message
-        === 'string'
+      &&
+      error.error
+      &&
+      typeof error.error === 'object'
+      &&
+      'message' in error.error
+      &&
+      typeof error.error.message ===
+        'string'
     ) {
       return error.error.message;
     }
 
     return fallback;
   }
+
 }
