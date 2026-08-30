@@ -57,9 +57,37 @@
 
   <main>
 
-    <h1>Inicio</h1>
+    <h1>
+      Inicio
+    </h1>
+
+    @if (puedeUsarTareas) {
+
+      <button
+        type="button"
+        (click)="irAMisTareas()"
+      >
+        Mis tareas
+      </button>
+
+      <button
+        type="button"
+        (click)="irAAvisosTarea()"
+      >
+        Avisos de tareas
+        ({{ avisosTareaPendientes() }})
+      </button>
+
+    }
 
     @if (esEncargado) {
+
+      <button
+        type="button"
+        (click)="irAPanelProyectos()"
+      >
+        Panel de proyectos
+      </button>
 
       <button
         type="button"

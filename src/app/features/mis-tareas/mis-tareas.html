@@ -1,0 +1,856 @@
+<section class="mis-tareas">
+
+  <header class="mis-tareas-cabecera">
+
+    <div>
+
+      <h1>
+        Mi trabajo
+      </h1>
+
+      <p>
+        Consulta y gestiona las tareas que tienes asignadas.
+      </p>
+
+    </div>
+
+
+    <div class="mis-tareas-acciones">
+
+      <a
+        pButton
+        [routerLink]="['/avisos-tarea']"
+        class="boton-avisos">
+
+        <i
+          class="pi pi-bell"
+          aria-hidden="true">
+        </i>
+
+        <span>
+          Avisos
+        </span>
+
+        @if (avisosNoLeidos() > 0) {
+
+          <span class="contador-avisos">
+            {{ avisosNoLeidos() }}
+          </span>
+
+        }
+
+      </a>
+
+
+      <button
+        pButton
+        type="button"
+        label="Actualizar"
+        icon="pi pi-refresh"
+        [loading]="cargando()"
+        [disabled]="cargando()"
+        (click)="actualizarVista()">
+      </button>
+
+    </div>
+
+  </header>
+
+
+  @if (error()) {
+
+    <p-message
+      severity="error"
+      [text]="error()">
+    </p-message>
+
+  }
+
+
+  @if (esVista('RESUMEN')) {
+
+    <section class="dashboard-tareas">
+
+      <h2>
+        Situación actual
+      </h2>
+
+
+      <div class="dashboard-principal">
+
+        <button
+          type="button"
+          class="panel-tarjeta"
+          (click)="seleccionarVista('HOY')">
+
+          <span>
+            Hoy
+          </span>
+
+          <strong>
+            {{ tareasHoy().length }}
+          </strong>
+
+          <small>
+            Requieren atención hoy
+          </small>
+
+        </button>
+
+
+        <button
+          type="button"
+          class="panel-tarjeta"
+          (click)="seleccionarVista('EN_CURSO')">
+
+          <span>
+            En curso
+          </span>
+
+          <strong>
+            {{ tareasEnCurso().length }}
+          </strong>
+
+          <small>
+            Trabajando actualmente
+          </small>
+
+        </button>
+
+
+        <button
+          type="button"
+          class="panel-tarjeta"
+          (click)="seleccionarVista('EN_PAUSA')">
+
+          <span>
+            En pausa
+          </span>
+
+          <strong>
+            {{ tareasEnPausa().length }}
+          </strong>
+
+          <small>
+            Pendientes de reanudar
+          </small>
+
+        </button>
+
+
+        <button
+          type="button"
+          class="panel-tarjeta"
+          (click)="seleccionarVista('RETRASADAS')">
+
+          <span>
+            Retrasadas
+          </span>
+
+          <strong>
+            {{ tareasRetrasadas().length }}
+          </strong>
+
+          <small>
+            Fuera de plazo
+          </small>
+
+        </button>
+
+      </div>
+
+
+      <section class="dashboard-bloque">
+
+        <h2>
+          Estado de mis tareas
+        </h2>
+
+        <div class="dashboard-estados">
+
+          <button
+            type="button"
+            (click)="seleccionarVista('PENDIENTES')">
+
+            <span>
+              Pendientes
+            </span>
+
+            <strong>
+              {{ tareasPendientes().length }}
+            </strong>
+
+          </button>
+
+
+          <button
+            type="button"
+            (click)="seleccionarVista('EN_CURSO')">
+
+            <span>
+              En curso
+            </span>
+
+            <strong>
+              {{ tareasEnCurso().length }}
+            </strong>
+
+          </button>
+
+
+          <button
+            type="button"
+            (click)="seleccionarVista('EN_PAUSA')">
+
+            <span>
+              En pausa
+            </span>
+
+            <strong>
+              {{ tareasEnPausa().length }}
+            </strong>
+
+          </button>
+
+        </div>
+
+      </section>
+
+
+      <section class="dashboard-bloque">
+
+        <h2>
+          Prioridades
+        </h2>
+
+        <div class="dashboard-prioridades">
+
+          <button
+            type="button"
+            (click)="seleccionarVista('PRIORIDAD_ALTA')">
+
+            <span>
+              Alta
+            </span>
+
+            <strong>
+              {{ tareasPrioridadAlta().length }}
+            </strong>
+
+          </button>
+
+
+          <button
+            type="button"
+            (click)="seleccionarVista('PRIORIDAD_MEDIA')">
+
+            <span>
+              Media
+            </span>
+
+            <strong>
+              {{ tareasPrioridadMedia().length }}
+            </strong>
+
+          </button>
+
+
+          <button
+            type="button"
+            (click)="seleccionarVista('PRIORIDAD_BAJA')">
+
+            <span>
+              Baja
+            </span>
+
+            <strong>
+              {{ tareasPrioridadBaja().length }}
+            </strong>
+
+          </button>
+
+        </div>
+
+      </section>
+
+
+      <section class="dashboard-bloque">
+
+        <div class="bloque-cabecera">
+
+          <div>
+
+            <h2>
+              Proyectos en los que trabajo
+            </h2>
+
+            <p>
+              Tus tareas agrupadas por proyecto.
+            </p>
+
+          </div>
+
+          <button
+            pButton
+            type="button"
+            label="Ver proyectos"
+            (click)="seleccionarVista('PROYECTOS')">
+          </button>
+
+        </div>
+
+
+        @if (proyectosTrabajo().length === 0) {
+
+          <p>
+            No tienes tareas asignadas en ningún proyecto.
+          </p>
+
+        } @else {
+
+          <div class="lista-proyectos">
+
+            @for (
+              proyecto of proyectosTrabajo();
+              track proyecto.id
+            ) {
+
+              <article class="proyecto-resumen">
+
+                <div>
+
+                  <h3>
+                    {{ proyecto.nombre }}
+                  </h3>
+
+                  <p>
+                    {{
+                      proyecto.tareasActivas
+                    }}
+                    tareas activas
+                  </p>
+
+                  <p>
+                    {{
+                      proyecto.tareasFinalizadas
+                    }}
+                    finalizadas
+                  </p>
+
+                </div>
+
+                <button
+                  pButton
+                  type="button"
+                  label="Ver mis tareas"
+                  icon="pi pi-arrow-right"
+                  (click)="abrirProyecto(proyecto.id)">
+                </button>
+
+              </article>
+
+            }
+
+          </div>
+
+        }
+
+      </section>
+
+
+      <section class="dashboard-bloque atencion">
+
+        <h2>
+          Necesita atención
+        </h2>
+
+        <div>
+
+          <button
+            type="button"
+            (click)="seleccionarVista('RETRASADAS')">
+
+            <strong>
+              {{ tareasRetrasadas().length }}
+            </strong>
+
+            <span>
+              tareas retrasadas
+            </span>
+
+          </button>
+
+
+          <button
+            type="button"
+            (click)="seleccionarVista('HOY')">
+
+            <strong>
+              {{ tareasHoy().length }}
+            </strong>
+
+            <span>
+              tareas para hoy
+            </span>
+
+          </button>
+
+        </div>
+
+      </section>
+
+
+      <section class="dashboard-bloque historico">
+
+        <div>
+
+          <h2>
+            Histórico
+          </h2>
+
+          <p>
+            Consulta tus tareas finalizadas.
+          </p>
+
+        </div>
+
+        <button
+          pButton
+          type="button"
+          label="Abrir histórico"
+          icon="pi pi-history"
+          (click)="seleccionarVista('HISTORICO')">
+        </button>
+
+      </section>
+
+    </section>
+
+  }
+
+
+  @if (esVista('PROYECTOS')) {
+
+    <section class="vista-proyectos">
+
+      <div class="vista-cabecera">
+
+        <button
+          pButton
+          type="button"
+          label="Volver a Mi trabajo"
+          icon="pi pi-arrow-left"
+          (click)="volverAlPanel()">
+        </button>
+
+        <div>
+
+          <h2>
+            Mis proyectos
+          </h2>
+
+          <p>
+            Proyectos en los que tienes tareas asignadas.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      @if (proyectosTrabajo().length === 0) {
+
+        <p>
+          No tienes proyectos asignados.
+        </p>
+
+      } @else {
+
+        <div class="lista-proyectos">
+
+          @for (
+            proyecto of proyectosTrabajo();
+            track proyecto.id
+          ) {
+
+            <article class="proyecto-resumen">
+
+              <div>
+
+                <h3>
+                  {{ proyecto.nombre }}
+                </h3>
+
+                <p>
+                  Tareas activas:
+                  {{ proyecto.tareasActivas }}
+                </p>
+
+                <p>
+                  Tareas finalizadas:
+                  {{ proyecto.tareasFinalizadas }}
+                </p>
+
+              </div>
+
+              <button
+                pButton
+                type="button"
+                label="Abrir"
+                icon="pi pi-arrow-right"
+                (click)="abrirProyecto(proyecto.id)">
+              </button>
+
+            </article>
+
+          }
+
+        </div>
+
+      }
+
+    </section>
+
+  }
+
+
+  @if (esVistaListado()) {
+
+    <section class="vista-tareas">
+
+      <div class="vista-cabecera">
+
+        <button
+          pButton
+          type="button"
+          label="Volver a Mi trabajo"
+          icon="pi pi-arrow-left"
+          (click)="volverAlPanel()">
+        </button>
+
+        <div>
+
+          @if (esVista('HOY')) {
+
+            <h2>
+              Hoy
+            </h2>
+
+            <p>
+              Tareas que requieren tu atención hoy.
+            </p>
+
+          } @else if (esVista('EN_CURSO')) {
+
+            <h2>
+              En curso
+            </h2>
+
+          } @else if (esVista('EN_PAUSA')) {
+
+            <h2>
+              En pausa
+            </h2>
+
+          } @else if (esVista('PENDIENTES')) {
+
+            <h2>
+              Pendientes
+            </h2>
+
+          } @else if (esVista('RETRASADAS')) {
+
+            <h2>
+              Retrasadas
+            </h2>
+
+          } @else if (esVista('PRIORIDAD_ALTA')) {
+
+            <h2>
+              Prioridad alta
+            </h2>
+
+          } @else if (esVista('PRIORIDAD_MEDIA')) {
+
+            <h2>
+              Prioridad media
+            </h2>
+
+          } @else if (esVista('PRIORIDAD_BAJA')) {
+
+            <h2>
+              Prioridad baja
+            </h2>
+
+          } @else if (esVista('HISTORICO')) {
+
+            <h2>
+              Histórico
+            </h2>
+
+            <p>
+              Tareas finalizadas.
+            </p>
+
+          } @else if (esVista('PROYECTO')) {
+
+            <h2>
+              {{ nombreProyectoSeleccionado() }}
+            </h2>
+
+            <p>
+              Mis tareas en este proyecto.
+            </p>
+
+          }
+
+        </div>
+
+      </div>
+
+
+      @if (tareasVista().length === 0) {
+
+        <p>
+          No hay tareas en esta vista.
+        </p>
+
+      } @else {
+
+        <p-table
+          [value]="tareasVista()"
+          [tableStyle]="{ 'min-width': '70rem' }">
+
+          <ng-template
+            pTemplate="header">
+
+            <tr>
+
+              <th scope="col">
+                Tarea
+              </th>
+
+              <th scope="col">
+                Proyecto
+              </th>
+
+              <th scope="col">
+                Prioridad
+              </th>
+
+              <th scope="col">
+                Estado
+              </th>
+
+              <th scope="col">
+                Fecha límite
+              </th>
+
+              <th scope="col">
+                Aclaración
+              </th>
+
+              <th scope="col">
+                Acciones
+              </th>
+
+            </tr>
+
+          </ng-template>
+
+
+          <ng-template
+            pTemplate="body"
+            let-tarea>
+
+            <tr>
+
+              <td>
+
+                <strong>
+                  {{ tarea.nombre }}
+                </strong>
+
+                @if (tarea.notas) {
+
+                  <div>
+                    {{ tarea.notas }}
+                  </div>
+
+                }
+
+              </td>
+
+
+              <td>
+                {{ tarea.proyectoNombre }}
+              </td>
+
+
+              <td>
+
+                <p-tag
+                  [value]="tarea.prioridad">
+                </p-tag>
+
+              </td>
+
+
+              <td>
+
+                <p-tag
+                  [value]="tarea.estado">
+                </p-tag>
+
+                @if (esTareaRetrasada(tarea)) {
+
+                  <div>
+                    Retrasada
+                  </div>
+
+                }
+
+              </td>
+
+
+              <td>
+                {{ tarea.fechaLimite }}
+              </td>
+
+
+              <td>
+
+                @if (tarea.aclaracionTrabajador) {
+
+                  <p>
+                    {{ tarea.aclaracionTrabajador }}
+                  </p>
+
+                }
+
+
+                @if (tarea.estado !== 'FINALIZADA') {
+
+                  <label
+                    [for]="'aclaracion-' + tarea.id">
+                    Nueva aclaración
+                  </label>
+
+                  <textarea
+                    #aclaracion
+                    [id]="'aclaracion-' + tarea.id"
+                    rows="3"
+                    maxlength="500"
+                    [disabled]="estaProcesando(tarea.id)">
+                  </textarea>
+
+                  <button
+                    pButton
+                    type="button"
+                    label="Guardar"
+                    icon="pi pi-save"
+                    [loading]="estaProcesando(tarea.id)"
+                    [disabled]="estaProcesando(tarea.id)"
+                    (click)="
+                      guardarAclaracion(
+                        tarea.id,
+                        aclaracion.value
+                      )
+                    ">
+                  </button>
+
+                }
+
+              </td>
+
+
+              <td>
+
+                @if (tarea.estado === 'SIN_INICIAR') {
+
+                  <button
+                    pButton
+                    type="button"
+                    label="Iniciar"
+                    icon="pi pi-play"
+                    [loading]="estaProcesando(tarea.id)"
+                    [disabled]="estaProcesando(tarea.id)"
+                    (click)="iniciarTarea(tarea.id)">
+                  </button>
+
+                }
+
+
+                @if (tarea.estado === 'INICIADA') {
+
+                  <button
+                    pButton
+                    type="button"
+                    label="Pausar"
+                    icon="pi pi-pause"
+                    [loading]="estaProcesando(tarea.id)"
+                    [disabled]="estaProcesando(tarea.id)"
+                    (click)="pausarTarea(tarea.id)">
+                  </button>
+
+                  <button
+                    pButton
+                    type="button"
+                    label="Finalizar"
+                    icon="pi pi-check"
+                    [loading]="estaProcesando(tarea.id)"
+                    [disabled]="estaProcesando(tarea.id)"
+                    (click)="finalizarTarea(tarea.id)">
+                  </button>
+
+                }
+
+
+                @if (tarea.estado === 'PAUSA') {
+
+                  <button
+                    pButton
+                    type="button"
+                    label="Reanudar"
+                    icon="pi pi-play"
+                    [loading]="estaProcesando(tarea.id)"
+                    [disabled]="estaProcesando(tarea.id)"
+                    (click)="iniciarTarea(tarea.id)">
+                  </button>
+
+                  <button
+                    pButton
+                    type="button"
+                    label="Finalizar"
+                    icon="pi pi-check"
+                    [loading]="estaProcesando(tarea.id)"
+                    [disabled]="estaProcesando(tarea.id)"
+                    (click)="finalizarTarea(tarea.id)">
+                  </button>
+
+                }
+
+
+                @if (tarea.estado === 'FINALIZADA') {
+
+                  <span>
+                    Finalizada
+                  </span>
+
+                }
+
+              </td>
+
+            </tr>
+
+          </ng-template>
+
+        </p-table>
+
+      }
+
+    </section>
+
+  }
+
+</section>

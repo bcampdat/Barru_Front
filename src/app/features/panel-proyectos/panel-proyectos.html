@@ -1,0 +1,1553 @@
+<section class="panel-proyectos">
+
+  <header class="panel-cabecera">
+
+    <div>
+
+      <h1>
+        Panel de proyectos
+      </h1>
+
+      <p>
+        Visión general de proyectos y tareas de la empresa.
+      </p>
+
+    </div>
+
+    <div class="panel-acciones">
+
+      <button
+        pButton
+        type="button"
+        (click)="abrirAvisos()">
+
+        <i
+          class="pi pi-bell"
+          aria-hidden="true">
+        </i>
+
+        <span>
+          Avisos
+        </span>
+
+        @if (avisosNoLeidos() > 0) {
+
+          <span class="contador-avisos">
+            {{ avisosNoLeidos() }}
+          </span>
+
+        }
+
+      </button>
+
+
+      <button
+        pButton
+        type="button"
+        label="Nuevo proyecto"
+        icon="pi pi-plus"
+        (click)="alternarFormularioProyecto()">
+      </button>
+
+      <button
+        pButton
+        type="button"
+        label="Actualizar"
+        icon="pi pi-refresh"
+        [loading]="cargando()"
+        [disabled]="cargando()"
+        (click)="actualizarPanel()">
+      </button>
+
+    </div>
+
+  </header>
+
+
+  @if (error()) {
+
+    <p-message
+      severity="error"
+      [text]="error()">
+    </p-message>
+
+  }
+
+
+  @if (mostrarFormularioProyecto()) {
+
+    <section class="formulario-proyecto">
+
+      <h2>
+        Nuevo proyecto
+      </h2>
+
+      <div>
+
+        <label for="nombre-proyecto">
+          Nombre
+        </label>
+
+        <input
+          id="nombre-proyecto"
+          name="nombreProyecto"
+          type="text"
+          maxlength="150"
+          autocomplete="off"
+          [(ngModel)]="nuevoProyecto.nombre">
+
+      </div>
+
+      <div>
+
+        <label for="fecha-inicio-proyecto">
+          Fecha de inicio
+        </label>
+
+        <input
+          id="fecha-inicio-proyecto"
+          name="fechaInicioProyecto"
+          type="text"
+          placeholder="dd/MM/yyyy"
+          autocomplete="off"
+          [(ngModel)]="nuevoProyecto.fechaInicio">
+
+      </div>
+
+      <div>
+
+        <label for="fecha-fin-proyecto">
+          Fecha estimada de finalización
+        </label>
+
+        <input
+          id="fecha-fin-proyecto"
+          name="fechaFinProyecto"
+          type="text"
+          placeholder="dd/MM/yyyy"
+          autocomplete="off"
+          [(ngModel)]="nuevoProyecto.fechaFinEstimada">
+
+      </div>
+
+      <div>
+
+        <button
+          pButton
+          type="button"
+          label="Crear proyecto"
+          icon="pi pi-check"
+          [loading]="creandoProyecto()"
+          [disabled]="creandoProyecto()"
+          (click)="crearProyecto()">
+        </button>
+
+        <button
+          pButton
+          type="button"
+          label="Cancelar"
+          icon="pi pi-times"
+          [disabled]="creandoProyecto()"
+          (click)="alternarFormularioProyecto()">
+        </button>
+
+      </div>
+
+    </section>
+
+  }
+
+
+  @if (esVista('RESUMEN')) {
+
+    <section class="dashboard">
+
+      <h2>
+        Situación general
+      </h2>
+
+
+      <div class="dashboard-principal">
+
+        <button
+          type="button"
+          class="panel-tarjeta"
+          (click)="seleccionarVista('PROYECTOS_ACTIVOS')">
+
+          <span>
+            Proyectos
+          </span>
+
+          <strong>
+            {{ proyectosActivos().length }}
+          </strong>
+
+          <small>
+            Activos
+          </small>
+
+        </button>
+
+
+        <button
+          type="button"
+          class="panel-tarjeta"
+          (click)="seleccionarVista('TAREAS')">
+
+          <span>
+            Tareas
+          </span>
+
+          <strong>
+            {{ tareasEmpresa().length }}
+          </strong>
+
+          <small>
+            {{
+              tareasFinalizadas().length
+            }}
+            finalizadas
+          </small>
+
+        </button>
+
+
+        <button
+          type="button"
+          class="panel-tarjeta"
+          (click)="seleccionarVista('RETRASADAS')">
+
+          <span>
+            Retrasadas
+          </span>
+
+          <strong>
+            {{ tareasRetrasadas().length }}
+          </strong>
+
+          <small>
+            Requieren atención
+          </small>
+
+        </button>
+
+
+        <button
+          type="button"
+          class="panel-tarjeta"
+          (click)="seleccionarVista('SIN_ASIGNAR')">
+
+          <span>
+            Sin asignar
+          </span>
+
+          <strong>
+            {{ tareasSinAsignar().length }}
+          </strong>
+
+          <small>
+            Pendientes de responsable
+          </small>
+
+        </button>
+
+      </div>
+
+
+      <section class="dashboard-bloque">
+
+        <h2>
+          Estado de las tareas
+        </h2>
+
+        <div class="dashboard-estados">
+
+          <button
+            type="button"
+            (click)="seleccionarVista('PENDIENTES')">
+
+            <span>
+              Pendientes
+            </span>
+
+            <strong>
+              {{ tareasPendientes().length }}
+            </strong>
+
+          </button>
+
+
+          <button
+            type="button"
+            (click)="seleccionarVista('EN_CURSO')">
+
+            <span>
+              En curso
+            </span>
+
+            <strong>
+              {{ tareasEnCurso().length }}
+            </strong>
+
+          </button>
+
+
+          <button
+            type="button"
+            (click)="seleccionarVista('EN_PAUSA')">
+
+            <span>
+              En pausa
+            </span>
+
+            <strong>
+              {{ tareasEnPausa().length }}
+            </strong>
+
+          </button>
+
+
+          <button
+            type="button"
+            (click)="seleccionarVista('FINALIZADAS')">
+
+            <span>
+              Finalizadas
+            </span>
+
+            <strong>
+              {{ tareasFinalizadas().length }}
+            </strong>
+
+          </button>
+
+        </div>
+
+      </section>
+
+
+      <section class="dashboard-bloque">
+
+        <h2>
+          Prioridades
+        </h2>
+
+        <div class="dashboard-prioridades">
+
+          <button
+            type="button"
+            (click)="seleccionarVista('PRIORIDAD_ALTA')">
+
+            <span>
+              Alta
+            </span>
+
+            <strong>
+              {{ tareasPrioridadAlta().length }}
+            </strong>
+
+          </button>
+
+
+          <button
+            type="button"
+            (click)="seleccionarVista('PRIORIDAD_MEDIA')">
+
+            <span>
+              Media
+            </span>
+
+            <strong>
+              {{ tareasPrioridadMedia().length }}
+            </strong>
+
+          </button>
+
+
+          <button
+            type="button"
+            (click)="seleccionarVista('PRIORIDAD_BAJA')">
+
+            <span>
+              Baja
+            </span>
+
+            <strong>
+              {{ tareasPrioridadBaja().length }}
+            </strong>
+
+          </button>
+
+        </div>
+
+      </section>
+
+
+      <section class="dashboard-bloque">
+
+        <div class="bloque-cabecera">
+
+          <h2>
+            Proyectos activos
+          </h2>
+
+          <button
+            pButton
+            type="button"
+            label="Ver todos"
+            (click)="seleccionarVista('PROYECTOS_ACTIVOS')">
+          </button>
+
+        </div>
+
+
+        @if (proyectosActivos().length === 0) {
+
+          <p>
+            No hay proyectos activos.
+          </p>
+
+        } @else {
+
+          <div class="lista-proyectos">
+
+            @for (
+              proyecto of proyectosActivos();
+              track proyecto.id
+            ) {
+
+              <article class="proyecto-resumen">
+
+                <div>
+
+                  <h3>
+                    {{ proyecto.nombre }}
+                  </h3>
+
+                  <p>
+                    Fecha estimada:
+                    {{ proyecto.fechaFinEstimada }}
+                  </p>
+
+                </div>
+
+
+                <div>
+
+                  <span>
+                    Progreso
+                  </span>
+
+                  <strong>
+                    {{
+                      progresoProyecto(
+                        proyecto.id
+                      )
+                    }} %
+                  </strong>
+
+                </div>
+
+
+                <div>
+
+                  <span>
+                    Tareas
+                  </span>
+
+                  <strong>
+                    {{
+                      obtenerTareasProyecto(
+                        proyecto.id
+                      ).length
+                    }}
+                  </strong>
+
+                </div>
+
+
+                <div>
+
+                  <span>
+                    Trabajadores
+                  </span>
+
+                  <strong>
+                    {{
+                      trabajadoresProyecto(
+                        proyecto.id
+                      )
+                    }}
+                  </strong>
+
+                </div>
+
+
+                <button
+                  pButton
+                  type="button"
+                  label="Gestionar"
+                  icon="pi pi-arrow-right"
+                  (click)="abrirProyecto(proyecto.id)">
+                </button>
+
+              </article>
+
+            }
+
+          </div>
+
+        }
+
+      </section>
+
+
+      <section class="dashboard-bloque atencion">
+
+        <h2>
+          Necesita atención
+        </h2>
+
+        <div>
+
+          <button
+            type="button"
+            (click)="seleccionarVista('RETRASADAS')">
+
+            <strong>
+              {{ tareasRetrasadas().length }}
+            </strong>
+
+            <span>
+              tareas retrasadas
+            </span>
+
+          </button>
+
+
+          <button
+            type="button"
+            (click)="seleccionarVista('SIN_ASIGNAR')">
+
+            <strong>
+              {{ tareasSinAsignar().length }}
+            </strong>
+
+            <span>
+              tareas sin asignar
+            </span>
+
+          </button>
+
+        </div>
+
+      </section>
+
+
+      <section class="dashboard-bloque historico">
+
+        <div>
+
+          <h2>
+            Histórico de proyectos
+          </h2>
+
+          <p>
+            Consulta los proyectos finalizados.
+          </p>
+
+        </div>
+
+        <button
+          pButton
+          type="button"
+          label="Abrir histórico"
+          icon="pi pi-history"
+          (click)="seleccionarVista('HISTORICO')">
+        </button>
+
+      </section>
+
+    </section>
+
+  }
+
+
+  @if (
+    esVista('PROYECTOS_ACTIVOS')
+    || esVista('HISTORICO')
+  ) {
+
+    <section class="vista-proyectos">
+
+      <div class="vista-cabecera">
+
+        <button
+          pButton
+          type="button"
+          label="Volver al panel"
+          icon="pi pi-arrow-left"
+          (click)="volverAlPanel()">
+        </button>
+
+        @if (esVista('PROYECTOS_ACTIVOS')) {
+
+          <div>
+
+            <h2>
+              Proyectos activos
+            </h2>
+
+            <p>
+              Proyectos actualmente en ejecución.
+            </p>
+
+          </div>
+
+        } @else {
+
+          <div>
+
+            <h2>
+              Histórico de proyectos
+            </h2>
+
+            <p>
+              Proyectos ya finalizados.
+            </p>
+
+          </div>
+
+        }
+
+      </div>
+
+
+      @if (proyectosVista().length === 0) {
+
+        <p>
+          No hay proyectos en esta vista.
+        </p>
+
+      } @else {
+
+        <div class="lista-proyectos">
+
+          @for (
+            proyecto of proyectosVista();
+            track proyecto.id
+          ) {
+
+            <article class="proyecto-resumen">
+
+              <div>
+
+                <h3>
+                  {{ proyecto.nombre }}
+                </h3>
+
+                <p>
+                  Inicio:
+                  {{ proyecto.fechaInicio }}
+                </p>
+
+                <p>
+                  Fecha estimada:
+                  {{ proyecto.fechaFinEstimada }}
+                </p>
+
+                @if (proyecto.fechaFin) {
+
+                  <p>
+                    Finalizado:
+                    {{ proyecto.fechaFin }}
+                  </p>
+
+                }
+
+              </div>
+
+
+              <div>
+
+                <span>
+                  Progreso
+                </span>
+
+                <strong>
+                  {{
+                    progresoProyecto(
+                      proyecto.id
+                    )
+                  }} %
+                </strong>
+
+              </div>
+
+
+              <div>
+
+                <span>
+                  Tareas
+                </span>
+
+                <strong>
+                  {{
+                    obtenerTareasProyecto(
+                      proyecto.id
+                    ).length
+                  }}
+                </strong>
+
+              </div>
+
+
+              <button
+                pButton
+                type="button"
+                label="Ver proyecto"
+                (click)="abrirProyecto(proyecto.id)">
+              </button>
+
+            </article>
+
+          }
+
+        </div>
+
+      }
+
+    </section>
+
+  }
+
+
+  @if (esVistaTareas()) {
+
+    <section class="vista-tareas">
+
+      <div class="vista-cabecera">
+
+        <button
+          pButton
+          type="button"
+          label="Volver al panel"
+          icon="pi pi-arrow-left"
+          (click)="volverAlPanel()">
+        </button>
+
+        <div>
+
+          @if (esVista('TAREAS')) {
+
+            <h2>
+              Todas las tareas
+            </h2>
+
+          } @else if (esVista('PENDIENTES')) {
+
+            <h2>
+              Tareas pendientes
+            </h2>
+
+          } @else if (esVista('EN_CURSO')) {
+
+            <h2>
+              Tareas en curso
+            </h2>
+
+          } @else if (esVista('EN_PAUSA')) {
+
+            <h2>
+              Tareas en pausa
+            </h2>
+
+          } @else if (esVista('FINALIZADAS')) {
+
+            <h2>
+              Tareas finalizadas
+            </h2>
+
+          } @else if (esVista('RETRASADAS')) {
+
+            <h2>
+              Tareas retrasadas
+            </h2>
+
+          } @else if (esVista('SIN_ASIGNAR')) {
+
+            <h2>
+              Tareas sin asignar
+            </h2>
+
+          } @else if (esVista('PRIORIDAD_ALTA')) {
+
+            <h2>
+              Prioridad alta
+            </h2>
+
+          } @else if (esVista('PRIORIDAD_MEDIA')) {
+
+            <h2>
+              Prioridad media
+            </h2>
+
+          } @else {
+
+            <h2>
+              Prioridad baja
+            </h2>
+
+          }
+
+        </div>
+
+      </div>
+
+
+      @if (tareasVista().length === 0) {
+
+        <p>
+          No hay tareas en esta vista.
+        </p>
+
+      } @else {
+
+        <div class="tabla-contenedor">
+
+          <table>
+
+            <thead>
+
+              <tr>
+
+                <th scope="col">
+                  Tarea
+                </th>
+
+                <th scope="col">
+                  Proyecto
+                </th>
+
+                <th scope="col">
+                  Trabajador
+                </th>
+
+                <th scope="col">
+                  Prioridad
+                </th>
+
+                <th scope="col">
+                  Estado
+                </th>
+
+                <th scope="col">
+                  Fecha límite
+                </th>
+
+              </tr>
+
+            </thead>
+
+            <tbody>
+
+              @for (
+                tarea of tareasVista();
+                track tarea.id
+              ) {
+
+                <tr>
+
+                  <td>
+
+                    <strong>
+                      {{ tarea.nombre }}
+                    </strong>
+
+                    @if (tarea.notas) {
+
+                      <div>
+                        {{ tarea.notas }}
+                      </div>
+
+                    }
+
+                  </td>
+
+                  <td>
+                    {{ tarea.proyectoNombre }}
+                  </td>
+
+                  <td>
+                    {{
+                      obtenerNombreUsuario(
+                        tarea.usuarioAsignadoUuid
+                      )
+                    }}
+                  </td>
+
+                  <td>
+
+                    <p-tag
+                      [value]="tarea.prioridad">
+                    </p-tag>
+
+                  </td>
+
+                  <td>
+
+                    <p-tag
+                      [value]="tarea.estado">
+                    </p-tag>
+
+                    @if (esTareaRetrasada(tarea)) {
+
+                      <span>
+                        Retrasada
+                      </span>
+
+                    }
+
+                  </td>
+
+                  <td>
+                    {{ tarea.fechaLimite }}
+                  </td>
+
+                </tr>
+
+              }
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      }
+
+    </section>
+
+  }
+
+
+  @if (esVista('PROYECTO')) {
+
+    @if (proyectoSeleccionado(); as proyecto) {
+
+      <section class="detalle-proyecto">
+
+        <div class="vista-cabecera">
+
+          <button
+            pButton
+            type="button"
+            label="Volver al panel"
+            icon="pi pi-arrow-left"
+            (click)="volverAlPanel()">
+          </button>
+
+          <div>
+
+            <h2>
+              {{ proyecto.nombre }}
+            </h2>
+
+            <p>
+              Gestión del proyecto.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div class="detalle-proyecto-resumen">
+
+          <div>
+
+            <span>
+              Inicio
+            </span>
+
+            <strong>
+              {{ proyecto.fechaInicio }}
+            </strong>
+
+          </div>
+
+          <div>
+
+            <span>
+              Fecha estimada
+            </span>
+
+            <strong>
+              {{ proyecto.fechaFinEstimada }}
+            </strong>
+
+          </div>
+
+          <div>
+
+            <span>
+              Progreso
+            </span>
+
+            <strong>
+              {{
+                progresoProyecto(
+                  proyecto.id
+                )
+              }} %
+            </strong>
+
+          </div>
+
+          <div>
+
+            <span>
+              Trabajadores
+            </span>
+
+            <strong>
+              {{
+                trabajadoresProyecto(
+                  proyecto.id
+                )
+              }}
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        @if (!proyectoFinalizado(proyecto)) {
+
+          <div class="acciones-proyecto">
+
+            <button
+              pButton
+              type="button"
+              label="Nueva tarea"
+              icon="pi pi-plus"
+              [disabled]="estaProcesandoProyecto(proyecto.id)"
+              (click)="alternarFormularioTarea(proyecto.id)">
+            </button>
+
+            <button
+              pButton
+              type="button"
+              label="Ampliar plazo"
+              icon="pi pi-calendar"
+              [disabled]="estaProcesandoProyecto(proyecto.id)"
+              (click)="alternarFormularioFecha(proyecto)">
+            </button>
+
+            <button
+              pButton
+              type="button"
+              label="Finalizar proyecto"
+              icon="pi pi-check"
+              [loading]="estaProcesandoProyecto(proyecto.id)"
+              [disabled]="estaProcesandoProyecto(proyecto.id)"
+              (click)="finalizarProyecto(proyecto.id)">
+            </button>
+
+          </div>
+
+        }
+
+
+        @if (mostrarFormularioFecha(proyecto.id)) {
+
+          <section class="formulario-fecha">
+
+            <h3>
+              Ampliar plazo
+            </h3>
+
+            <p>
+              Fecha estimada actual:
+              {{ proyecto.fechaFinEstimada }}
+            </p>
+
+            <label
+              [for]="'fecha-estimada-' + proyecto.id">
+              Nueva fecha estimada
+            </label>
+
+            <input
+              [id]="'fecha-estimada-' + proyecto.id"
+              [name]="'fechaEstimada-' + proyecto.id"
+              type="text"
+              placeholder="dd/MM/yyyy"
+              autocomplete="off"
+              [(ngModel)]="
+                fechaFinEstimadaPorProyecto[
+                  proyecto.id
+                ]
+              ">
+
+            <button
+              pButton
+              type="button"
+              label="Guardar"
+              [loading]="estaProcesandoProyecto(proyecto.id)"
+              [disabled]="estaProcesandoProyecto(proyecto.id)"
+              (click)="ampliarFechaFinEstimada(proyecto.id)">
+            </button>
+
+            <button
+              pButton
+              type="button"
+              label="Cancelar"
+              [disabled]="estaProcesandoProyecto(proyecto.id)"
+              (click)="alternarFormularioFecha(proyecto)">
+            </button>
+
+          </section>
+
+        }
+
+
+        @if (mostrarFormularioTarea(proyecto.id)) {
+
+          <section class="formulario-tarea">
+
+            <h3>
+              Nueva tarea
+            </h3>
+
+            <div>
+
+              <label
+                [for]="'nombre-tarea-' + proyecto.id">
+                Nombre
+              </label>
+
+              <input
+                [id]="'nombre-tarea-' + proyecto.id"
+                [name]="'nombreTarea-' + proyecto.id"
+                type="text"
+                maxlength="150"
+                autocomplete="off"
+                [(ngModel)]="nuevaTarea.nombre">
+
+            </div>
+
+            <div>
+
+              <label
+                [for]="'notas-tarea-' + proyecto.id">
+                Notas e instrucciones
+              </label>
+
+              <textarea
+                [id]="'notas-tarea-' + proyecto.id"
+                [name]="'notasTarea-' + proyecto.id"
+                rows="4"
+                [(ngModel)]="nuevaTarea.notas">
+              </textarea>
+
+            </div>
+
+            <div>
+
+              <label
+                [for]="'prioridad-tarea-' + proyecto.id">
+                Prioridad
+              </label>
+
+              <select
+                [id]="'prioridad-tarea-' + proyecto.id"
+                [name]="'prioridadTarea-' + proyecto.id"
+                [(ngModel)]="nuevaTarea.prioridad">
+
+                <option value="ALTA">
+                  Alta
+                </option>
+
+                <option value="MEDIA">
+                  Media
+                </option>
+
+                <option value="BAJA">
+                  Baja
+                </option>
+
+              </select>
+
+            </div>
+
+            <div>
+
+              <label
+                [for]="'fecha-limite-' + proyecto.id">
+                Fecha límite
+              </label>
+
+              <input
+                [id]="'fecha-limite-' + proyecto.id"
+                [name]="'fechaLimite-' + proyecto.id"
+                type="text"
+                placeholder="dd/MM/yyyy"
+                autocomplete="off"
+                [(ngModel)]="nuevaTarea.fechaLimite">
+
+            </div>
+
+            <div>
+
+              <label
+                [for]="'usuario-tarea-' + proyecto.id">
+                Trabajador
+              </label>
+
+              <select
+                [id]="'usuario-tarea-' + proyecto.id"
+                [name]="'usuarioTarea-' + proyecto.id"
+                [(ngModel)]="nuevaTarea.usuarioAsignadoUuid">
+
+                <option [ngValue]="null">
+                  Sin asignar
+                </option>
+
+                @for (
+                  usuario of usuariosAsignables();
+                  track usuario.uuid
+                ) {
+
+                  @if (usuario.uuid) {
+
+                    <option
+                      [value]="usuario.uuid">
+
+                      {{ usuario.nombre }}
+                      {{ usuario.apellidos }}
+
+                    </option>
+
+                  }
+
+                }
+
+              </select>
+
+            </div>
+
+            <button
+              pButton
+              type="button"
+              label="Crear tarea"
+              [loading]="estaCreandoTarea(proyecto.id)"
+              [disabled]="estaCreandoTarea(proyecto.id)"
+              (click)="crearTarea(proyecto.id)">
+            </button>
+
+            <button
+              pButton
+              type="button"
+              label="Cancelar"
+              [disabled]="estaCreandoTarea(proyecto.id)"
+              (click)="alternarFormularioTarea(proyecto.id)">
+            </button>
+
+          </section>
+
+        }
+
+
+        <section class="tareas-proyecto">
+
+          <h3>
+            Tareas
+          </h3>
+
+          <div class="resumen-tareas-proyecto">
+
+            <span>
+              Pendientes:
+              {{
+                tareasPendientesProyecto(
+                  proyecto.id
+                ).length
+              }}
+            </span>
+
+            <span>
+              En curso:
+              {{
+                tareasEnCursoProyecto(
+                  proyecto.id
+                ).length
+              }}
+            </span>
+
+            <span>
+              En pausa:
+              {{
+                tareasEnPausaProyecto(
+                  proyecto.id
+                ).length
+              }}
+            </span>
+
+            <span>
+              Finalizadas:
+              {{
+                tareasFinalizadasProyecto(
+                  proyecto.id
+                ).length
+              }}
+            </span>
+
+            <span>
+              Retrasadas:
+              {{
+                tareasRetrasadasProyecto(
+                  proyecto.id
+                ).length
+              }}
+            </span>
+
+            <span>
+              Sin asignar:
+              {{
+                tareasSinAsignarProyecto(
+                  proyecto.id
+                ).length
+              }}
+            </span>
+
+          </div>
+
+
+          @if (
+            tareasProyectoSeleccionado().length === 0
+          ) {
+
+            <p>
+              Este proyecto no tiene tareas.
+            </p>
+
+          } @else {
+
+            <div class="tabla-contenedor">
+
+              <table>
+
+                <thead>
+
+                  <tr>
+
+                    <th scope="col">
+                      Tarea
+                    </th>
+
+                    <th scope="col">
+                      Trabajador
+                    </th>
+
+                    <th scope="col">
+                      Prioridad
+                    </th>
+
+                    <th scope="col">
+                      Estado
+                    </th>
+
+                    <th scope="col">
+                      Fecha límite
+                    </th>
+
+                  </tr>
+
+                </thead>
+
+                <tbody>
+
+                  @for (
+                    tarea of tareasProyectoSeleccionado();
+                    track tarea.id
+                  ) {
+
+                    <tr>
+
+                      <td>
+
+                        <strong>
+                          {{ tarea.nombre }}
+                        </strong>
+
+                        @if (tarea.notas) {
+
+                          <div>
+                            {{ tarea.notas }}
+                          </div>
+
+                        }
+
+                        @if (
+                          tarea.aclaracionTrabajador
+                        ) {
+
+                          <div>
+
+                            Aclaración:
+
+                            {{
+                              tarea.aclaracionTrabajador
+                            }}
+
+                          </div>
+
+                        }
+
+                      </td>
+
+
+                      <td>
+
+                        @if (
+                          tarea.usuarioAsignadoUuid
+                        ) {
+
+                          {{
+                            obtenerNombreUsuario(
+                              tarea.usuarioAsignadoUuid
+                            )
+                          }}
+
+                        } @else if (
+                          !proyectoFinalizado(proyecto)
+                        ) {
+
+                          <label
+                            [for]="'trabajador-' + tarea.id">
+                            Trabajador
+                          </label>
+
+                          <select
+                            [id]="'trabajador-' + tarea.id"
+                            [name]="'trabajador-' + tarea.id"
+                            [(ngModel)]="
+                              usuarioSeleccionadoPorTarea[
+                                tarea.id
+                              ]
+                            "
+                            [disabled]="
+                              estaProcesandoTarea(
+                                tarea.id
+                              )
+                            ">
+
+                            <option value="">
+                              Seleccionar
+                            </option>
+
+                            @for (
+                              usuario of usuariosAsignables();
+                              track usuario.uuid
+                            ) {
+
+                              @if (usuario.uuid) {
+
+                                <option
+                                  [value]="usuario.uuid">
+
+                                  {{ usuario.nombre }}
+                                  {{ usuario.apellidos }}
+
+                                </option>
+
+                              }
+
+                            }
+
+                          </select>
+
+                          <button
+                            pButton
+                            type="button"
+                            label="Asignar"
+                            [loading]="
+                              estaProcesandoTarea(
+                                tarea.id
+                              )
+                            "
+                            [disabled]="
+                              !usuarioSeleccionadoPorTarea[
+                                tarea.id
+                              ]
+                              ||
+                              estaProcesandoTarea(
+                                tarea.id
+                              )
+                            "
+                            (click)="asignarTarea(tarea.id)">
+                          </button>
+
+                        } @else {
+
+                          Sin asignar
+
+                        }
+
+                      </td>
+
+
+                      <td>
+
+                        <p-tag
+                          [value]="tarea.prioridad">
+                        </p-tag>
+
+                      </td>
+
+
+                      <td>
+
+                        <p-tag
+                          [value]="tarea.estado">
+                        </p-tag>
+
+                        @if (
+                          esTareaRetrasada(tarea)
+                        ) {
+
+                          <span>
+                            Retrasada
+                          </span>
+
+                        }
+
+                      </td>
+
+
+                      <td>
+                        {{ tarea.fechaLimite }}
+                      </td>
+
+                    </tr>
+
+                  }
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+          }
+
+        </section>
+
+      </section>
+
+    }
+
+  }
+
+</section>

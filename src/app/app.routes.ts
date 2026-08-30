@@ -21,19 +21,30 @@ import { ZonaAdminGestion } from './features/admin/gestion/zona-admin-gestion';
 
 import { ListadoEmpresas } from './features/empresa/listado-empresas/listado-empresas';
 import { FormularioEmpresa } from './features/empresa/formulario-empresa/formulario-empresa';
+
 import { ListadoMetodosFichaje } from './features/metodo-fichaje/listado-metodos-fichaje/listado-metodos-fichaje';
+
 import { ResumenPersonal } from './features/resumenes/personal/resumen-personal/resumen-personal';
 import { ResumenEmpresa } from './features/resumenes/empresa/resumen-empresa/resumen-empresa';
+
 import { Fichar } from './features/fichaje/fichar/fichar';
+
 import { Notificaciones } from './features/notificaciones/notificaciones';
+import { AvisosTarea } from './features/avisos-tarea/avisos-tarea';
+
 import { Auditoria } from './features/auditoria/auditoria';
+
+import { MisTareas } from './features/mis-tareas/mis-tareas';
+import { PanelProyectos } from './features/panel-proyectos/panel-proyectos';
 
 
 export const routes: Routes = [
+
   {
     path: 'login',
     component: Login,
   },
+
   {
     path: 'primer-acceso',
     component: PrimerAcceso,
@@ -41,6 +52,7 @@ export const routes: Routes = [
       firstAccessGuard,
     ],
   },
+
   {
     path: 'inicio',
     component: Inicio,
@@ -65,6 +77,7 @@ export const routes: Routes = [
       adminGuard,
     ],
   },
+
   {
     path: 'empresas/nueva',
     component: FormularioEmpresa,
@@ -73,6 +86,7 @@ export const routes: Routes = [
       adminGuard,
     ],
   },
+
   {
     path: 'empresas/:id/editar',
     component: FormularioEmpresa,
@@ -100,12 +114,38 @@ export const routes: Routes = [
   },
 
   {
+    path: 'mis-tareas',
+    component: MisTareas,
+    canActivate: [
+      authGuard,
+    ],
+  },
+
+  {
+    path: 'avisos-tarea',
+    component: AvisosTarea,
+    canActivate: [
+      authGuard,
+    ],
+  },
+
+  {
+    path: 'panel-proyectos',
+    component: PanelProyectos,
+    canActivate: [
+      authGuard,
+      encargadoGuard,
+    ],
+  },
+
+  {
     path: 'resumenes/mio',
     component: ResumenPersonal,
     canActivate: [
       authGuard,
     ],
   },
+
   {
     path: 'resumenes/empresa',
     component: ResumenEmpresa,
@@ -141,6 +181,7 @@ export const routes: Routes = [
       gestionGuard,
     ],
   },
+
   {
     path: 'usuarios/:uuid/editar',
     component: FormularioUsuario,
@@ -149,6 +190,7 @@ export const routes: Routes = [
       gestionGuard,
     ],
   },
+
   {
     path: 'usuarios',
     component: ListadoUsuarios,
@@ -162,6 +204,7 @@ export const routes: Routes = [
     path: 'restablecer-password',
     component: RestablecerPassword,
   },
+
   {
     path: 'recuperar-password',
     component: RecuperarPassword,
@@ -186,4 +229,5 @@ export const routes: Routes = [
     path: '**',
     redirectTo: 'login',
   },
+
 ];

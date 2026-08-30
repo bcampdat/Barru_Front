@@ -226,7 +226,7 @@
 
       <output class="estado-carga">
         Cargando resumen...
-      </output>      
+      </output>
 
     } @else {
 
@@ -359,7 +359,7 @@
                   </span>
 
                   <h3>
-                    Tiempos de la jornada
+                    Estado de la jornada
                   </h3>
 
                 </div>
@@ -370,11 +370,11 @@
               <div class="kpi-principal kpi-principal--tiempo">
 
                 <strong>
-                  {{ resumen.tiempoTrabajado }}
+                  {{ resumen.tiempoMedioTrabajado }}
                 </strong>
 
                 <span>
-                  tiempo trabajado
+                  tiempo medio trabajado
                 </span>
 
               </div>
@@ -383,9 +383,23 @@
               <dl class="metricas">
 
                 <div>
-                  <dt>Tiempo de pausa</dt>
+                  <dt>Tiempo medio restante</dt>
                   <dd>
-                    {{ resumen.tiempoPausa }}
+                    {{ resumen.tiempoMedioRestante }}
+                  </dd>
+                </div>
+
+                <div>
+                  <dt>Progreso medio</dt>
+                  <dd>
+                    {{ resumen.progresoMedioJornada }} %
+                  </dd>
+                </div>
+
+                <div>
+                  <dt>Pausa media</dt>
+                  <dd>
+                    {{ resumen.tiempoMedioPausa }}
                   </dd>
                 </div>
 

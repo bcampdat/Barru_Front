@@ -69,10 +69,8 @@ export interface ResumenDiarioDTO {
 
 }
 
-
 /*
- * Incidencia incluida en el resumen
- * global de una empresa.
+ * Incidencia global de una empresa.
  */
 export interface IncidenciaEmpresaDTO {
 
@@ -82,30 +80,12 @@ export interface IncidenciaEmpresaDTO {
 
   tipoIncidencia: TipoIncidenciaEmpresa;
 
-  /*
-   * Hora del fichaje real relacionado
-   * con la incidencia.
-   */
   hora: string | null;
 
-  /*
-   * Tipo real del fichaje.
-   *
-   * Para una jornada incompleta puede ser:
-   * ENTRADA, INICIO_PAUSA o FIN_PAUSA.
-   */
   tipoFichaje: TipoFichaje;
 
-  /*
-   * Solo existe cuando la incidencia
-   * procede realmente de una SALIDA.
-   */
   tipoSalida: TipoSalida | null;
 
-  /*
-   * Solo existe cuando la salida
-   * tiene un motivo asociado.
-   */
   motivoSalida: MotivoSalida | null;
 
 }
@@ -119,6 +99,9 @@ export interface ResumenEmpresaDTO {
 
   fecha: string;
 
+  /*
+   * Situación de la plantilla.
+   */
   totalTrabajadores: number;
 
   trabajadoresConFichaje: number;
@@ -133,6 +116,9 @@ export interface ResumenEmpresaDTO {
 
   trabajadoresConHorasExtra: number;
 
+  /*
+   * Totales acumulados.   
+   */
   minutosTrabajados: number;
 
   minutosPausa: number;
@@ -145,6 +131,27 @@ export interface ResumenEmpresaDTO {
 
   tiempoExtra: string;
 
+  /*
+   * Indicadores operativos
+   * para la visión actual de empresa.
+   */
+  minutosMediosTrabajados: number;
+
+  minutosMediosRestantes: number;
+
+  minutosMediosPausa: number;
+
+  progresoMedioJornada: number;
+
+  tiempoMedioTrabajado: string;
+
+  tiempoMedioRestante: string;
+
+  tiempoMedioPausa: string;
+
+  /*
+   * Seguimiento y control.
+   */
   totalIncidencias: number;
 
   incidencias: IncidenciaEmpresaDTO[];
