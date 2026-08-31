@@ -1,0 +1,166 @@
+@mixin responsive {
+
+  /* TABLET / PANTALLA INTERMEDIA */
+
+  @media (max-width: 900px) {
+
+    .inicio-page:not(.menu-recogido) {
+      grid-template-columns:
+        230px minmax(0, 1fr);
+    }
+
+    .logo-completo {
+      width: 130px;
+    }
+
+    .contenido-principal {
+      padding: 1.5rem;
+    }
+
+    .inicio-bienvenida {
+      min-height: calc(100vh - 3rem);
+    }
+
+    .bienvenida-logo {
+      width: 240px;
+    }
+
+    .inicio-bienvenida h1 {
+      font-size: 1.7rem;
+    }
+
+    .bienvenida-rol {
+      font-size: 0.9rem;
+    }
+
+    .bienvenida-accion {
+      padding: 0.78rem 1.3rem;
+
+      font-size: 0.85rem;
+    }
+
+  }
+
+
+  /* MÓVIL */
+
+  @media (max-width: 760px) {
+
+    .inicio-page,
+    .inicio-page.menu-recogido {
+      grid-template-columns:
+        64px minmax(0, 1fr);
+    }
+
+
+    /* El sidebar permanece siempre recogido */
+
+    .inicio-page .boton-recoger {
+      display: none;
+    }
+
+
+    /* Sidebar compacto */
+
+    .menu-recogido .sidebar {
+      padding-inline: 0.45rem;
+    }
+
+    .logo-icono {
+      width: 28px;
+      height: 28px;
+    }
+
+    .menu-recogido .avatar {
+      width: 36px;
+      height: 36px;
+    }
+
+    .menu-recogido .avatar .pi {
+      font-size: 1.05rem;
+    }
+
+    .menu-recogido .menu-item {
+      min-height: 40px;
+
+      padding-inline: 0;
+    }
+
+    .menu-recogido .menu-item i {
+      font-size: 0.82rem;
+    }
+
+    .menu-recogido .boton-avisos {
+      width: 32px;
+      height: 32px;
+
+      flex-basis: 32px;
+    }
+
+
+    /* Tipografía móvil */
+
+    .sidebar-usuario strong {
+      font-size: 0.72rem;
+    }
+
+    .rol {
+      font-size: 0.59rem;
+    }
+
+    .menu-item {
+      font-size: 0.67rem;
+    }
+
+
+    /* Contenido principal */
+
+    .contenido-principal {
+      min-width: 0;
+
+      padding: 1rem;
+    }
+
+    .inicio-bienvenida {
+      width: 100%;
+      min-height: calc(100vh - 2rem);
+
+      align-items: center;
+      justify-content: center;
+
+      text-align: center;
+    }
+
+    .bienvenida-logo {
+      width: 200px;
+      max-width: 85%;
+
+      margin-bottom: 1.2rem;
+    }
+
+    .inicio-bienvenida h1 {
+      font-size: 1.3rem;
+    }
+
+    .bienvenida-rol {
+      margin-top: 0.3rem;
+
+      font-size: 0.78rem;
+    }
+
+    .bienvenida-accion {
+      max-width: 100%;
+
+      margin-top: 1.4rem;
+      padding: 0.68rem 0.95rem;
+
+      font-size: 0.76rem;
+    }
+
+    .bienvenida-accion .pi {
+      font-size: 0.85rem;
+    }
+
+  }
+
+}

@@ -1,0 +1,182 @@
+:host {
+  /*
+   * Barru claro:
+   * fondo claro + tarjeta oscura.
+   */
+  --login-card-bg: #20262e;
+  --login-card-text: #f0f0ed;
+  --login-card-secondary: #a9afb6;
+  --login-card-border: #353d47;
+
+  --login-input-bg: #2a3139;
+  --login-input-text: #f0f0ed;
+  --login-input-border: #4a5561;
+
+  --login-link: #7fb3b8;
+  --login-link-hover: #98c4c8;
+}
+
+
+/*
+ * Barru oscuro:
+ * fondo oscuro + tarjeta clara.
+ */
+:host-context(.barru-dark) {
+  --login-card-bg: #f5f5f2;
+  --login-card-text: #363d48;
+  --login-card-secondary: #697078;
+  --login-card-border: #d2d3cf;
+
+  --login-input-bg: #ececea;
+  --login-input-text: #363d48;
+  --login-input-border: #c8cac6;
+
+  --login-link: var(--barru-primary);
+  --login-link-hover: var(--barru-primary-hover);
+
+  .logo-tarjeta-oscura {
+    display: none;
+  }
+
+  .logo-tarjeta-clara {
+    display: block;
+  }
+}
+
+
+.login-page {
+  min-height: 100vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 1.5rem;
+
+  background: var(--barru-bg);
+}
+
+
+.login-card {
+  width: 100%;
+  max-width: 357px;
+
+  padding: 2.34rem 2.13rem;
+
+  background: var(--login-card-bg);
+
+  border: 1px solid var(--login-card-border);
+  border-radius: var(--barru-radius);
+
+  box-shadow: var(--barru-shadow);
+}
+
+
+.login-header {
+  margin-bottom: 2.25rem;
+
+  text-align: center;
+}
+
+
+.login-logo {
+  width: 280px;
+  max-width: 100%;
+  height: auto;
+
+  margin: 0 auto;
+}
+
+
+/*
+ * Barru claro:
+ * la tarjeta es oscura.
+ */
+.logo-tarjeta-oscura {
+  display: block;
+}
+
+.logo-tarjeta-clara {
+  display: none;
+}
+
+
+form {
+  display: flex;
+  flex-direction: column;
+
+  gap: 1.4rem;
+}
+
+
+.campo {
+  display: flex;
+  flex-direction: column;
+
+  gap: 0.5rem;
+
+  label {
+    color: var(--login-card-text);
+
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  input {
+    width: 100%;
+
+    background: var(--login-input-bg);
+    color: var(--login-input-text);
+
+    border-color: var(--login-input-border);
+  }
+
+  input:focus {
+    border-color: var(--barru-primary);
+
+    box-shadow:
+      0 0 0 1px var(--barru-primary);
+  }
+}
+
+
+.recuperar-link {
+  margin-top: 0.5rem;
+
+  text-align: right;
+
+  a {
+    color: var(--login-link);
+
+    font-size: 0.88rem;
+
+    text-decoration: none;
+
+    &:hover {
+      color: var(--login-link-hover);
+
+      text-decoration: underline;
+    }
+  }
+}
+
+
+:host ::ng-deep .p-button {
+  width: 100%;
+}
+
+
+@media (max-width: 520px) {
+
+  .login-page {
+    padding: 1rem;
+  }
+
+  .login-card {
+    padding: 1.7rem 1.28rem;
+  }
+
+  .login-logo {
+    width: 190px;
+  }
+}

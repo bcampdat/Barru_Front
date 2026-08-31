@@ -4,6 +4,7 @@ import {
   Component,
   OnDestroy,
   OnInit,
+  output,
   signal,
 } from '@angular/core';
 
@@ -45,6 +46,9 @@ implements OnInit, OnDestroy {
 
   readonly mensaje =
     signal<string | null>(null);
+
+  readonly cantidadPendientesChange =
+    output<number>();
 
 
   private intervalo:
@@ -127,6 +131,10 @@ implements OnInit, OnDestroy {
 
           this.solicitudes.set(
             solicitudes
+          );
+
+          this.cantidadPendientesChange.emit(
+            solicitudes.length
           );
 
           /*
@@ -395,12 +403,6 @@ implements OnInit, OnDestroy {
       });
   }
 
-
-  /*
-   * =========================================================
-   * AUXILIARES
-   * =========================================================
-   */
 
   private limpiarSeleccionInvalida(
     solicitudes:

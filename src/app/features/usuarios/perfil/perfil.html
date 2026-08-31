@@ -1,157 +1,193 @@
 <div class="perfil-page">
 
-  <header>
+  <section class="perfil-card">
 
-    <button
-      type="button"
-      (click)="volver()"
-    >
-      Volver
-    </button>
+    <header class="perfil-header">
 
-    <h1>Mis datos</h1>
+      <h1>
+        Mis datos
+      </h1>
 
-  </header>
+    </header>
 
 
-  @if (error()) {
-    <p-message severity="error">
-      {{ error() }}
-    </p-message>
-  }
+    @if (error()) {
+
+      <p-message severity="error">
+        {{ error() }}
+      </p-message>
+
+    }
 
 
-  @if (exito()) {
-    <p-message severity="success">
-      {{ exito() }}
-    </p-message>
-  }
+    @if (exito()) {
+
+      <p-message severity="success">
+        {{ exito() }}
+      </p-message>
+
+    }
 
 
-  @if (cargando()) {
+    @if (cargando()) {
 
-    <p>Cargando...</p>
+      <div class="perfil-cargando">
+        Cargando...
+      </div>
 
-  } @else {
+    } @else {
 
-    <form
-      #perfilForm="ngForm"
-      (ngSubmit)="guardar()"
-    >
+      <form
+        #perfilForm="ngForm"
+        class="perfil-form"
+        (ngSubmit)="guardar()"
+      >
 
-      <div>
+        <!-- Foto / avatar -->
+        <div class="perfil-foto">
 
-        @if (fotoPerfil) {
+          <div class="perfil-avatar">
 
-          <img
-            [src]="fotoPerfil"
-            alt="Foto de perfil"
-            width="120"
-            height="120"
+            @if (fotoPerfil) {
+
+              <img
+                [src]="fotoPerfil"
+                alt="Foto de perfil"
+              />
+
+            } @else {
+
+              <i
+                class="pi pi-user"
+                aria-hidden="true"
+              ></i>
+
+            }
+
+          </div>
+
+
+          <label
+            for="fotoPerfil"
+            class="foto-label"
+          >
+            Foto de perfil
+          </label>
+
+          <input
+            id="fotoPerfil"
+            name="fotoPerfil"
+            class="foto-input"
+            type="file"
+            accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+            (change)="seleccionarFoto($event)"
           />
 
-        } @else {
-
-          <span>
-            Sin foto de perfil
-          </span>
-
-        }
-
-      </div>
+        </div>
 
 
-      <div>
+        <!-- Nombre -->
+        <div class="campo">
 
-        <label for="fotoPerfil">
-          Foto de perfil
-        </label>
+          <label for="nombre">
+            Nombre
+          </label>
 
-        <input
-          id="fotoPerfil"
-          name="fotoPerfil"
-          type="file"
-          accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
-          (change)="seleccionarFoto($event)"
-        />
+          <input
+            id="nombre"
+            name="nombre"
+            type="text"
+            pInputText
+            [(ngModel)]="nombre"
+            maxlength="80"
+            required
+          />
 
-      </div>
-
-
-      <div>
-
-        <label for="nombre">
-          Nombre
-        </label>
-
-        <input
-          id="nombre"
-          name="nombre"
-          type="text"
-          pInputText
-          [(ngModel)]="nombre"
-          maxlength="80"
-          required
-        />
-
-      </div>
+        </div>
 
 
-      <div>
+        <!-- Apellidos -->
+        <div class="campo">
 
-        <label for="apellidos">
-          Apellidos
-        </label>
+          <label for="apellidos">
+            Apellidos
+          </label>
 
-        <input
-          id="apellidos"
-          name="apellidos"
-          type="text"
-          pInputText
-          [(ngModel)]="apellidos"
-          maxlength="120"
-          required
-        />
+          <input
+            id="apellidos"
+            name="apellidos"
+            type="text"
+            pInputText
+            [(ngModel)]="apellidos"
+            maxlength="120"
+            required
+          />
 
-      </div>
-
-
-      <div>
-
-        <label for="email">
-          Email
-        </label>
-
-        <input
-          id="email"
-          name="email"
-          type="email"
-          pInputText
-          [(ngModel)]="email"
-          maxlength="150"
-          required
-          email
-        />
-
-      </div>
+        </div>
 
 
-      <div>
+        <!-- Email -->
+        <div class="campo">
 
+          <label for="email">
+            Email
+          </label>
+
+          <input
+            id="email"
+            name="email"
+            type="email"
+            pInputText
+            [(ngModel)]="email"
+            maxlength="150"
+            required
+            email
+          />
+
+        </div>
+
+
+        <!-- Guardar -->
         <button
           type="submit"
+          class="guardar-perfil"
           [disabled]="
             perfilForm.invalid ||
             guardando()
           "
         >
-          Guardar cambios
+
+          @if (guardando()) {
+            Guardando...
+          } @else {
+            Guardar cambios
+          }
+
         </button>
 
-      </div>
+      </form>
 
-    </form>
+    }
 
-  }
+  </section>
+
+
+  <!-- Volver a Inicio -->
+  <button
+    type="button"
+    class="volver-inicio"
+    (click)="volver()"
+  >
+
+    <i
+      class="pi pi-angle-double-right"
+      aria-hidden="true"
+    ></i>
+
+    <span class="solo-lectura">
+      Volver a Inicio
+    </span>
+
+  </button>
 
 </div>

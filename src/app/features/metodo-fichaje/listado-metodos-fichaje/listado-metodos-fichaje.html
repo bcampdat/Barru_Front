@@ -1,221 +1,280 @@
-<div class="metodos-fichaje-page">
+<div class="listado-metodos-fichaje">
 
   <p-confirmdialog />
 
-  <h1>Métodos de fichaje</h1>
+  <header class="listado-metodos-fichaje-header">
+    <h1 class="listado-metodos-fichaje-titulo">
+      Métodos de fichaje
+    </h1>
 
-  <p>
-    Gestión de los métodos de fichaje asignados a cada empresa.
-  </p>
+    <p class="listado-metodos-fichaje-descripcion">
+      Gestión de los métodos de fichaje asignados a cada empresa.
+    </p>
+  </header>
 
   @if (error()) {
-    <p-message severity="error">
-      {{ error() }}
-    </p-message>
+    <div class="listado-metodos-fichaje-mensaje">
+      <p-message severity="error">
+        {{ error() }}
+      </p-message>
+    </div>
   }
 
   @if (exito()) {
-    <p-message severity="success">
-      {{ exito() }}
-    </p-message>
+    <div class="listado-metodos-fichaje-mensaje">
+      <p-message severity="success">
+        {{ exito() }}
+      </p-message>
+    </div>
   }
 
-  <div>
+  <div class="listado-metodos-fichaje-panel">
 
-    <label for="empresaMetodo">
-      Empresa
-    </label>
+    <div class="listado-metodos-fichaje-empresa">
 
-    <select
-      id="empresaMetodo"
-      [(ngModel)]="empresaId"
-      [disabled]="cargando()"
-      (ngModelChange)="seleccionarEmpresa()"
-    >
-
-      <option [ngValue]="null">
-        Selecciona una empresa
-      </option>
-
-      @for (empresa of empresas(); track empresa.id) {
-
-        @if (empresa.id !== undefined) {
-
-          <option [ngValue]="empresa.id">
-            {{ empresa.nombre }}
-            {{ empresa.activa === false ? '(Inactiva)' : '' }}
-          </option>
-
-        }
-
-      }
-
-    </select>
-
-  </div>
-
-  @if (empresaId !== null) {
-
-    <section>
-
-      <h2>Asignar método</h2>
-
-      <label for="metodoDisponible">
-        Método disponible
+      <label for="empresaMetodo">
+        Empresa
       </label>
 
       <select
-        id="metodoDisponible"
-        [(ngModel)]="codigoMetodo"
-        [disabled]="procesando() || metodosDisponibles().length === 0"
+        id="empresaMetodo"
+        class="listado-metodos-fichaje-select"
+        [(ngModel)]="empresaId"
+        [disabled]="cargando()"
+        (ngModelChange)="seleccionarEmpresa()"
       >
-
-        <option value="">
-          Selecciona un método
+        <option [ngValue]="null">
+          Selecciona una empresa
         </option>
 
-        @for (
-          metodo of metodosDisponibles();
-          track metodo.codigoMetodo
-        ) {
+        @for (empresa of empresas(); track empresa.id) {
 
-          <option [value]="metodo.codigoMetodo">
-            {{ metodo.nombre ?? metodo.codigoMetodo }}
-          </option>
+          @if (empresa.id !== undefined) {
+            <option [ngValue]="empresa.id">
+              {{ empresa.nombre }}
+              {{ empresa.activa === false ? '(Inactiva)' : '' }}
+            </option>
+          }
 
         }
 
       </select>
 
-      <p-button
-        type="button"
-        label="Asignar"
-        [disabled]="!codigoMetodo || procesando()"
-        [loading]="procesando()"
-        (onClick)="confirmarAsignacion()"
-      />
+    </div>
 
-      @if (metodosDisponibles().length === 0) {
 
-        <p>
-          La empresa ya tiene asignados todos los métodos disponibles.
-        </p>
+    @if (empresaId !== null) {
 
-      }
+      <div class="listado-metodos-fichaje-separador"></div>
 
-    </section>
+      <section class="listado-metodos-fichaje-asignar">
 
-    <section>
+        <h2 class="listado-metodos-fichaje-subtitulo">
+          Asignar método
+        </h2>
 
-      <h2>Métodos asignados</h2>
+        <div class="listado-metodos-fichaje-asignacion">
 
-      <div>
+          <div class="listado-metodos-fichaje-campo">
 
-        <p-button
-          type="button"
-          label="Todos"
-          [outlined]="filtroEstado !== 'todos'"
-          (onClick)="filtroEstado = 'todos'"
-        />
+            <label for="metodoDisponible">
+              Método disponible
+            </label>
 
-        <p-button
-          type="button"
-          label="Activos"
-          [outlined]="filtroEstado !== 'activos'"
-          (onClick)="filtroEstado = 'activos'"
-        />
+            <select
+              id="metodoDisponible"
+              class="listado-metodos-fichaje-select"
+              [(ngModel)]="codigoMetodo"
+              [disabled]="procesando() || metodosDisponibles().length === 0"
+            >
+              <option value="">
+                Selecciona un método
+              </option>
 
-        <p-button
-          type="button"
-          label="Inactivos"
-          [outlined]="filtroEstado !== 'inactivos'"
-          (onClick)="filtroEstado = 'inactivos'"
-        />
-
-      </div>
-
-      <p-table
-        [value]="metodosVisibles()"
-        [loading]="cargando()"
-      >
-
-        <ng-template #header>
-
-          <tr>
-            <th scope="col">Método</th>
-            <th scope="col">Código</th>
-            <th scope="col">Estado</th>
-            <th scope="col">Acción</th>
-          </tr>
-
-        </ng-template>
-
-        <ng-template
-          #body
-          let-metodo
-        >
-
-          <tr>
-
-            <td>
-              {{ metodo.nombre ?? metodo.codigoMetodo }}
-            </td>
-
-            <td>
-              {{ metodo.codigoMetodo }}
-            </td>
-
-            <td>
-              {{ metodo.activo === true ? 'Activo' : 'Inactivo' }}
-            </td>
-
-            <td>
-
-              @if (metodo.id !== undefined) {
-
-                @if (metodo.activo === true) {
-
-                  <p-button
-                    type="button"
-                    label="Desactivar"
-                    severity="secondary"
-                    [disabled]="procesando()"
-                    (onClick)="cambiarEstado(metodo)"
-                  />
-
-                } @else {
-
-                  <p-button
-                    type="button"
-                    label="Activar"
-                    [disabled]="procesando()"
-                    (onClick)="cambiarEstado(metodo)"
-                  />
-
-                }
-
+              @for (
+                metodo of metodosDisponibles();
+                track metodo.codigoMetodo
+              ) {
+                <option [value]="metodo.codigoMetodo">
+                  {{ metodo.nombre ?? metodo.codigoMetodo }}
+                </option>
               }
 
-            </td>
+            </select>
 
-          </tr>
+          </div>
 
-        </ng-template>
+          <button
+            type="button"
+            class="boton-primario"
+            [disabled]="!codigoMetodo || procesando()"
+            (click)="confirmarAsignacion()"
+          >
+            {{ procesando() ? 'Asignando...' : 'Asignar' }}
+          </button>
 
-        <ng-template #emptymessage>
+        </div>
 
-          <tr>
-            <td colspan="4">
-              No hay métodos de fichaje para mostrar.
-            </td>
-          </tr>
+        @if (metodosDisponibles().length === 0) {
+          <p class="listado-metodos-fichaje-aviso">
+            La empresa ya tiene asignados todos los métodos disponibles.
+          </p>
+        }
 
-        </ng-template>
+      </section>
 
-      </p-table>
 
-    </section>
+      <div class="listado-metodos-fichaje-separador"></div>
 
-  }
+
+      <section class="listado-metodos-fichaje-asignados">
+
+        <div class="listado-metodos-fichaje-asignados-header">
+
+          <h2 class="listado-metodos-fichaje-subtitulo">
+            Métodos asignados
+          </h2>
+
+          <nav
+            class="listado-metodos-fichaje-filtros"
+            aria-label="Estado de los métodos de fichaje"
+          >
+
+            <button
+              type="button"
+              [attr.aria-pressed]="filtroEstado === 'todos'"
+              (click)="filtroEstado = 'todos'"
+            >
+              Todos
+            </button>
+
+            <button
+              type="button"
+              [attr.aria-pressed]="filtroEstado === 'activos'"
+              (click)="filtroEstado = 'activos'"
+            >
+              Activos
+            </button>
+
+            <button
+              type="button"
+              [attr.aria-pressed]="filtroEstado === 'inactivos'"
+              (click)="filtroEstado = 'inactivos'"
+            >
+              Inactivos
+            </button>
+
+          </nav>
+
+        </div>
+
+
+        <div class="listado-metodos-fichaje-tabla">
+
+          <p-table
+            [value]="metodosVisibles()"
+            [loading]="cargando()"
+          >
+
+            <ng-template #header>
+              <tr>
+                <th scope="col">Método</th>
+                <th scope="col">Código</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Acción</th>
+              </tr>
+            </ng-template>
+
+
+            <ng-template
+              #body
+              let-metodo
+            >
+              <tr>
+
+                <td class="listado-metodos-fichaje-nombre">
+                  {{ metodo.nombre ?? metodo.codigoMetodo }}
+                </td>
+
+                <td>
+                  {{ metodo.codigoMetodo }}
+                </td>
+
+                <td>
+                  <span
+                    class="listado-metodos-fichaje-estado"
+                    [class.listado-metodos-fichaje-estado-activo]="metodo.activo === true"
+                    [class.listado-metodos-fichaje-estado-inactivo]="metodo.activo !== true"
+                  >
+                    {{ metodo.activo === true ? 'Activo' : 'Inactivo' }}
+                  </span>
+                </td>
+
+                <td>
+
+                  @if (metodo.id !== undefined) {
+
+                    @if (metodo.activo === true) {
+
+                      <button
+                        type="button"
+                        class="boton-secundario"
+                        [disabled]="procesando()"
+                        (click)="cambiarEstado(metodo)"
+                      >
+                        <i
+                          class="pi pi-ban"
+                          aria-hidden="true"
+                        ></i>
+
+                        Desactivar
+                      </button>
+
+                    } @else {
+
+                      <button
+                        type="button"
+                        class="boton-primario"
+                        [disabled]="procesando()"
+                        (click)="cambiarEstado(metodo)"
+                      >
+                        <i
+                          class="pi pi-check"
+                          aria-hidden="true"
+                        ></i>
+
+                        Activar
+                      </button>
+
+                    }
+
+                  }
+
+                </td>
+
+              </tr>
+            </ng-template>
+
+
+            <ng-template #emptymessage>
+              <tr>
+                <td
+                  colspan="4"
+                  class="listado-metodos-fichaje-vacio"
+                >
+                  No hay métodos de fichaje para mostrar.
+                </td>
+              </tr>
+            </ng-template>
+
+          </p-table>
+
+        </div>
+
+      </section>
+
+    }
+
+  </div>
 
 </div>

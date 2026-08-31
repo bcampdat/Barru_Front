@@ -19,7 +19,7 @@ import {
 } from 'rxjs';
 
 import { providePrimeNG } from 'primeng/config';
-import Aura from '@primeuix/themes/aura';
+import { BarruPreset } from './core/theme/theme';
 
 import { routes } from './app.routes';
 import { AuthService } from './core/auth/auth.service';
@@ -59,7 +59,10 @@ export const appConfig: ApplicationConfig = {
 
     providePrimeNG({
       theme: {
-        preset: Aura,
+        preset: BarruPreset,
+        options: {
+          darkModeSelector: '.barru-dark',
+        },
       },
     }),
   ],

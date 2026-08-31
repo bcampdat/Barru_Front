@@ -1,244 +1,283 @@
-<div class="empresa-formulario">
+<div class="formulario-empresa">
 
-  <h1>
-    {{ esEdicion() ? 'Modificar empresa' : 'Nueva empresa' }}
-  </h1>
+  <header class="formulario-empresa-header">
+    <h1 class="formulario-empresa-titulo">
+      {{ esEdicion() ? 'Modificar empresa' : 'Nueva empresa' }}
+    </h1>
+  </header>
 
   @if (error()) {
-    <p-message severity="error">
-      {{ error() }}
-    </p-message>
+    <div class="formulario-empresa-error">
+      <p-message severity="error">
+        {{ error() }}
+      </p-message>
+    </div>
   }
 
   @if (cargando()) {
 
-    <p>Cargando empresa...</p>
+    <div class="formulario-empresa-cargando">
+      Cargando empresa...
+    </div>
 
   } @else {
 
     <form
+      class="formulario-empresa-form"
       [formGroup]="formulario"
       (ngSubmit)="guardar()"
     >
 
-      <div>
+      <div class="formulario-empresa-panel">
 
-        <label for="nombre">
-          Nombre
-        </label>
+        <div class="formulario-empresa-identidad">
 
-        <input
-          id="nombre"
-          type="text"
-          pInputText
-          formControlName="nombre"
-          maxlength="150"
-          required
-        />
+          <div class="formulario-empresa-campo formulario-empresa-nombre">
+            <label for="nombre">
+              Nombre
+            </label>
 
-      </div>
+            <input
+              id="nombre"
+              class="formulario-empresa-input"
+              type="text"
+              pInputText
+              formControlName="nombre"
+              maxlength="150"
+              required
+            />
+          </div>
 
+          <div class="formulario-empresa-logo">
 
-      <div>
+            <label for="logo">
+              Logo
+            </label>
 
-        <label for="limiteUsuarios">
-          Límite de usuarios
-        </label>
+            @if (logoActual()) {
 
-        <input
-          id="limiteUsuarios"
-          type="number"
-          formControlName="limiteUsuarios"
-          min="1"
-          max="100000"
-          step="1"
-          required
-        />
+              <div class="formulario-empresa-logo-actual">
+                <img
+                  [src]="logoActual()"
+                  alt="Logo actual de la empresa"
+                />
+              </div>
 
-      </div>
+            }
 
+            <input
+              id="logo"
+              class="formulario-empresa-archivo"
+              type="file"
+              accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+              (change)="seleccionarLogo($event)"
+            />
 
-      <fieldset>
+            @if (esEdicion()) {
 
-        <legend>
-          Jornada diaria
-        </legend>
+              <small class="formulario-empresa-ayuda">
+                Si no seleccionas otro logo, se conservará el actual.
+              </small>
 
-        <div>
+            }
 
-          <label for="jornadaHoras">
-            Horas
-          </label>
-
-          <input
-            id="jornadaHoras"
-            type="number"
-            formControlName="jornadaHoras"
-            min="0"
-            max="24"
-            step="1"
-          />
-
-          <label for="jornadaMinutosResto">
-            Minutos
-          </label>
-
-          <input
-            id="jornadaMinutosResto"
-            type="number"
-            formControlName="jornadaMinutosResto"
-            min="0"
-            max="59"
-            step="1"
-          />
+          </div>
 
         </div>
 
-      </fieldset>
+
+        <div class="formulario-empresa-jornada">
+
+          <fieldset class="formulario-empresa-grupo">
+
+            <legend>
+              Jornada diaria
+            </legend>
+
+            <div class="formulario-empresa-duracion">
+
+              <div class="formulario-empresa-duracion-campo">
+                <label for="jornadaHoras">
+                  Horas
+                </label>
+
+                <input
+                  id="jornadaHoras"
+                  class="formulario-empresa-input"
+                  type="number"
+                  formControlName="jornadaHoras"
+                  min="0"
+                  max="24"
+                  step="1"
+                />
+              </div>
+
+              <div class="formulario-empresa-duracion-campo">
+                <label for="jornadaMinutosResto">
+                  Minutos
+                </label>
+
+                <input
+                  id="jornadaMinutosResto"
+                  class="formulario-empresa-input"
+                  type="number"
+                  formControlName="jornadaMinutosResto"
+                  min="0"
+                  max="59"
+                  step="1"
+                />
+              </div>
+
+            </div>
+
+          </fieldset>
 
 
-      <fieldset>
+          <fieldset class="formulario-empresa-grupo">
 
-        <legend>
-          Pausa disponible
-        </legend>
+            <legend>
+              Pausa disponible
+            </legend>
 
-        <div>
+            <div class="formulario-empresa-duracion">
 
-          <label for="pausaHoras">
-            Horas
-          </label>
+              <div class="formulario-empresa-duracion-campo">
+                <label for="pausaHoras">
+                  Horas
+                </label>
 
-          <input
-            id="pausaHoras"
-            type="number"
-            formControlName="pausaHoras"
-            min="0"
-            max="24"
-            step="1"
-          />
+                <input
+                  id="pausaHoras"
+                  class="formulario-empresa-input"
+                  type="number"
+                  formControlName="pausaHoras"
+                  min="0"
+                  max="24"
+                  step="1"
+                />
+              </div>
 
-          <label for="pausaMinutosResto">
-            Minutos
-          </label>
+              <div class="formulario-empresa-duracion-campo">
+                <label for="pausaMinutosResto">
+                  Minutos
+                </label>
 
-          <input
-            id="pausaMinutosResto"
-            type="number"
-            formControlName="pausaMinutosResto"
-            min="0"
-            max="59"
-            step="1"
-          />
+                <input
+                  id="pausaMinutosResto"
+                  class="formulario-empresa-input"
+                  type="number"
+                  formControlName="pausaMinutosResto"
+                  min="0"
+                  max="59"
+                  step="1"
+                />
+              </div>
+
+            </div>
+
+          </fieldset>
 
         </div>
 
-      </fieldset>
+
+        <div class="formulario-empresa-configuracion">
+
+          <div class="formulario-empresa-campo">
+            <label for="limiteUsuarios">
+              Límite de usuarios
+            </label>
+
+            <input
+              id="limiteUsuarios"
+              class="formulario-empresa-input"
+              type="number"
+              formControlName="limiteUsuarios"
+              min="1"
+              max="100000"
+              step="1"
+              required
+            />
+          </div>
+
+          <div class="formulario-empresa-campo">
+            <label for="radioFichaje">
+              Radio de fichaje en metros
+            </label>
+
+            <input
+              id="radioFichaje"
+              class="formulario-empresa-input"
+              type="number"
+              formControlName="radioFichaje"
+              min="5"
+              max="500"
+              step="1"
+              required
+            />
+          </div>
+
+        </div>
 
 
-      <div>
+        <div class="formulario-empresa-coordenadas">
 
-        <label for="latitud">
-          Latitud
-        </label>
+          <div class="formulario-empresa-campo">
+            <label for="latitud">
+              Latitud
+            </label>
 
-        <input
-          id="latitud"
-          type="number"
-          formControlName="latitud"
-          step="any"
-          required
-        />
+            <input
+              id="latitud"
+              class="formulario-empresa-input"
+              type="number"
+              formControlName="latitud"
+              step="any"
+              required
+            />
+          </div>
 
-      </div>
+          <div class="formulario-empresa-campo">
+            <label for="longitud">
+              Longitud
+            </label>
 
+            <input
+              id="longitud"
+              class="formulario-empresa-input"
+              type="number"
+              formControlName="longitud"
+              step="any"
+              required
+            />
+          </div>
 
-      <div>
-
-        <label for="longitud">
-          Longitud
-        </label>
-
-        <input
-          id="longitud"
-          type="number"
-          formControlName="longitud"
-          step="any"
-          required
-        />
-
-      </div>
-
-
-      <div>
-
-        <label for="radioFichaje">
-          Radio de fichaje en metros
-        </label>
-
-        <input
-          id="radioFichaje"
-          type="number"
-          formControlName="radioFichaje"
-          min="5"
-          max="500"
-          step="1"
-          required
-        />
-
-      </div>
-
-
-      <div>
-
-        <label for="logo">
-          Logo
-        </label>
-
-        @if (logoActual()) {
-
-          <img
-            [src]="logoActual()"
-            alt="Logo actual de la empresa"
-            width="80"
-            height="80"
-          />
-
-        }
-
-        <input
-          id="logo"
-          type="file"
-          accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
-          (change)="seleccionarLogo($event)"
-        />
-
-        @if (esEdicion()) {
-
-          <small>
-            Si no seleccionas otro logo, se conservará el actual.
-          </small>
-
-        }
+        </div>
 
       </div>
 
 
-      <div>
+      <div class="formulario-empresa-acciones">
 
-        <p-button
+        <button
           type="button"
-          label="Cancelar"
-          severity="secondary"
+          class="boton-secundario"
           [disabled]="guardando()"
-          (onClick)="volver()"
-        />
+          (click)="volver()"
+        >
+          Cancelar
+        </button>
 
-        <p-button
+        <button
           type="submit"
-          [label]="esEdicion() ? 'Guardar cambios' : 'Crear empresa'"
-          [loading]="guardando()"
-        />
+          class="boton-primario"
+          [disabled]="guardando()"
+        >
+          @if (guardando()) {
+            Guardando...
+          } @else {
+            {{ esEdicion() ? 'Guardar cambios' : 'Crear empresa' }}
+          }
+        </button>
 
       </div>
 

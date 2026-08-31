@@ -1,12 +1,18 @@
 import {
   Component,
+  HostListener,
   OnInit,
-  signal
+  signal,
 } from '@angular/core';
 
-import { Router } from '@angular/router';
+import {
+  Router,
+  RouterOutlet,
+} from '@angular/router';
 
 import { AuthService } from '../../core/auth/auth.service';
+
+import { ThemeService } from '../../core/theme/theme-service';
 
 import { AvisoTareaService } from '../../core/proyecto/aviso-tarea/aviso-tarea-service';
 
@@ -16,6 +22,7 @@ import { ZonaAdminAcceso } from '../admin/acceso/zona-admin-acceso';
   selector: 'app-inicio',
   imports: [
     ZonaAdminAcceso,
+    RouterOutlet,
   ],
   templateUrl: './inicio.html',
   styleUrl: './inicio.scss',
@@ -28,13 +35,27 @@ export class Inicio implements OnInit {
 
   readonly avisosTareaPendientes = signal(0);
 
+  readonly menuRecogido = signal(false);
+
   constructor(
     private readonly authService: AuthService,
     private readonly avisoTareaService: AvisoTareaService,
+    private readonly themeService: ThemeService,
     private readonly router: Router
   ) {}
 
   ngOnInit(): void {
+
+    this.actualizarMenuResponsive();
+
+    const sesion =
+      this.authService.getSesion();
+
+    if (sesion) {
+      this.themeService.inicializar(
+        sesion.usuarioUuid
+      );
+    }
 
     if (this.puedeUsarTareas) {
       this.cargarAvisosTareaPendientes();
@@ -73,17 +94,50 @@ export class Inicio implements OnInit {
       || rol === 'ENCARGADO';
   }
 
-  irAPerfil(): void {
+  get puedeGestionar(): boolean {
 
-    void this.router.navigateByUrl(
-      '/perfil'
+    return this.esAdminSistema
+      || this.esEncargado;
+  }
+
+  get temaOscuro(): boolean {
+
+    return this.themeService.oscuro();
+  }
+
+  @HostListener('window:resize')
+  actualizarMenuResponsive(): void {
+
+    this.menuRecogido.set(
+      window.innerWidth <= 760
     );
   }
 
-  irANotificaciones(): void {
+  alternarMenu(): void {
+
+    this.menuRecogido.update(
+      recogido => !recogido
+    );
+  }
+
+  alternarTema(): void {
+
+    const sesion =
+      this.authService.getSesion();
+
+    if (!sesion) {
+      return;
+    }
+
+    this.themeService.alternar(
+      sesion.usuarioUuid
+    );
+  }
+
+  irAFichar(): void {
 
     void this.router.navigateByUrl(
-      '/notificaciones'
+      '/fichar'
     );
   }
 
@@ -101,10 +155,66 @@ export class Inicio implements OnInit {
     );
   }
 
+  irAMiResumen(): void {
+
+    void this.router.navigateByUrl(
+      '/resumenes/mio'
+    );
+  }
+
   irAPanelProyectos(): void {
 
     void this.router.navigateByUrl(
       '/panel-proyectos'
+    );
+  }
+
+  irANotificaciones(): void {
+
+    void this.router.navigateByUrl(
+      '/notificaciones'
+    );
+  }
+
+  irAUsuarios(): void {
+
+    void this.router.navigateByUrl(
+      '/usuarios'
+    );
+  }
+
+  irAResumenEmpresa(): void {
+
+    void this.router.navigateByUrl(
+      '/resumenes/empresa'
+    );
+  }
+
+  irAAuditoria(): void {
+
+    void this.router.navigateByUrl(
+      '/auditoria'
+    );
+  }
+
+  irAEmpresas(): void {
+
+    void this.router.navigateByUrl(
+      '/empresas'
+    );
+  }
+
+  irAMetodosFichaje(): void {
+
+    void this.router.navigateByUrl(
+      '/metodos-fichaje'
+    );
+  }
+
+  irAPerfil(): void {
+
+    void this.router.navigateByUrl(
+      '/perfil'
     );
   }
 
@@ -171,7 +281,7 @@ export class Inicio implements OnInit {
       .obtenerMisAvisosNoLeidos()
       .subscribe({
 
-        next: (avisos) => {
+        next: avisos => {
 
           this.avisosTareaPendientes.set(
             avisos.length

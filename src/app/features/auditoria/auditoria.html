@@ -1,15 +1,16 @@
 <div class="auditoria-page">
 
-  <header>
-    <h1>Auditoría</h1>
+  <!-- CABECERA -->
+  <header class="auditoria-header">
 
-    <p>
-      Consulta la trazabilidad de la actividad registrada
-      en la aplicación.
-    </p>
+    <div>
+      <h1>Auditoría</h1>
+    </div>
+
   </header>
 
 
+  <!-- ERROR -->
   @if (error()) {
 
     <p-message severity="error">
@@ -19,126 +20,304 @@
   }
 
 
-  @if (esAdmin()) {
+  <!-- BARRA SUPERIOR -->
+  <section class="auditoria-toolbar">
 
-    <section>
+    <div class="toolbar-inicio">
 
-      <h2>Ámbito</h2>
+      @if (esAdmin()) {
 
-      <nav aria-label="Ámbito de auditoría">
+        @if (ambitoAdmin() === 'GLOBAL') {
 
-        <button
-          type="button"
-          [disabled]="cargando() || descargando()"
-          [attr.aria-pressed]="ambitoAdmin() === 'GLOBAL'"
-          (click)="seleccionarAmbitoAdmin('GLOBAL')"
-        >
-          Global
-        </button>
+          <!-- Selección inicial de ámbito -->
+          <nav
+            class="ambito-selector"
+            aria-label="Ámbito de auditoría"
+          >
 
-        <button
-          type="button"
-          [disabled]="cargando() || descargando()"
-          [attr.aria-pressed]="ambitoAdmin() === 'EMPRESA'"
-          (click)="seleccionarAmbitoAdmin('EMPRESA')"
-        >
-          Empresa
-        </button>
+            <button
+              type="button"
+              [disabled]="cargando() || descargando()"
+              aria-pressed="true"
+              (click)="seleccionarAmbitoAdmin('GLOBAL')"
+            >
+              Global
+            </button>
 
-      </nav>
+            <button
+              type="button"
+              [disabled]="cargando() || descargando()"
+              aria-pressed="false"
+              (click)="seleccionarAmbitoAdmin('EMPRESA')"
+            >
+              Empresa
+            </button>
+
+          </nav>
+
+        } @else {
+
+          <!-- Ámbito empresa seleccionado -->
+          <button
+            type="button"
+            class="volver-ambito"
+            [disabled]="cargando() || descargando()"
+            (click)="seleccionarAmbitoAdmin('GLOBAL')"
+          >
+
+            <i
+              class="pi pi-angle-double-left"
+              aria-hidden="true"
+            ></i>
+
+            <span class="solo-lectura">
+              Volver a auditoría global
+            </span>
+
+          </button>
 
 
-      @if (ambitoAdmin() === 'EMPRESA') {
+          <span class="ambito-activo">
+            Empresa
+          </span>
 
-        <label for="empresaAuditoria">
-          Empresa
-        </label>
 
-        <select
-          id="empresaAuditoria"
-          name="empresaAuditoria"
-          [ngModel]="empresaId()"
-          [disabled]="cargando() || descargando()"
-          (ngModelChange)="seleccionarEmpresa($event)"
-        >
+          <div class="empresa-selector">
 
-          <option [ngValue]="null">
-            Selecciona una empresa
-          </option>
+            <label
+              for="empresaAuditoria"
+              class="solo-lectura"
+            >
+              Empresa
+            </label>
 
-          @for (
-            empresa of empresas();
-            track empresa.id ?? empresa.nombre
-          ) {
+            <select
+              id="empresaAuditoria"
+              name="empresaAuditoria"
+              [ngModel]="empresaId()"
+              [disabled]="cargando() || descargando()"
+              (ngModelChange)="seleccionarEmpresa($event)"
+            >
 
-            @if (empresa.id !== undefined) {
-
-              <option [ngValue]="empresa.id">
-                {{ empresa.nombre }}
-                {{ empresa.activa === false ? '(Inactiva)' : '' }}
+              <option [ngValue]="null">
+                Selecciona una empresa
               </option>
 
-            }
+              @for (
+                empresa of empresas();
+                track empresa.id ?? empresa.nombre
+              ) {
 
-          }
+                @if (empresa.id !== undefined) {
 
-        </select>
+                  <option [ngValue]="empresa.id">
+                    {{ empresa.nombre }}
+                    {{ empresa.activa === false ? '(Inactiva)' : '' }}
+                  </option>
+
+                }
+
+              }
+
+            </select>
+
+          </div>
+
+        }
 
       }
 
-    </section>
-
-  }
+    </div>
 
 
+    <!-- ACCIONES -->
+    @if (
+      !esAdmin()
+      || ambitoAdmin() === 'GLOBAL'
+      || empresaId() !== null
+    ) {
+
+      <div class="toolbar-acciones">
+
+        <button
+          type="button"
+          class="boton-primario"
+          [disabled]="cargando() || descargando()"
+          (click)="consultarDesdeInicio()"
+        >
+
+          <i
+            class="pi pi-search"
+            aria-hidden="true"
+          ></i>
+
+          <span>
+            Consultar
+          </span>
+
+        </button>
+
+
+        <button
+          type="button"
+          class="boton-secundario"
+          [disabled]="cargando() || descargando()"
+          (click)="limpiarFiltros()"
+        >
+
+          <i
+            class="pi pi-filter-slash"
+            aria-hidden="true"
+          ></i>
+
+          <span>
+            Limpiar
+          </span>
+
+        </button>
+
+
+        <button
+          type="button"
+          class="boton-secundario"
+          [disabled]="!puedeDescargar()"
+          (click)="descargarPdf()"
+        >
+
+          <i
+            class="pi pi-file-pdf"
+            aria-hidden="true"
+          ></i>
+
+          <span>
+
+            @if (descargando()) {
+              Descargando...
+            } @else {
+              Descargar PDF
+            }
+
+          </span>
+
+        </button>
+
+      </div>
+
+    }
+
+  </section>
+
+
+  <!-- FILTROS -->
   @if (
     !esAdmin()
     || ambitoAdmin() === 'GLOBAL'
     || empresaId() !== null
   ) {
 
-    <section>
+    <section class="auditoria-panel">
 
-      <h2>Filtros</h2>
+      <div class="panel-header">
+
+        <h2>
+          Filtros
+        </h2>
+
+      </div>
+
 
       <div class="auditoria-filtros">
 
-        <label for="auditoriaDesde">
-          Desde
-        </label>
+        <!-- DESDE -->
+        <div class="campo">
 
-        <input
-          id="auditoriaDesde"
-          name="auditoriaDesde"
-          type="date"
-          [(ngModel)]="desde"
-          [disabled]="cargando() || descargando()"
-        />
+          <label for="auditoriaDesde">
+            Desde
+          </label>
 
+          <input
+            id="auditoriaDesde"
+            name="auditoriaDesde"
+            type="date"
+            [(ngModel)]="desde"
+            [disabled]="cargando() || descargando()"
+          />
 
-        <label for="auditoriaHasta">
-          Hasta
-        </label>
-
-        <input
-          id="auditoriaHasta"
-          name="auditoriaHasta"
-          type="date"
-          [(ngModel)]="hasta"
-          [disabled]="cargando() || descargando()"
-        />
+        </div>
 
 
+        <!-- HASTA -->
+        <div class="campo">
+
+          <label for="auditoriaHasta">
+            Hasta
+          </label>
+
+          <input
+            id="auditoriaHasta"
+            name="auditoriaHasta"
+            type="date"
+            [(ngModel)]="hasta"
+            [disabled]="cargando() || descargando()"
+          />
+
+        </div>
+
+
+        <!-- USUARIO -->
         @if (usuarios().length > 0) {
 
-          <label for="usuarioAuditoria">
-            Usuario
+          <div class="campo">
+
+            <label for="usuarioAuditoria">
+              Usuario
+            </label>
+
+            <select
+              id="usuarioAuditoria"
+              name="usuarioAuditoria"
+              [(ngModel)]="usuarioUuid"
+              [disabled]="cargando() || descargando()"
+            >
+
+              <option value="">
+                Todos
+              </option>
+
+              @for (
+                usuario of usuarios();
+                track usuario.uuid ?? usuario.email
+              ) {
+
+                @if (usuario.uuid) {
+
+                  <option [value]="usuario.uuid">
+                    {{ usuario.nombre }}
+                    {{ usuario.apellidos }}
+                  </option>
+
+                }
+
+              }
+
+            </select>
+
+          </div>
+
+        }
+
+
+        <!-- EVENTO -->
+        <div class="campo">
+
+          <label for="eventoAuditoria">
+            Evento
           </label>
 
           <select
-            id="usuarioAuditoria"
-            name="usuarioAuditoria"
-            [(ngModel)]="usuarioUuid"
+            id="eventoAuditoria"
+            name="eventoAuditoria"
+            [(ngModel)]="tipoEntidad"
             [disabled]="cargando() || descargando()"
           >
 
@@ -146,138 +325,80 @@
               Todos
             </option>
 
-            @for (
-              usuario of usuarios();
-              track usuario.uuid ?? usuario.email
-            ) {
+            <option value="AUTH">
+              Acceso y autenticación
+            </option>
 
-              @if (usuario.uuid) {
+            <option value="USER">
+              Usuarios
+            </option>
 
-                <option [value]="usuario.uuid">
-                  {{ usuario.nombre }}
-                  {{ usuario.apellidos }}
-                </option>
+            <option value="FICHAJE">
+              Fichajes
+            </option>
 
-              }
+            <option value="HORAS_EXTRA">
+              Horas extra
+            </option>
+
+            <option value="RESUMEN_DIARIO">
+              Resúmenes
+            </option>
+
+            <option value="AUDITORIA">
+              Auditoría
+            </option>
+
+            @if (esAdmin()) {
+
+              <option value="EMPRESA">
+                Empresas
+              </option>
+
+              <option value="METODO_FICHAJE">
+                Métodos de fichaje
+              </option>
 
             }
 
           </select>
 
-        }
+        </div>
 
 
-        <label for="eventoAuditoria">
-          Evento
-        </label>
+        <!-- RESULTADO -->
+        <div class="campo">
 
-        <select
-          id="eventoAuditoria"
-          name="eventoAuditoria"
-          [(ngModel)]="tipoEntidad"
-          [disabled]="cargando() || descargando()"
-        >
+          <label for="resultadoAuditoria">
+            Resultado
+          </label>
 
-          <option value="">
-            Todos
-          </option>
+          <select
+            id="resultadoAuditoria"
+            name="resultadoAuditoria"
+            [(ngModel)]="resultado"
+            [disabled]="cargando() || descargando()"
+          >
 
-          <option value="AUTH">
-            Acceso y autenticación
-          </option>
-
-          <option value="USER">
-            Usuarios
-          </option>
-
-          <option value="FICHAJE">
-            Fichajes
-          </option>
-
-          <option value="HORAS_EXTRA">
-            Horas extra
-          </option>
-
-          <option value="RESUMEN_DIARIO">
-            Resúmenes
-          </option>
-
-          <option value="AUDITORIA">
-            Auditoría
-          </option>
-
-          @if (esAdmin()) {
-
-            <option value="EMPRESA">
-              Empresas
+            <option value="">
+              Todos
             </option>
 
-            <option value="METODO_FICHAJE">
-              Métodos de fichaje
+            <option value="OK">
+              Correcto
             </option>
 
-          }
+            <option value="ERROR">
+              Error
+            </option>
 
-        </select>
+            <option value="DENEGADO">
+              Denegado
+            </option>
 
+          </select>
 
-        <label for="resultadoAuditoria">
-          Resultado
-        </label>
-
-        <select
-          id="resultadoAuditoria"
-          name="resultadoAuditoria"
-          [(ngModel)]="resultado"
-          [disabled]="cargando() || descargando()"
-        >
-
-          <option value="">
-            Todos
-          </option>
-
-          <option value="OK">
-            Correcto
-          </option>
-
-          <option value="ERROR">
-            Error
-          </option>
-
-          <option value="DENEGADO">
-            Denegado
-          </option>
-
-        </select>
-
-
-        <button
-          type="button"
-          [disabled]="cargando() || descargando()"
-          (click)="consultarDesdeInicio()"
-        >
-          Consultar
-        </button>
-
-        <button
-          type="button"
-          [disabled]="cargando() || descargando()"
-          (click)="limpiarFiltros()"
-        >
-          Limpiar
-        </button>
-
-        <button
-          type="button"
-          [disabled]="!puedeDescargar()"
-          (click)="descargarPdf()"
-        >
-          @if (descargando()) {
-            Descargando...
-          } @else {
-            Descargar PDF
-          }
-        </button>
+        </div>
 
       </div>
 
@@ -286,11 +407,12 @@
   }
 
 
+  <!-- CARGA / REGISTROS -->
   @if (cargando()) {
 
-    <p>
+    <div class="auditoria-cargando">
       Cargando auditoría...
-    </p>
+    </div>
 
   } @else {
 
@@ -300,126 +422,144 @@
       || empresaId() !== null
     ) {
 
-      <section>
+      <section class="auditoria-panel registros-panel">
 
-        <header>
-          <h2>Registros</h2>
+        <!-- CABECERA REGISTROS -->
+        <header class="registros-header">
 
-          <p>
-            Total: {{ totalElementos() }}
-          </p>
+          <div>
+
+            <h2>
+              Registros
+            </h2>
+
+            <span>
+              {{ totalElementos() }} registros
+            </span>
+
+          </div>
+
         </header>
 
 
         @if (auditorias().length > 0) {
 
-          <p-table
-            [value]="auditorias()"
-          >
+          <!-- TABLA -->
+          <div class="tabla-contenedor">
 
-            <ng-template #header>
-
-              <tr>
-                <th scope="col">Fecha y hora</th>
-                <th scope="col">Actor</th>
-                <th scope="col">Rol</th>
-                <th scope="col">Usuario</th>
-                <th scope="col">Empresa</th>
-                <th scope="col">Evento</th>
-                <th scope="col">Elemento</th>
-                <th scope="col">Resultado</th>
-                <th scope="col">Detalle</th>
-              </tr>
-
-            </ng-template>
-
-
-            <ng-template
-              #body
-              let-auditoria
+            <p-table
+              class="auditoria-tabla"
+              [value]="auditorias()"
             >
 
-              <tr>
+              <ng-template #header>
 
-                <td>
-                  {{
-                    auditoria.fechaHora
-                      | date:'dd/MM/yyyy HH:mm:ss'
-                  }}
-                </td>
+                <tr>
+                  <th scope="col">Fecha y hora</th>
+                  <th scope="col">Actor</th>
+                  <th scope="col">Rol</th>
+                  <th scope="col">Usuario</th>
+                  <th scope="col">Empresa</th>
+                  <th scope="col">Evento</th>
+                  <th scope="col">Elemento</th>
+                  <th scope="col">Resultado</th>
+                  <th scope="col">Detalle</th>
+                </tr>
 
-                <td>
-                  {{
-                    auditoria.usuarioActorNombre
-                    ?? 'Sistema'
-                  }}
-                </td>
-
-                <td>
-                  {{
-                    textoRol(
-                      auditoria.usuarioActorRolNombre
-                    )
-                  }}
-                </td>
-
-                <td>
-                  {{
-                    auditoria.usuarioNombre
-                    ?? '—'
-                  }}
-                </td>
-
-                <td>
-                  {{
-                    auditoria.empresaNombre
-                    ?? 'Global'
-                  }}
-                </td>
-
-                <td>
-                  {{
-                    textoAccion(
-                      auditoria.accion
-                    )
-                  }}
-                </td>
-
-                <td>
-                  {{
-                    auditoria.entidadDescripcion
-                    ?? '—'
-                  }}
-                </td>
-
-                <td>
-                  {{
-                    textoResultado(
-                      auditoria.resultado
-                    )
-                  }}
-                </td>
-
-                <td>
-                  {{
-                    auditoria.detalle
-                    ?? '—'
-                  }}
-                </td>
-
-              </tr>
-
-            </ng-template>
-
-          </p-table>
+              </ng-template>
 
 
+              <ng-template
+                #body
+                let-auditoria
+              >
+
+                <tr>
+
+                  <td>
+                    {{
+                      auditoria.fechaHora
+                        | date:'dd/MM/yyyy HH:mm:ss'
+                    }}
+                  </td>
+
+                  <td>
+                    {{
+                      auditoria.usuarioActorNombre
+                      ?? 'Sistema'
+                    }}
+                  </td>
+
+                  <td>
+                    {{
+                      textoRol(
+                        auditoria.usuarioActorRolNombre
+                      )
+                    }}
+                  </td>
+
+                  <td>
+                    {{
+                      auditoria.usuarioNombre
+                      ?? '—'
+                    }}
+                  </td>
+
+                  <td>
+                    {{
+                      auditoria.empresaNombre
+                      ?? 'Global'
+                    }}
+                  </td>
+
+                  <td>
+                    {{
+                      textoAccion(
+                        auditoria.accion
+                      )
+                    }}
+                  </td>
+
+                  <td>
+                    {{
+                      auditoria.entidadDescripcion
+                      ?? '—'
+                    }}
+                  </td>
+
+                  <td>
+                    {{
+                      textoResultado(
+                        auditoria.resultado
+                      )
+                    }}
+                  </td>
+
+                  <td>
+                    {{
+                      auditoria.detalle
+                      ?? '—'
+                    }}
+                  </td>
+
+                </tr>
+
+              </ng-template>
+
+            </p-table>
+
+          </div>
+
+
+          <!-- PAGINACIÓN -->
           <nav
+            class="auditoria-paginacion"
             aria-label="Paginación de auditoría"
           >
 
             <button
               type="button"
+              class="pagina-boton"
               [disabled]="
                 cargando()
                 || descargando()
@@ -427,20 +567,39 @@
               "
               (click)="paginaAnterior()"
             >
-              Anterior
+
+              <i
+                class="pi pi-angle-left"
+                aria-hidden="true"
+              ></i>
+
+              <span>
+                Anterior
+              </span>
+
             </button>
 
 
-            <span>
+            <span class="pagina-estado">
+
               Página
-              {{ numeroPaginaVisible() }}
+
+              <strong>
+                {{ numeroPaginaVisible() }}
+              </strong>
+
               de
-              {{ totalPaginas() }}
+
+              <strong>
+                {{ totalPaginas() }}
+              </strong>
+
             </span>
 
 
             <button
               type="button"
+              class="pagina-boton"
               [disabled]="
                 cargando()
                 || descargando()
@@ -448,48 +607,61 @@
               "
               (click)="paginaSiguiente()"
             >
-              Siguiente
+
+              <span>
+                Siguiente
+              </span>
+
+              <i
+                class="pi pi-angle-right"
+                aria-hidden="true"
+              ></i>
+
             </button>
 
 
-            <label for="tamanoPaginaAuditoria">
-              Registros por página
-            </label>
+            <div class="pagina-tamano">
 
-            <select
-              id="tamanoPaginaAuditoria"
-              name="tamanoPaginaAuditoria"
-              [ngModel]="tamanoPagina()"
-              [disabled]="cargando() || descargando()"
-              (ngModelChange)="cambiarTamanoPagina($event)"
-            >
+              <label for="tamanoPaginaAuditoria">
+                Por página
+              </label>
 
-              <option [ngValue]="10">
-                10
-              </option>
+              <select
+                id="tamanoPaginaAuditoria"
+                name="tamanoPaginaAuditoria"
+                [ngModel]="tamanoPagina()"
+                [disabled]="cargando() || descargando()"
+                (ngModelChange)="cambiarTamanoPagina($event)"
+              >
 
-              <option [ngValue]="20">
-                20
-              </option>
+                <option [ngValue]="10">
+                  10
+                </option>
 
-              <option [ngValue]="50">
-                50
-              </option>
+                <option [ngValue]="20">
+                  20
+                </option>
 
-              <option [ngValue]="100">
-                100
-              </option>
+                <option [ngValue]="50">
+                  50
+                </option>
 
-            </select>
+                <option [ngValue]="100">
+                  100
+                </option>
+
+              </select>
+
+            </div>
 
           </nav>
 
         } @else {
 
-          <p>
+          <div class="sin-registros">
             No hay registros de auditoría
             para los filtros seleccionados.
-          </p>
+          </div>
 
         }
 

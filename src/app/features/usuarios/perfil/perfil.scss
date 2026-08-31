@@ -1,0 +1,327 @@
+.perfil-page {
+  position: relative;
+
+  min-height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0.5rem 0.75rem 3rem;
+}
+
+
+/* TARJETA */
+
+.perfil-card {
+  width: 100%;
+  max-width: 520px;
+
+  padding: 1.25rem 1.75rem;
+
+  border: 1px solid var(--barru-border);
+  border-radius: var(--barru-radius);
+
+  background: var(--barru-surface);
+
+  box-shadow: var(--barru-shadow);
+}
+
+
+/* CABECERA */
+
+.perfil-header {
+  margin-bottom: 0.9rem;
+
+  text-align: center;
+}
+
+.perfil-header h1 {
+  margin: 0;
+
+  color: var(--barru-text);
+
+  font-size: 1.35rem;
+  font-weight: 600;
+}
+
+
+/* FORMULARIO */
+
+.perfil-form {
+  display: flex;
+  flex-direction: column;
+
+  gap: 0.7rem;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+
+  gap: 0.3rem;
+}
+
+.campo label,
+.foto-label {
+  color: var(--barru-text);
+
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.campo input {
+  width: 100%;
+}
+
+
+/* FOTO */
+
+.perfil-foto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: 0.4rem;
+
+  margin-bottom: 0.15rem;
+}
+
+.perfil-avatar {
+  width: 82px;
+  height: 82px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+
+  border: 1px solid var(--barru-border);
+  border-radius: 50%;
+
+  background: var(--barru-bg);
+  color: var(--barru-icon);
+}
+
+.perfil-avatar img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.perfil-avatar .pi {
+  color: var(--barru-icon);
+
+  font-size: 2rem;
+}
+
+.foto-input {
+  max-width: 100%;
+
+  color: var(--barru-text-secondary);
+
+  font-size: 0.66rem;
+}
+
+.foto-input::file-selector-button {
+  margin-right: 0.5rem;
+  padding: 0.38rem 0.6rem;
+
+  border: 1px solid var(--barru-border);
+  border-radius: 6px;
+
+  background: var(--barru-bg);
+  color: var(--barru-text);
+
+  cursor: pointer;
+}
+
+.foto-input::file-selector-button:hover {
+  border-color: var(--barru-primary);
+
+  color: var(--barru-primary);
+}
+
+
+/* GUARDAR */
+
+.guardar-perfil {
+  align-self: center;
+
+  min-width: 145px;
+
+  margin-top: 0.3rem;
+  padding: 0.55rem 1rem;
+
+  border: 1px solid var(--barru-primary);
+  border-radius: 8px;
+
+  background: var(--barru-primary);
+  color: #ffffff;
+
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.guardar-perfil:hover:not(:disabled) {
+  background: var(--barru-primary-hover);
+
+  border-color: var(--barru-primary-hover);
+}
+
+.guardar-perfil:disabled {
+  opacity: 0.55;
+
+  cursor: not-allowed;
+}
+
+
+/* CARGANDO */
+
+.perfil-cargando {
+  padding: 1.5rem;
+
+  color: var(--barru-text-secondary);
+
+  text-align: center;
+}
+
+
+/* VOLVER A INICIO */
+
+.volver-inicio {
+  position: absolute;
+
+  right: 0.5rem;
+  bottom: 0.5rem;
+
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 1px solid var(--barru-icon);
+  border-radius: 50%;
+
+  background: var(--barru-surface);
+  color: var(--barru-icon);
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.volver-inicio:hover {
+  background: var(--barru-bg);
+  color: var(--barru-icon-hover);
+
+  border-color: var(--barru-icon-hover);
+
+  transform: scale(1.08);
+}
+
+.volver-inicio .pi {
+  font-size: 0.98rem;
+}
+
+
+/* FOCO */
+
+.guardar-perfil:focus-visible,
+.volver-inicio:focus-visible {
+  outline: 2px solid var(--barru-primary);
+  outline-offset: 2px;
+}
+
+
+/* SOLO LECTORES DE PANTALLA */
+
+.solo-lectura {
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+
+  padding: 0;
+  margin: -1px;
+
+  overflow: hidden;
+
+  clip: rect(0, 0, 0, 0);
+
+  white-space: nowrap;
+
+  border: 0;
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 760px) {
+
+  .perfil-page {
+    min-height: 100%;
+
+    align-items: flex-start;
+
+    padding:
+      0.25rem
+      0.15rem
+      2.75rem;
+  }
+
+  .perfil-card {
+    max-width: 100%;
+
+    padding: 1rem 0.8rem;
+  }
+
+  .perfil-header {
+    margin-bottom: 0.75rem;
+  }
+
+  .perfil-header h1 {
+    font-size: 1.15rem;
+  }
+
+  .perfil-form {
+    gap: 0.6rem;
+  }
+
+  .perfil-avatar {
+    width: 72px;
+    height: 72px;
+  }
+
+  .perfil-avatar .pi {
+    font-size: 1.65rem;
+  }
+
+  .guardar-perfil {
+    width: 100%;
+  }
+
+  .volver-inicio {
+    width: 34px;
+    height: 34px;
+  }
+
+}     

@@ -9,7 +9,7 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { finalize } from 'rxjs';
 
-import { ButtonModule } from 'primeng/button';
+
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 
@@ -20,7 +20,6 @@ import { EmpresaDTO } from '../../../core/empresa/empresa.types';
   selector: 'app-formulario-empresa',
   imports: [
     ReactiveFormsModule,
-    ButtonModule,
     InputTextModule,
     MessageModule,
   ],

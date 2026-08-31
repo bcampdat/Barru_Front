@@ -1,106 +1,471 @@
-<div class="inicio-page">
+<div
+  class="inicio-page"
+  [class.menu-recogido]="menuRecogido()"
+>
 
-  <header>
+  <aside class="sidebar">
 
-    <div>
-      <strong>Barru</strong>
+    <!-- Logo -->
+    <div class="sidebar-logo">
+
+      @if (menuRecogido()) {
+
+        <img
+          [src]="temaOscuro
+            ? '/icon-dark.png'
+            : '/icon-light.png'"
+          alt="Barru"
+          class="logo-icono"
+        />
+
+      } @else {
+
+        <img
+          [src]="temaOscuro
+            ? '/assets/logo-dark.png'
+            : '/assets/logo-light.png'"
+          alt="Barru"
+          class="logo-completo"
+        />
+
+      }
+
     </div>
 
-    <details>
 
-      <summary>
-        {{ nombreUsuario }}
-      </summary>
+    <!-- Recoger / desplegar menú -->
+    <button
+      type="button"
+      class="boton-recoger"
+      (click)="alternarMenu()"
+    >
 
-      <div>
+      @if (menuRecogido()) {
 
-        <button
-          type="button"
-          (click)="irAPerfil()"
-        >
-          Mis datos
-        </button>
+        <i
+          class="pi pi-angle-double-right"
+          aria-hidden="true"
+        ></i>
+
+        <span class="solo-lectura">
+          Desplegar menú
+        </span>
+
+      } @else {
+
+        <i
+          class="pi pi-angle-double-left"
+          aria-hidden="true"
+        ></i>
+
+        <span class="solo-lectura">
+          Recoger menú
+        </span>
+
+      }
+
+    </button>
+
+
+    <!-- Usuario -->
+    <div class="sidebar-usuario">
+
+      <div class="avatar">
 
         @if (esAdminSistema) {
 
-          <button
-            type="button"
-            (click)="abrirZonaAdmin()"
-          >
-            Zona administrativa
-          </button>
+          <i
+            class="pi pi-shield"
+            aria-hidden="true"
+          ></i>
+
+        } @else if (esEncargado) {
+
+          <i
+            class="pi pi-users"
+            aria-hidden="true"
+          ></i>
+
+        } @else {
+
+          <i
+            class="pi pi-user"
+            aria-hidden="true"
+          ></i>
 
         }
 
-        <button
-          type="button"
-          (click)="cerrarSesion()"
-        >
-          Cerrar sesión
-        </button>
-
       </div>
 
-    </details>
 
-  </header>
+      @if (!menuRecogido()) {
+
+        <strong>
+          {{ nombreUsuario }}
+        </strong>
+
+        <span class="rol">
+
+          @if (esAdminSistema) {
+            Administrador
+          } @else if (esEncargado) {
+            Encargado
+          } @else {
+            Empleado
+          }
+
+        </span>
+
+      }
+
+    </div>
 
 
-  @if (error()) {
-
-    <p>
-      {{ error() }}
-    </p>
-
-  }
+    <div class="sidebar-separador"></div>
 
 
-  <main>
+    <!-- Navegación -->
+    <nav class="sidebar-menu">
 
-    <h1>
-      Inicio
-    </h1>
+      <!-- EMPLEADO + ENCARGADO -->
+      @if (puedeUsarTareas) {
 
-    @if (puedeUsarTareas) {
+        <button
+          type="button"
+          class="menu-item menu-item-fichar"
+          (click)="irAFichar()"
+        >
+          <i
+            class="pi pi-clock"
+            aria-hidden="true"
+          ></i>
+
+          <span class="texto-menu">
+            Fichar
+          </span>
+        </button>
+
+
+        <div class="menu-tareas-linea">
+
+          <button
+            type="button"
+            class="menu-item"
+            (click)="irAMisTareas()"
+          >
+            <i
+              class="pi pi-check-square"
+              aria-hidden="true"
+            ></i>
+
+            <span class="texto-menu">
+              Mis tareas
+            </span>
+          </button>
+
+
+          <button
+            type="button"
+            class="boton-avisos"
+            (click)="irAAvisosTarea()"
+          >
+            <i
+              class="pi pi-bell"
+              aria-hidden="true"
+            ></i>
+
+            <span class="solo-lectura">
+              Avisos de tareas,
+              {{ avisosTareaPendientes() }}
+              pendientes
+            </span>
+
+            @if (avisosTareaPendientes() > 0) {
+
+              <span
+                class="contador-avisos"
+                aria-hidden="true"
+              >
+                {{ avisosTareaPendientes() }}
+              </span>
+
+            }
+
+          </button>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="menu-item"
+          (click)="irAMiResumen()"
+        >
+          <i
+            class="pi pi-chart-bar"
+            aria-hidden="true"
+          ></i>
+
+          <span class="texto-menu">
+            Mi resumen
+          </span>
+        </button>
+
+      }
+
+
+      <!-- ENCARGADO -->
+      @if (esEncargado) {
+
+        <button
+          type="button"
+          class="menu-item"
+          (click)="irAPanelProyectos()"
+        >
+          <i
+            class="pi pi-folder"
+            aria-hidden="true"
+          ></i>
+
+          <span class="texto-menu">
+            Proyectos
+          </span>
+        </button>
+
+
+        <button
+          type="button"
+          class="menu-item"
+          (click)="irANotificaciones()"
+        >
+          <i
+            class="pi pi-bell"
+            aria-hidden="true"
+          ></i>
+
+          <span class="texto-menu">
+            Notificaciones
+          </span>
+        </button>
+
+      }
+
+
+      <!-- ENCARGADO + ADMIN_SISTEMA -->
+      @if (puedeGestionar) {
+
+        <button
+          type="button"
+          class="menu-item"
+          (click)="irAAuditoria()"
+        >
+          <i
+            class="pi pi-history"
+            aria-hidden="true"
+          ></i>
+
+          <span class="texto-menu">
+            Auditoría
+          </span>
+        </button>
+
+
+        <button
+          type="button"
+          class="menu-item"
+          (click)="irAResumenEmpresa()"
+        >
+          <i
+            class="pi pi-chart-line"
+            aria-hidden="true"
+          ></i>
+
+          <span class="texto-menu">
+            Resumen empresa
+          </span>
+        </button>
+
+      }
+
+
+      <!-- ADMIN_SISTEMA -->
+      @if (esAdminSistema) {
+
+        <button
+          type="button"
+          class="menu-item"
+          (click)="irAEmpresas()"
+        >
+          <i
+            class="pi pi-building"
+            aria-hidden="true"
+          ></i>
+
+          <span class="texto-menu">
+            Empresas
+          </span>
+        </button>
+
+      }
+
+
+      <!-- ENCARGADO + ADMIN_SISTEMA -->
+      @if (puedeGestionar) {
+
+        <button
+          type="button"
+          class="menu-item"
+          (click)="irAUsuarios()"
+        >
+          <i
+            class="pi pi-users"
+            aria-hidden="true"
+          ></i>
+
+          <span class="texto-menu">
+            Usuarios
+          </span>
+        </button>
+
+      }
+
+
+      <!-- ADMIN_SISTEMA -->
+      @if (esAdminSistema) {
+
+        <button
+          type="button"
+          class="menu-item"
+          (click)="irAMetodosFichaje()"
+        >
+          <i
+            class="pi pi-id-card"
+            aria-hidden="true"
+          ></i>
+
+          <span class="texto-menu">
+            Métodos de fichaje
+          </span>
+        </button>
+
+      }
+
+    </nav>
+
+
+    <!-- Zona inferior -->
+    <div class="sidebar-footer">
+
+      <div class="sidebar-separador"></div>
+
 
       <button
         type="button"
-        (click)="irAMisTareas()"
+        class="menu-item"
+        (click)="irAPerfil()"
       >
-        Mis tareas
+        <i
+          class="pi pi-user-edit"
+          aria-hidden="true"
+        ></i>
+
+        <span class="texto-menu">
+          Mi Perfil
+        </span>
       </button>
+
+
+      @if (esAdminSistema) {
+
+        <button
+          type="button"
+          class="menu-item"
+          (click)="abrirZonaAdmin()"
+        >
+          <i
+            class="pi pi-cog"
+            aria-hidden="true"
+          ></i>
+
+          <span class="texto-menu">
+            Zona Admin
+          </span>
+        </button>
+
+      }
+
+
+      <!-- Tema claro / oscuro -->
+      <button
+        type="button"
+        class="menu-item"
+        (click)="alternarTema()"
+      >
+
+        @if (temaOscuro) {
+
+          <i
+            class="pi pi-sun"
+            aria-hidden="true"
+          ></i>
+
+          <span class="texto-menu">
+            Tema claro
+          </span>
+
+        } @else {
+
+          <i
+            class="pi pi-moon"
+            aria-hidden="true"
+          ></i>
+
+          <span class="texto-menu">
+            Tema oscuro
+          </span>
+
+        }
+
+      </button>
+
 
       <button
         type="button"
-        (click)="irAAvisosTarea()"
+        class="menu-item cerrar-sesion"
+        (click)="cerrarSesion()"
       >
-        Avisos de tareas
-        ({{ avisosTareaPendientes() }})
+        <i
+          class="pi pi-sign-out"
+          aria-hidden="true"
+        ></i>
+
+        <span class="texto-menu">
+          Cerrar sesión
+        </span>
       </button>
+
+    </div>
+
+  </aside>
+
+
+  <!-- Contenido -->
+  <main class="contenido-principal">
+
+    @if (error()) {
+
+      <div class="mensaje-error">
+        {{ error() }}
+      </div>
 
     }
 
-    @if (esEncargado) {
-
-      <button
-        type="button"
-        (click)="irAPanelProyectos()"
-      >
-        Panel de proyectos
-      </button>
-
-      <button
-        type="button"
-        (click)="irANotificaciones()"
-      >
-        Notificaciones
-      </button>
-
-    }
+    <router-outlet />
 
   </main>
 
 
+  <!-- Acceso protegido ADMIN_SISTEMA -->
   @if (mostrarAccesoAdmin()) {
 
     <app-zona-admin-acceso

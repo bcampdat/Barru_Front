@@ -1,0 +1,86 @@
+@if (error()) {
+
+  <div class="mensaje-error">
+    {{ error() }}
+  </div>
+
+}
+
+
+<section class="inicio-bienvenida">
+
+  <img
+    [src]="temaOscuro
+      ? '/assets/logo-dark.png'
+      : '/assets/logo-light.png'"
+    alt="Barru"
+    class="bienvenida-logo"
+  />
+
+
+  <h1>
+    Bienvenido, {{ nombreUsuario }}
+  </h1>
+
+
+  <span class="bienvenida-rol">
+
+    @if (esAdminSistema) {
+      Administrador
+    } @else if (esEncargado) {
+      Encargado
+    } @else {
+      Empleado
+    }
+
+  </span>
+
+
+  @if (esAdminSistema) {
+
+    <button
+      type="button"
+      class="bienvenida-accion"
+      (click)="abrirZonaAdmin()"
+    >
+      <i
+        class="pi pi-shield"
+        aria-hidden="true"
+      ></i>
+
+      <span>
+        Acceder a Zona Admin
+      </span>
+    </button>
+
+  } @else {
+
+    <button
+      type="button"
+      class="bienvenida-accion"
+      (click)="irAFichar()"
+    >
+      <i
+        class="pi pi-clock"
+        aria-hidden="true"
+      ></i>
+
+      <span>
+        Fichar
+      </span>
+    </button>
+
+  }
+
+</section>
+
+
+@if (mostrarAccesoAdmin()) {
+
+  <app-zona-admin-acceso
+    (accesoConcedido)="accesoAdminConcedido()"
+    (accesoDenegado)="accesoAdminDenegado($event)"
+    (cerrado)="cerrarAccesoAdmin()"
+  />
+
+}

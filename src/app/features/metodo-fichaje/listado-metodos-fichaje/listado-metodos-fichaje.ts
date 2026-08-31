@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { finalize, forkJoin } from 'rxjs';
 
 import { ConfirmationService } from 'primeng/api';
-import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { MessageModule } from 'primeng/message';
 import { TableModule } from 'primeng/table';
@@ -23,7 +22,6 @@ type FiltroEstado =
   selector: 'app-listado-metodos-fichaje',
   imports: [
     FormsModule,
-    ButtonModule,
     MessageModule,
     TableModule,
     ConfirmDialogModule,

@@ -3,7 +3,7 @@ import { Component, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { finalize, Observable } from 'rxjs';
 
-import { ButtonModule } from 'primeng/button';
+
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { TableModule } from 'primeng/table';
@@ -22,7 +22,6 @@ type FiltroEstado =
     RouterLink,
     TableModule,
     MessageModule,
-    ButtonModule,
     InputTextModule,
   ],
   templateUrl: './listado-empresas.html',

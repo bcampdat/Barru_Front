@@ -1,180 +1,285 @@
-<div class="usuario-formulario">
+<div class="formulario-usuario">
 
-  <h1>
-    {{ esEdicion() ? 'Modificar usuario' : 'Nuevo usuario' }}
-  </h1>
+  <header class="formulario-usuario-header">
+    <h1 class="formulario-usuario-titulo">
+      {{ esEdicion() ? 'Modificar usuario' : 'Nuevo usuario' }}
+    </h1>
+  </header>
 
   @if (error()) {
-    <p-message severity="error">
-      {{ error() }}
-    </p-message>
+    <div class="formulario-usuario-error">
+      <p-message severity="error">
+        {{ error() }}
+      </p-message>
+    </div>
   }
 
   @if (cargando()) {
 
-    <p>Cargando...</p>
+    <div class="formulario-usuario-cargando">
+      Cargando...
+    </div>
 
   } @else {
 
     <form
+      class="formulario-usuario-form"
       #formUsuario="ngForm"
       (ngSubmit)="guardar()"
     >
 
-      <div>
-        <label for="nombre">
-          Nombre
-        </label>
+      <div class="formulario-usuario-panel">
 
-        <input
-          id="nombre"
-          name="nombre"
-          type="text"
-          pInputText
-          [(ngModel)]="nombre"
-          maxlength="80"
-          required
-        />
-      </div>
+        @if (esAdmin()) {
 
-      <div>
-        <label for="apellidos">
-          Apellidos
-        </label>
+          <div class="formulario-usuario-identidad">
 
-        <input
-          id="apellidos"
-          name="apellidos"
-          type="text"
-          pInputText
-          [(ngModel)]="apellidos"
-          maxlength="120"
-          required
-        />
-      </div>
+            <div class="formulario-usuario-campo formulario-usuario-empresa">
 
-      <div>
-        <label for="email">
-          Email
-        </label>
+              <label for="empresa">
+                Empresa
+              </label>
 
-        <input
-          id="email"
-          name="email"
-          type="email"
-          pInputText
-          [(ngModel)]="email"
-          maxlength="150"
-          required
-          email
-        />
-      </div>
+              <select
+                id="empresa"
+                name="empresa"
+                class="formulario-usuario-select"
+                [(ngModel)]="empresaId"
+                required
+                (ngModelChange)="cambiarEmpresa()"
+              >
 
-      @if (esAdmin()) {
-        <div>
-          <label for="empresa">
-            Empresa
+                <option [ngValue]="null">
+                  Selecciona una empresa
+                </option>
+
+                @for (
+                  empresa of empresas();
+                  track empresa.id ?? empresa.nombre
+                ) {
+
+                  @if (empresa.id !== undefined) {
+
+                    <option [ngValue]="empresa.id">
+                      {{ empresa.nombre }}
+                      {{ empresa.activa === false ? '(Inactiva)' : '' }}
+                    </option>
+
+                  }
+
+                }
+
+              </select>
+
+            </div>
+
+
+            <div class="formulario-usuario-logo-empresa">
+
+              @for (
+                empresa of empresas();
+                track empresa.id ?? empresa.nombre
+              ) {
+
+                @if (
+                  empresa.id === empresaId &&
+                  empresa.logoUrl
+                ) {
+
+                  <img
+                    [src]="empresa.logoUrl"
+                    [alt]="'Logo de ' + empresa.nombre"
+                  />
+
+                }
+
+              }
+
+            </div>
+
+          </div>
+
+        }
+
+
+        <div class="formulario-usuario-fila">
+
+          <div class="formulario-usuario-campo">
+
+            <label for="nombre">
+              Nombre
+            </label>
+
+            <input
+              id="nombre"
+              name="nombre"
+              class="formulario-usuario-input"
+              type="text"
+              pInputText
+              [(ngModel)]="nombre"
+              maxlength="80"
+              required
+            />
+
+          </div>
+
+
+          <div class="formulario-usuario-campo">
+
+            <label for="apellidos">
+              Apellidos
+            </label>
+
+            <input
+              id="apellidos"
+              name="apellidos"
+              class="formulario-usuario-input"
+              type="text"
+              pInputText
+              [(ngModel)]="apellidos"
+              maxlength="120"
+              required
+            />
+
+          </div>
+
+        </div>
+
+
+        <div class="formulario-usuario-campo">
+
+          <label for="email">
+            Email
           </label>
 
-          <select
-            id="empresa"
-            name="empresa"
-            [(ngModel)]="empresaId"
+          <input
+            id="email"
+            name="email"
+            class="formulario-usuario-input"
+            type="email"
+            pInputText
+            [(ngModel)]="email"
+            maxlength="150"
             required
-            (ngModelChange)="cambiarEmpresa()"
-          >
-            <option [ngValue]="null">
-              Selecciona una empresa
-            </option>
+            email
+          />
 
-            @for (
-              empresa of empresas();
-              track empresa.id ?? empresa.nombre
-            ) {
-              @if (empresa.id !== undefined) {
-                <option [ngValue]="empresa.id">
-                  {{ empresa.nombre }}
-                  {{ empresa.activa === false ? '(Inactiva)' : '' }}
-                </option>
-              }
-            }
-          </select>
         </div>
-      }
 
-      <div>
-        <label for="rol">
-          Rol
-        </label>
 
-        <select
-          id="rol"
-          name="rol"
-          [(ngModel)]="rolId"
-          required
-        >
-          <option [ngValue]="null">
-            Selecciona un rol
-          </option>
+        <div class="formulario-usuario-fila">
 
-          @for (rol of rolesFormulario(); track rol.id) {
-            <option [ngValue]="rol.id">
-              {{ rol.nombre }}
-            </option>
-          }
-        </select>
-      </div>
+          <div class="formulario-usuario-campo">
 
-      <div>
-        <label for="metodoFichaje">
-          Método de fichaje
-        </label>
+            <label for="rol">
+              Rol
+            </label>
 
-        <select
-          id="metodoFichaje"
-          name="metodoFichaje"
-          [(ngModel)]="metodoFichajeId"
-          [disabled]="empresaId === null || cargandoMetodos()"
-        >
-          <option [ngValue]="null">
-            Sin asignar
-          </option>
+            <select
+              id="rol"
+              name="rol"
+              class="formulario-usuario-select"
+              [(ngModel)]="rolId"
+              required
+            >
 
-          @for (
-            metodo of metodos();
-            track metodo.id ?? metodo.codigoMetodo
-          ) {
-            @if (metodo.id !== undefined) {
-              <option
-                [ngValue]="metodo.id"
-                [disabled]="
-                  metodo.activo === false &&
-                  metodo.id !== metodoFichajeId
-                "
-              >
-                {{ metodo.nombre ?? metodo.codigoMetodo }}
-                {{ metodo.activo === false ? '(Inactivo)' : '' }}
+              <option [ngValue]="null">
+                Selecciona un rol
               </option>
+
+              @for (rol of rolesFormulario(); track rol.id) {
+
+                <option [ngValue]="rol.id">
+                  {{ rol.nombre }}
+                </option>
+
+              }
+
+            </select>
+
+          </div>
+
+
+          <div class="formulario-usuario-campo">
+
+            <label for="metodoFichaje">
+              Método de fichaje
+            </label>
+
+            <select
+              id="metodoFichaje"
+              name="metodoFichaje"
+              class="formulario-usuario-select"
+              [(ngModel)]="metodoFichajeId"
+              [disabled]="empresaId === null || cargandoMetodos()"
+            >
+
+              <option [ngValue]="null">
+                Sin asignar
+              </option>
+
+              @for (
+                metodo of metodos();
+                track metodo.id ?? metodo.codigoMetodo
+              ) {
+
+                @if (metodo.id !== undefined) {
+
+                  <option
+                    [ngValue]="metodo.id"
+                    [disabled]="
+                      metodo.activo === false &&
+                      metodo.id !== metodoFichajeId
+                    "
+                  >
+                    {{ metodo.nombre ?? metodo.codigoMetodo }}
+                    {{ metodo.activo === false ? '(Inactivo)' : '' }}
+                  </option>
+
+                }
+
+              }
+
+            </select>
+
+            @if (cargandoMetodos()) {
+              <small class="formulario-usuario-ayuda">
+                Cargando métodos...
+              </small>
             }
-          }
-        </select>
+
+          </div>
+
+        </div>
+
       </div>
 
-      <div>
-        <button
-          type="submit"
-          [disabled]="formUsuario.invalid || guardando()"
-        >
-          {{ esEdicion() ? 'Guardar cambios' : 'Crear usuario' }}
-        </button>
+
+      <div class="formulario-usuario-acciones">
 
         <button
           type="button"
+          class="boton-secundario"
           [disabled]="guardando()"
           (click)="cancelar()"
         >
           Cancelar
         </button>
+
+        <button
+          type="submit"
+          class="boton-primario"
+          [disabled]="formUsuario.invalid || guardando()"
+        >
+
+          @if (guardando()) {
+            Guardando...
+          } @else {
+            {{ esEdicion() ? 'Guardar cambios' : 'Crear usuario' }}
+          }
+
+        </button>
+
       </div>
 
     </form>

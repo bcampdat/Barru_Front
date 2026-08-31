@@ -1,0 +1,168 @@
+.inicio-bienvenida {
+  min-height: calc(100vh - 4rem);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+}
+
+.bienvenida-logo {
+  display: block;
+
+  width: 480px;
+  max-width: 70%;
+  height: auto;
+
+  margin-bottom: 2.2rem;
+}
+
+.inicio-bienvenida h1 {
+  margin: 0;
+
+  color: var(--barru-text);
+
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.bienvenida-rol {
+  margin-top: 0.4rem;
+
+  color: var(--barru-text-secondary);
+
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.bienvenida-accion {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 0.6rem;
+
+  margin-top: 2.2rem;
+  padding: 0.85rem 1.5rem;
+
+  border: 1px solid var(--barru-primary);
+  border-radius: 8px;
+
+  background: var(--barru-primary);
+  color: #ffffff;
+
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.bienvenida-accion:hover {
+  background: var(--barru-primary-hover);
+
+  border-color: var(--barru-primary-hover);
+}
+
+.bienvenida-accion .pi {
+  font-size: 1rem;
+}
+
+.bienvenida-accion:focus-visible {
+  outline: 2px solid var(--barru-primary);
+
+  outline-offset: 2px;
+}
+
+.mensaje-error {
+  margin-bottom: 1rem;
+  padding: 0.85rem 1rem;
+
+  border: 1px solid #c97878;
+  border-radius: var(--barru-radius);
+
+  background: #f8e9e9;
+  color: #7e2929;
+}
+
+
+/* TABLET / PANTALLA INTERMEDIA */
+
+@media (max-width: 900px) {
+
+  .inicio-bienvenida {
+    min-height: calc(100vh - 3rem);
+  }
+
+  .bienvenida-logo {
+    width: 240px;
+  }
+
+  .inicio-bienvenida h1 {
+    font-size: 1.7rem;
+  }
+
+  .bienvenida-rol {
+    font-size: 0.9rem;
+  }
+
+  .bienvenida-accion {
+    padding: 0.78rem 1.3rem;
+
+    font-size: 0.85rem;
+  }
+
+}
+
+
+/* MÓVIL */
+
+@media (max-width: 760px) {
+
+  .inicio-bienvenida {
+    width: 100%;
+    min-height: calc(100vh - 2rem);
+
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+  }
+
+  .bienvenida-logo {
+    width: 200px;
+    max-width: 85%;
+
+    margin-bottom: 1.2rem;
+  }
+
+  .inicio-bienvenida h1 {
+    font-size: 1.3rem;
+  }
+
+  .bienvenida-rol {
+    margin-top: 0.3rem;
+
+    font-size: 0.78rem;
+  }
+
+  .bienvenida-accion {
+    max-width: 100%;
+
+    margin-top: 1.4rem;
+    padding: 0.68rem 0.95rem;
+
+    font-size: 0.76rem;
+  }
+
+  .bienvenida-accion .pi {
+    font-size: 0.85rem;
+  }
+
+}

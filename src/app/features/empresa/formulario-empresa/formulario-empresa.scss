@@ -1,0 +1,380 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.formulario-empresa {
+  width: 100%;
+  max-width: 820px;
+  margin-left: 4rem;
+  padding-top: 1rem;
+  color: var(--barru-text);
+}
+
+.formulario-empresa-header {
+  margin-bottom: 1.25rem;
+}
+
+.formulario-empresa-titulo {
+  margin: 0;
+  color: var(--barru-text);
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.formulario-empresa-error {
+  margin-bottom: 1rem;
+}
+
+:host ::ng-deep .formulario-empresa-error .p-message {
+  width: 100%;
+}
+
+.formulario-empresa-cargando {
+  padding: 1rem;
+  border: 1px solid var(--barru-border);
+  border-radius: var(--barru-radius);
+  background: var(--barru-surface);
+  color: var(--barru-text-secondary);
+  font-size: 0.84rem;
+}
+
+.formulario-empresa-form {
+  width: 100%;
+}
+
+.formulario-empresa-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  padding: 1.25rem;
+
+  border: 1px solid var(--barru-border);
+  border-radius: var(--barru-radius);
+
+  background: var(--barru-surface);
+  box-shadow: var(--barru-shadow);
+}
+
+.formulario-empresa-identidad {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  align-items: start;
+  gap: 2rem;
+}
+
+.formulario-empresa-nombre {
+  width: 100%;
+}
+
+.formulario-empresa-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.formulario-empresa-campo label,
+.formulario-empresa-logo > label,
+.formulario-empresa-duracion-campo label {
+  color: var(--barru-text);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.formulario-empresa-input {
+  width: 100%;
+  min-height: 36px;
+
+  padding: 0.5rem 0.7rem;
+
+  border: 1px solid var(--barru-border);
+  border-radius: var(--barru-radius);
+
+  background: var(--barru-bg);
+  color: var(--barru-text);
+
+  font: inherit;
+  font-size: 0.84rem;
+
+  outline: none;
+  box-shadow: none;
+
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.formulario-empresa-input:hover {
+  border-color: var(--barru-primary);
+}
+
+.formulario-empresa-input:focus {
+  border-color: var(--barru-primary);
+  outline: 2px solid var(--barru-primary);
+  outline-offset: 1px;
+  box-shadow: none;
+}
+
+.formulario-empresa-input.ng-invalid.ng-touched {
+  border-color: var(--p-red-500, #ef4444);
+}
+
+.formulario-empresa-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.55rem;
+
+  width: 100%;
+  text-align: right;
+}
+
+.formulario-empresa-logo-actual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 58px;
+  height: 58px;
+
+  overflow: hidden;
+
+  border: 1px solid var(--barru-border);
+  border-radius: var(--barru-radius);
+
+  background: var(--barru-bg);
+}
+
+.formulario-empresa-logo-actual img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.formulario-empresa-archivo {
+  width: 100%;
+  max-width: 280px;
+
+  color: var(--barru-text-secondary);
+
+  font: inherit;
+  font-size: 0.78rem;
+  text-align: right;
+}
+
+.formulario-empresa-archivo::file-selector-button {
+  margin-right: 0.55rem;
+  padding: 0.42rem 0.65rem;
+
+  border: 1px solid var(--barru-border);
+  border-radius: calc(var(--barru-radius) - 2px);
+
+  background: var(--barru-bg);
+  color: var(--barru-text);
+
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.formulario-empresa-archivo::file-selector-button:hover {
+  border-color: var(--barru-primary);
+  color: var(--barru-primary);
+}
+
+.formulario-empresa-ayuda {
+  max-width: 280px;
+
+  color: var(--barru-text-secondary);
+
+  font-size: 0.74rem;
+  line-height: 1.35;
+  text-align: right;
+}
+
+.formulario-empresa-jornada {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.formulario-empresa-grupo {
+  min-width: 0;
+  margin: 0;
+  padding: 0.85rem 1rem 1rem;
+
+  border: 1px solid var(--barru-border);
+  border-radius: var(--barru-radius);
+
+  background: transparent;
+}
+
+.formulario-empresa-grupo legend {
+  padding: 0 0.4rem;
+
+  color: var(--barru-text);
+
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.formulario-empresa-duracion {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+}
+
+.formulario-empresa-duracion-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.formulario-empresa-configuracion {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.formulario-empresa-coordenadas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.formulario-empresa-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+
+  margin-top: 1rem;
+}
+
+.boton-primario,
+.boton-secundario {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+
+  min-height: 36px;
+
+  padding: 0.5rem 0.85rem;
+
+  border: 1px solid transparent;
+  border-radius: var(--barru-radius);
+
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 600;
+  line-height: 1;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.boton-primario {
+  border-color: var(--barru-primary);
+  background: var(--barru-primary);
+  color: #ffffff;
+}
+
+.boton-primario:hover:not(:disabled) {
+  border-color: var(--barru-primary-hover);
+  background: var(--barru-primary-hover);
+}
+
+.boton-secundario {
+  border-color: var(--barru-border);
+  background: var(--barru-surface);
+  color: var(--barru-text);
+}
+
+.boton-secundario:hover:not(:disabled) {
+  border-color: var(--barru-primary);
+  color: var(--barru-primary);
+}
+
+.boton-primario:focus-visible,
+.boton-secundario:focus-visible {
+  outline: 2px solid var(--barru-primary);
+  outline-offset: 2px;
+}
+
+.boton-primario:disabled,
+.boton-secundario:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 760px) {
+  .formulario-empresa {
+    max-width: 100%;
+  }
+
+  .formulario-empresa-identidad {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .formulario-empresa-logo {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .formulario-empresa-archivo {
+    text-align: left;
+  }
+
+  .formulario-empresa-ayuda {
+    text-align: left;
+  }
+
+  .formulario-empresa-jornada,
+  .formulario-empresa-configuracion,
+  .formulario-empresa-coordenadas {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .formulario-empresa {
+    padding-top: 0.85rem;
+    margin-left: 0;
+  }
+
+  .formulario-empresa-titulo {
+    font-size: 1.55rem;
+  }
+
+  .formulario-empresa-panel {
+    padding: 1rem;
+  }
+
+  .formulario-empresa-duracion {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .formulario-empresa-acciones {
+    flex-direction: column-reverse;
+  }
+
+  .formulario-empresa-acciones .boton-primario,
+  .formulario-empresa-acciones .boton-secundario {
+    width: 100%;
+  }
+}

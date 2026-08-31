@@ -1,214 +1,276 @@
-<div class="empresas-page">
+<div class="listado-empresa">
 
-  <div class="empresas-header">
+  <header class="listado-empresa-header">
 
-    <div>
-      <h1>Empresas</h1>
-
-      <p>
-        Gestión de las empresas registradas en Barru.
-      </p>
-    </div>
+    <h1 class="listado-empresa-titulo">
+      Empresas
+    </h1>
 
     <a
       routerLink="/empresas/nueva"
-      pButton
+      class="boton-primario"
     >
-      <i class="pi pi-plus"></i>
+      <i
+        class="pi pi-plus"
+        aria-hidden="true"
+      ></i>
+
       <span>Nueva empresa</span>
     </a>
 
-  </div>
+  </header>
 
 
-  <div class="empresas-filtros">
+  <nav
+    class="listado-empresa-filtros"
+    aria-label="Estado de las empresas"
+  >
 
-    <p-button
+    <button
       type="button"
-      label="Todas"
-      [outlined]="filtroEstado() !== 'todas'"
-      (onClick)="cargarEmpresas('todas')"
-    />
+      [attr.aria-pressed]="filtroEstado() === 'todas'"
+      [disabled]="cargando()"
+      (click)="cargarEmpresas('todas')"
+    >
+      Todas
+    </button>
 
-    <p-button
+    <button
       type="button"
-      label="Activas"
-      [outlined]="filtroEstado() !== 'activas'"
-      (onClick)="cargarEmpresas('activas')"
-    />
+      [attr.aria-pressed]="filtroEstado() === 'activas'"
+      [disabled]="cargando()"
+      (click)="cargarEmpresas('activas')"
+    >
+      Activas
+    </button>
 
-    <p-button
+    <button
       type="button"
-      label="Inactivas"
-      [outlined]="filtroEstado() !== 'inactivas'"
-      (onClick)="cargarEmpresas('inactivas')"
-    />
+      [attr.aria-pressed]="filtroEstado() === 'inactivas'"
+      [disabled]="cargando()"
+      (click)="cargarEmpresas('inactivas')"
+    >
+      Inactivas
+    </button>
 
-  </div>
+  </nav>
 
 
   @if (error()) {
 
-    <p-message severity="error">
-      {{ error() }}
-    </p-message>
+    <div class="listado-empresa-error">
+
+      <p-message severity="error">
+        {{ error() }}
+      </p-message>
+
+    </div>
 
   }
 
 
-  <p-table
-    #tabla
-    [value]="empresas()"
-    [loading]="cargando()"
-    [paginator]="true"
-    [rows]="10"
-    [rowsPerPageOptions]="[10, 25, 50]"
-    [globalFilterFields]="['nombre']"
-  >
+  <div class="listado-empresa-tabla">
 
-    <ng-template #caption>
-
-      <label for="busquedaEmpresa">
-        Buscar empresa
-      </label>
-
-      <input
-        id="busquedaEmpresa"
-        #busqueda
-        type="text"
-        pInputText
-        placeholder="Buscar por nombre"
-        (input)="tabla.filterGlobal(busqueda.value, 'contains')"
-      />
-
-    </ng-template>
-
-
-    <ng-template #header>
-
-      <tr>
-        <th scope="col">Logo</th>
-        <th scope="col">Nombre</th>
-        <th scope="col">Estado</th>
-        <th scope="col">Límite usuarios</th>
-        <th scope="col">Jornada</th>
-        <th scope="col">Pausa</th>
-        <th scope="col">Radio fichaje</th>
-        <th scope="col">Acciones</th>
-      </tr>
-
-    </ng-template>
-
-
-    <ng-template
-      #body
-      let-empresa
+    <p-table
+      #tabla
+      [value]="empresas()"
+      [loading]="cargando()"
+      [paginator]="true"
+      [rows]="10"
+      [rowsPerPageOptions]="[10, 25, 50]"
+      [globalFilterFields]="['nombre']"
     >
 
-      <tr>
+      <ng-template #caption>
 
-        <td>
+        <div class="listado-empresa-busqueda">
 
-          @if (empresa.logoUrl) {
+          <label
+            for="busquedaEmpresa"
+            class="listado-empresa-busqueda-label"
+          >
+            Buscar empresa
+          </label>
 
-            <img
-              [src]="empresa.logoUrl"
-              [alt]="'Logo de ' + empresa.nombre"
-              width="40"
-              height="40"
-            />
+          <input
+            id="busquedaEmpresa"
+            #busqueda
+            type="text"
+            pInputText
+            class="listado-empresa-busqueda-input"
+            placeholder="Buscar por nombre"
+            (input)="tabla.filterGlobal(busqueda.value, 'contains')"
+          />
 
-          } @else {
+        </div>
 
-            <span>Sin logo</span>
+      </ng-template>
 
-          }
 
-        </td>
+      <ng-template #header>
 
-        <td>
-          {{ empresa.nombre }}
-        </td>
+        <tr>
+          <th scope="col">Logo</th>
+          <th scope="col">Nombre</th>
+          <th scope="col">Estado</th>
+          <th scope="col">Límite usuarios</th>
+          <th scope="col">Jornada</th>
+          <th scope="col">Pausa</th>
+          <th scope="col">Radio fichaje</th>
+          <th scope="col">Acciones</th>
+        </tr>
 
-        <td>
-          {{ empresa.activa === true ? 'Activa' : 'Inactiva' }}
-        </td>
+      </ng-template>
 
-        <td>
-          {{ empresa.limiteUsuarios }}
-        </td>
 
-        <td>
-          {{ formatearDuracion(empresa.jornadaMinutos) }}
-        </td>
+      <ng-template
+        #body
+        let-empresa
+      >
 
-        <td>
-          {{ formatearDuracion(empresa.pausaMinutos ?? 30) }}
-        </td>
+        <tr>
 
-        <td>
-          {{ empresa.radioFichaje }} m
-        </td>
+          <td>
 
-        <td>
+            @if (empresa.logoUrl) {
 
-          @if (empresa.id !== undefined) {
-
-            <a
-              [routerLink]="[
-                '/empresas',
-                empresa.id,
-                'editar'
-              ]"
-              pButton
-              severity="secondary"
-            >
-              <i class="pi pi-pencil"></i>
-              <span>Modificar</span>
-            </a>
-
-            @if (empresa.activa === true) {
-
-              <p-button
-                type="button"
-                label="Desactivar"
-                icon="pi pi-ban"
-                severity="secondary"
-                [disabled]="cargando()"
-                (onClick)="cambiarEstado(empresa)"
+              <img
+                class="listado-empresa-logo"
+                [src]="empresa.logoUrl"
+                [alt]="'Logo de ' + empresa.nombre"
               />
 
             } @else {
 
-              <p-button
-                type="button"
-                label="Activar"
-                icon="pi pi-check"
-                [disabled]="cargando()"
-                (onClick)="cambiarEstado(empresa)"
-              />
+              <span class="listado-empresa-sin-logo">
+                Sin logo
+              </span>
 
             }
 
-          }
-
-        </td>
-
-      </tr>
-
-    </ng-template>
+          </td>
 
 
-    <ng-template #emptymessage>
+          <td class="listado-empresa-nombre">
+            {{ empresa.nombre }}
+          </td>
 
-      <tr>
-        <td colspan="8">
-          No hay empresas que coincidan con los criterios seleccionados.
-        </td>
-      </tr>
 
-    </ng-template>
+          <td>
 
-  </p-table>
+            <span
+              class="listado-empresa-estado"
+              [class.listado-empresa-estado-activa]="empresa.activa === true"
+              [class.listado-empresa-estado-inactiva]="empresa.activa !== true"
+            >
+              {{ empresa.activa === true ? 'Activa' : 'Inactiva' }}
+            </span>
+
+          </td>
+
+
+          <td>
+            {{ empresa.limiteUsuarios }}
+          </td>
+
+          <td>
+            {{ formatearDuracion(empresa.jornadaMinutos) }}
+          </td>
+
+          <td>
+            {{ formatearDuracion(empresa.pausaMinutos ?? 30) }}
+          </td>
+
+          <td>
+            {{ empresa.radioFichaje }} m
+          </td>
+
+
+          <td>
+
+            @if (empresa.id !== undefined) {
+
+              <div class="listado-empresa-acciones">
+
+                <a
+                  [routerLink]="[
+                    '/empresas',
+                    empresa.id,
+                    'editar'
+                  ]"
+                  class="boton-secundario"
+                >
+                  <i
+                    class="pi pi-pencil"
+                    aria-hidden="true"
+                  ></i>
+
+                  <span>Modificar</span>
+                </a>
+
+
+                @if (empresa.activa === true) {
+
+                  <button
+                    type="button"
+                    class="boton-secundario"
+                    [disabled]="cargando()"
+                    (click)="cambiarEstado(empresa)"
+                  >
+                    <i
+                      class="pi pi-ban"
+                      aria-hidden="true"
+                    ></i>
+
+                    <span>Desactivar</span>
+                  </button>
+
+                } @else {
+
+                  <button
+                    type="button"
+                    class="boton-primario"
+                    [disabled]="cargando()"
+                    (click)="cambiarEstado(empresa)"
+                  >
+                    <i
+                      class="pi pi-check"
+                      aria-hidden="true"
+                    ></i>
+
+                    <span>Activar</span>
+                  </button>
+
+                }
+
+              </div>
+
+            }
+
+          </td>
+
+        </tr>
+
+      </ng-template>
+
+
+      <ng-template #emptymessage>
+
+        <tr>
+
+          <td
+            colspan="8"
+            class="listado-empresa-vacio"
+          >
+            No hay empresas que coincidan con los criterios seleccionados.
+          </td>
+
+        </tr>
+
+      </ng-template>
+
+    </p-table>
+
+  </div>
 
 </div>

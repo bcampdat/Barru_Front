@@ -12,6 +12,7 @@ import { RestablecerPassword } from './features/auth/restablecer-password/restab
 import { RecuperarPassword } from './features/auth/recuperar-password/recuperar-password';
 
 import { Inicio } from './features/inicio/inicio';
+import { Contenido } from './features/inicio/contenido/contenido';
 
 import { Perfil } from './features/usuarios/perfil/perfil';
 import { ListadoUsuarios } from './features/usuarios/listado-usuarios/listado-usuarios';
@@ -54,153 +55,6 @@ export const routes: Routes = [
   },
 
   {
-    path: 'inicio',
-    component: Inicio,
-    canActivate: [
-      authGuard,
-    ],
-  },
-
-  {
-    path: 'perfil',
-    component: Perfil,
-    canActivate: [
-      authGuard,
-    ],
-  },
-
-  {
-    path: 'empresas',
-    component: ListadoEmpresas,
-    canActivate: [
-      authGuard,
-      adminGuard,
-    ],
-  },
-
-  {
-    path: 'empresas/nueva',
-    component: FormularioEmpresa,
-    canActivate: [
-      authGuard,
-      adminGuard,
-    ],
-  },
-
-  {
-    path: 'empresas/:id/editar',
-    component: FormularioEmpresa,
-    canActivate: [
-      authGuard,
-      adminGuard,
-    ],
-  },
-
-  {
-    path: 'metodos-fichaje',
-    component: ListadoMetodosFichaje,
-    canActivate: [
-      authGuard,
-      adminGuard,
-    ],
-  },
-
-  {
-    path: 'fichar',
-    component: Fichar,
-    canActivate: [
-      authGuard,
-    ],
-  },
-
-  {
-    path: 'mis-tareas',
-    component: MisTareas,
-    canActivate: [
-      authGuard,
-    ],
-  },
-
-  {
-    path: 'avisos-tarea',
-    component: AvisosTarea,
-    canActivate: [
-      authGuard,
-    ],
-  },
-
-  {
-    path: 'panel-proyectos',
-    component: PanelProyectos,
-    canActivate: [
-      authGuard,
-      encargadoGuard,
-    ],
-  },
-
-  {
-    path: 'resumenes/mio',
-    component: ResumenPersonal,
-    canActivate: [
-      authGuard,
-    ],
-  },
-
-  {
-    path: 'resumenes/empresa',
-    component: ResumenEmpresa,
-    canActivate: [
-      authGuard,
-      gestionGuard,
-    ],
-  },
-
-  {
-    path: 'auditoria',
-    component: Auditoria,
-    canActivate: [
-      authGuard,
-      gestionGuard,
-    ],
-  },
-
-  {
-    path: 'notificaciones',
-    component: Notificaciones,
-    canActivate: [
-      authGuard,
-      encargadoGuard,
-    ],
-  },
-
-  {
-    path: 'usuarios/nuevo',
-    component: FormularioUsuario,
-    canActivate: [
-      authGuard,
-      gestionGuard,
-    ],
-  },
-
-  {
-    path: 'usuarios/:uuid/editar',
-    component: FormularioUsuario,
-    canActivate: [
-      authGuard,
-      gestionGuard,
-    ],
-  },
-
-  {
-    path: 'usuarios',
-    component: ListadoUsuarios,
-    canActivate: [
-      authGuard,
-      gestionGuard,
-    ],
-  },
-
-  {
     path: 'restablecer-password',
     component: RestablecerPassword,
   },
@@ -211,18 +65,146 @@ export const routes: Routes = [
   },
 
   {
-    path: 'admin',
-    component: ZonaAdminGestion,
-    canActivate: [
-      authGuard,
-      adminGuard,
-    ],
+    path: '',
+    redirectTo: 'login',
+    pathMatch: 'full',
   },
 
   {
     path: '',
-    redirectTo: 'login',
-    pathMatch: 'full',
+    component: Inicio,
+    canActivate: [
+      authGuard,
+    ],
+    children: [
+
+      {
+        path: 'inicio',
+        component: Contenido,
+      },
+
+      {
+        path: 'perfil',
+        component: Perfil,
+      },
+
+      {
+        path: 'empresas',
+        component: ListadoEmpresas,
+        canActivate: [
+          adminGuard,
+        ],
+      },
+
+      {
+        path: 'empresas/nueva',
+        component: FormularioEmpresa,
+        canActivate: [
+          adminGuard,
+        ],
+      },
+
+      {
+        path: 'empresas/:id/editar',
+        component: FormularioEmpresa,
+        canActivate: [
+          adminGuard,
+        ],
+      },
+
+      {
+        path: 'metodos-fichaje',
+        component: ListadoMetodosFichaje,
+        canActivate: [
+          adminGuard,
+        ],
+      },
+
+      {
+        path: 'fichar',
+        component: Fichar,
+      },
+
+      {
+        path: 'mis-tareas',
+        component: MisTareas,
+      },
+
+      {
+        path: 'avisos-tarea',
+        component: AvisosTarea,
+      },
+
+      {
+        path: 'panel-proyectos',
+        component: PanelProyectos,
+        canActivate: [
+          encargadoGuard,
+        ],
+      },
+
+      {
+        path: 'resumenes/mio',
+        component: ResumenPersonal,
+      },
+
+      {
+        path: 'resumenes/empresa',
+        component: ResumenEmpresa,
+        canActivate: [
+          gestionGuard,
+        ],
+      },
+
+      {
+        path: 'auditoria',
+        component: Auditoria,
+        canActivate: [
+          gestionGuard,
+        ],
+      },
+
+      {
+        path: 'notificaciones',
+        component: Notificaciones,
+        canActivate: [
+          encargadoGuard,
+        ],
+      },
+
+      {
+        path: 'usuarios/nuevo',
+        component: FormularioUsuario,
+        canActivate: [
+          gestionGuard,
+        ],
+      },
+
+      {
+        path: 'usuarios/:uuid/editar',
+        component: FormularioUsuario,
+        canActivate: [
+          gestionGuard,
+        ],
+      },
+
+      {
+        path: 'usuarios',
+        component: ListadoUsuarios,
+        canActivate: [
+          gestionGuard,
+        ],
+      },
+
+      {
+        path: 'admin',
+        component: ZonaAdminGestion,
+        canActivate: [
+          adminGuard,
+        ],
+      },
+
+    ],
   },
 
   {

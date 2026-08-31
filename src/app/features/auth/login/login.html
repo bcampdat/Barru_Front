@@ -3,8 +3,21 @@
   <div class="login-card">
 
     <div class="login-header">
-      <h1>Barru</h1>
-      <p>Control horario</p>
+
+      <!-- Barru claro: tarjeta oscura -->
+      <img
+        src="/assets/logo-dark.png"
+        alt="Barru"
+        class="login-logo logo-tarjeta-oscura"
+      />
+
+      <!-- Barru oscuro: tarjeta clara -->
+      <img
+        src="/assets/logo-light.png"
+        alt="Barru"
+        class="login-logo logo-tarjeta-clara"
+      />
+
     </div>
 
     <form
@@ -14,6 +27,7 @@
     >
 
       <div class="campo">
+
         <label for="email">
           Correo electrónico
         </label>
@@ -27,16 +41,20 @@
         />
 
         @if (emailInvalido()) {
+
           <p-message
             severity="error"
             variant="simple"
           >
             Introduce un correo electrónico válido.
           </p-message>
+
         }
+
       </div>
 
       <div class="campo">
+
         <label for="password">
           Contraseña
         </label>
@@ -50,35 +68,42 @@
         />
 
         @if (passwordInvalida()) {
+
           <p-message
             severity="error"
             variant="simple"
           >
             La contraseña es obligatoria.
           </p-message>
+
         }
+
       </div>
 
       <div class="recuperar-link">
+
         <a routerLink="/recuperar-password">
           ¿Has olvidado tu contraseña?
         </a>
+
       </div>
 
       @if (error()) {
+
         <p-message
           severity="error"
         >
           {{ error() }}
         </p-message>
+
       }
 
       <p-button
-            type="submit"
-            label="Iniciar sesión"
-            [loading]="enviando()"
-            [disabled]="enviando()"
-            />
+        type="submit"
+        label="Iniciar sesión"
+        [loading]="enviando()"
+        [disabled]="enviando()"
+      />
 
     </form>
 

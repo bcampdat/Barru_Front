@@ -1,19 +1,36 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit, signal } from '@angular/core';
+
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  signal,
+} from '@angular/core';
+
 import { FormsModule } from '@angular/forms';
-import { finalize, forkJoin, Observable } from 'rxjs';
+
+import {
+  finalize,
+  forkJoin,
+  Observable,
+} from 'rxjs';
 
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { TableModule } from 'primeng/table';
 
 import { AuthService } from '../../../../core/auth/auth.service';
+
 import {
   DescargaPdfService,
   DescargaPdfSolicitud,
 } from '../../../../core/descargas/descarga-pdf-service';
+
 import { EmpresaService } from '../../../../core/empresa/empresa-service';
-import { EmpresaDTO } from '../../../../core/empresa/empresa.types';
+
+import {
+  EmpresaDTO,
+} from '../../../../core/empresa/empresa.types';
 
 import type {
   MotivoSalida,
@@ -21,16 +38,30 @@ import type {
   TipoSalida,
 } from '../../../../core/fichaje/fichaje-types';
 
-import { ResumenService } from '../../../../core/resumenes/resumen-service';
+import {
+  ResumenService,
+} from '../../../../core/resumenes/resumen-service';
+
 import {
   ResumenEmpresaDTO,
   TipoIncidenciaEmpresa,
 } from '../../../../core/resumenes/resumen-types';
-import { UsuarioService } from '../../../../core/usuarios/usuario-service';
-import { UserDTO } from '../../../../core/usuarios/usuario.types';
 
-import { Notificaciones } from '../../../notificaciones/notificaciones';
-import { ResumenTrabajador } from '../../trabajador/resumen-trabajador/resumen-trabajador';
+import {
+  UsuarioService,
+} from '../../../../core/usuarios/usuario-service';
+
+import {
+  UserDTO,
+} from '../../../../core/usuarios/usuario.types';
+
+import {
+  Notificaciones,
+} from '../../../notificaciones/notificaciones';
+
+import {
+  ResumenTrabajador,
+} from '../../trabajador/resumen-trabajador/resumen-trabajador';
 
 
 type ModoConsulta =
@@ -42,21 +73,27 @@ type ModoConsulta =
 
 @Component({
   selector: 'app-resumen-empresa',
+
   imports: [
     FormsModule,
     InputTextModule,
     MessageModule,
-    TableModule,    
+    TableModule,
     ResumenTrabajador,
     Notificaciones,
   ],
+
   templateUrl: './resumen-empresa.html',
   styleUrl: './resumen-empresa.scss',
 })
-export class ResumenEmpresa implements OnInit {
+export class ResumenEmpresa
+implements OnInit, OnDestroy {
 
-  readonly empresas = signal<EmpresaDTO[]>([]);
-  readonly trabajadores = signal<UserDTO[]>([]);
+  readonly empresas =
+    signal<EmpresaDTO[]>([]);
+
+  readonly trabajadores =
+    signal<UserDTO[]>([]);
 
   readonly resumenEmpresa =
     signal<ResumenEmpresaDTO | null>(null);
@@ -67,11 +104,17 @@ export class ResumenEmpresa implements OnInit {
   readonly trabajadorSeleccionado =
     signal<UserDTO | null>(null);
 
-  readonly cargando = signal(false);
-  readonly descargando = signal(false);
-  readonly error = signal<string | null>(null);
+  readonly cargando =
+    signal(false);
 
-  readonly esAdmin = signal(false);
+  readonly descargando =
+    signal(false);
+
+  readonly error =
+    signal<string | null>(null);
+
+  readonly esAdmin =
+    signal(false);
 
   readonly modoEmpresa =
     signal<ModoConsulta>('HOY');
@@ -79,21 +122,51 @@ export class ResumenEmpresa implements OnInit {
   readonly empresaId =
     signal<number | null>(null);
 
+  readonly fechaHoraActual =
+    signal('');
+
+  readonly notificacionesPendientes =
+    signal<number | null>(null);
+
+
   fechaEmpresa = '';
   desdeEmpresa = '';
   hastaEmpresa = '';
 
 
+  private relojIntervalo:
+    ReturnType<typeof setInterval> | null =
+      null;
+
+
   constructor(
-    private readonly authService: AuthService,
-    private readonly empresaService: EmpresaService,
-    private readonly usuarioService: UsuarioService,
-    private readonly resumenService: ResumenService,
-    private readonly descargaPdfService: DescargaPdfService
+    private readonly authService:
+      AuthService,
+
+    private readonly empresaService:
+      EmpresaService,
+
+    private readonly usuarioService:
+      UsuarioService,
+
+    private readonly resumenService:
+      ResumenService,
+
+    private readonly descargaPdfService:
+      DescargaPdfService
   ) {}
 
 
   ngOnInit(): void {
+
+    this.actualizarReloj();
+
+    this.relojIntervalo =
+      setInterval(
+        () =>
+          this.actualizarReloj(),
+        1000
+      );
 
     const sesion =
       this.authService.getSesion();
@@ -109,12 +182,29 @@ export class ResumenEmpresa implements OnInit {
     if (this.esAdmin()) {
 
       this.inicializarAdmin();
+
       return;
     }
 
     this.inicializarEncargado(
       sesion.usuarioUuid
     );
+  }
+
+
+  ngOnDestroy(): void {
+
+    if (
+      this.relojIntervalo !== null
+    ) {
+
+      clearInterval(
+        this.relojIntervalo
+      );
+
+      this.relojIntervalo =
+        null;
+    }
   }
 
 
@@ -128,7 +218,9 @@ export class ResumenEmpresa implements OnInit {
 
     this.limpiarEmpresa();
 
-    if (empresaId !== null) {
+    if (
+      empresaId !== null
+    ) {
 
       this.cargarContextoEmpresa(
         empresaId
@@ -141,7 +233,9 @@ export class ResumenEmpresa implements OnInit {
     trabajador: UserDTO
   ): void {
 
-    if (!trabajador.uuid) {
+    if (
+      !trabajador.uuid
+    ) {
       return;
     }
 
@@ -223,7 +317,10 @@ export class ResumenEmpresa implements OnInit {
     tipo: TipoSalida | null
   ): string {
 
-    if (tipo === null) {
+    if (
+      tipo === null
+    ) {
+
       return 'Sin clasificación de salida';
     }
 
@@ -248,7 +345,10 @@ export class ResumenEmpresa implements OnInit {
     motivo: MotivoSalida | null
   ): string {
 
-    if (motivo === null) {
+    if (
+      motivo === null
+    ) {
+
       return 'Sin motivo indicado';
     }
 
@@ -277,16 +377,22 @@ export class ResumenEmpresa implements OnInit {
 
   descargarPdfEmpresa(): void {
 
-    this.error.set(null);
+    this.error.set(
+      null
+    );
 
     const solicitud =
       this.crearSolicitudDescarga();
 
-    if (!solicitud) {
+    if (
+      !solicitud
+    ) {
       return;
     }
 
-    this.descargando.set(true);
+    this.descargando.set(
+      true
+    );
 
     this.descargaPdfService
       .descargar(
@@ -294,10 +400,13 @@ export class ResumenEmpresa implements OnInit {
       )
       .pipe(
         finalize(() =>
-          this.descargando.set(false)
+          this.descargando.set(
+            false
+          )
         )
       )
       .subscribe({
+
         error: error =>
           this.mostrarErrorDescarga(
             error
@@ -326,8 +435,7 @@ export class ResumenEmpresa implements OnInit {
     }
 
     if (
-      this.modoEmpresa()
-        === 'RANGO'
+      this.modoEmpresa() === 'RANGO'
     ) {
 
       return this.historicoEmpresa()
@@ -345,7 +453,9 @@ export class ResumenEmpresa implements OnInit {
     const empresaId =
       this.empresaId();
 
-    if (empresaId === null) {
+    if (
+      empresaId === null
+    ) {
       return;
     }
 
@@ -389,6 +499,7 @@ export class ResumenEmpresa implements OnInit {
 
         break;
 
+
       case 'FECHA':
 
         this.ejecutarConsulta(
@@ -403,6 +514,7 @@ export class ResumenEmpresa implements OnInit {
         );
 
         break;
+
 
       case 'RANGO':
 
@@ -419,6 +531,7 @@ export class ResumenEmpresa implements OnInit {
         );
 
         break;
+
 
       case 'HISTORICO':
 
@@ -443,7 +556,9 @@ export class ResumenEmpresa implements OnInit {
     const empresaId =
       this.empresaId();
 
-    if (empresaId === null) {
+    if (
+      empresaId === null
+    ) {
       return null;
     }
 
@@ -464,7 +579,9 @@ export class ResumenEmpresa implements OnInit {
               ?.fecha
           );
 
-        if (!fecha) {
+        if (
+          !fecha
+        ) {
 
           this.error.set(
             'No hay un resumen disponible para descargar.'
@@ -481,6 +598,7 @@ export class ResumenEmpresa implements OnInit {
           ...datosEmpresa,
         };
       }
+
 
       case 'FECHA':
 
@@ -503,6 +621,7 @@ export class ResumenEmpresa implements OnInit {
           fecha: this.fechaEmpresa,
           ...datosEmpresa,
         };
+
 
       case 'RANGO':
 
@@ -529,7 +648,9 @@ export class ResumenEmpresa implements OnInit {
           ...datosEmpresa,
         };
 
+
       case 'HISTORICO':
+
         return null;
     }
   }
@@ -537,7 +658,9 @@ export class ResumenEmpresa implements OnInit {
 
   private inicializarAdmin(): void {
 
-    this.cargando.set(true);
+    this.cargando.set(
+      true
+    );
 
     this.ejecutarConsulta(
       this.empresaService
@@ -554,21 +677,28 @@ export class ResumenEmpresa implements OnInit {
     usuarioUuid: string
   ): void {
 
-    this.cargando.set(true);
+    this.cargando.set(
+      true
+    );
 
     this.usuarioService
       .buscarPorUuid(
         usuarioUuid
       )
       .subscribe({
+
         next: usuario => {
 
           const empresaId =
             usuario.empresaId;
 
-          if (empresaId == null) {
+          if (
+            empresaId == null
+          ) {
 
-            this.cargando.set(false);
+            this.cargando.set(
+              false
+            );
 
             this.error.set(
               'El usuario no tiene una empresa asociada.'
@@ -588,7 +718,9 @@ export class ResumenEmpresa implements OnInit {
 
         error: error => {
 
-          this.cargando.set(false);
+          this.cargando.set(
+            false
+          );
 
           this.mostrarError(
             error
@@ -602,8 +734,13 @@ export class ResumenEmpresa implements OnInit {
     empresaId: number
   ): void {
 
-    this.cargando.set(true);
-    this.error.set(null);
+    this.cargando.set(
+      true
+    );
+
+    this.error.set(
+      null
+    );
 
     forkJoin({
       resumen:
@@ -619,10 +756,13 @@ export class ResumenEmpresa implements OnInit {
     })
       .pipe(
         finalize(() =>
-          this.cargando.set(false)
+          this.cargando.set(
+            false
+          )
         )
       )
       .subscribe({
+
         next: respuesta => {
 
           this.resumenEmpresa.set(
@@ -723,10 +863,13 @@ export class ResumenEmpresa implements OnInit {
     peticion
       .pipe(
         finalize(() =>
-          this.cargando.set(false)
+          this.cargando.set(
+            false
+          )
         )
       )
       .subscribe({
+
         next: guardar,
 
         error: error =>
@@ -771,7 +914,9 @@ export class ResumenEmpresa implements OnInit {
     modo: ModoConsulta
   ): void {
 
-    this.error.set(null);
+    this.error.set(
+      null
+    );
 
     this.resumenEmpresa.set(
       null
@@ -793,7 +938,9 @@ export class ResumenEmpresa implements OnInit {
 
   private limpiarEmpresa(): void {
 
-    this.error.set(null);
+    this.error.set(
+      null
+    );
 
     this.resumenEmpresa.set(
       null
@@ -821,11 +968,67 @@ export class ResumenEmpresa implements OnInit {
   }
 
 
+  private actualizarReloj(): void {
+
+    const ahora =
+      new Date();
+
+    const dia =
+      String(
+        ahora.getDate()
+      ).padStart(
+        2,
+        '0'
+      );
+
+    const mes =
+      String(
+        ahora.getMonth() + 1
+      ).padStart(
+        2,
+        '0'
+      );
+
+    const anio =
+      ahora.getFullYear();
+
+    const horas =
+      String(
+        ahora.getHours()
+      ).padStart(
+        2,
+        '0'
+      );
+
+    const minutos =
+      String(
+        ahora.getMinutes()
+      ).padStart(
+        2,
+        '0'
+      );
+
+    const segundos =
+      String(
+        ahora.getSeconds()
+      ).padStart(
+        2,
+        '0'
+      );
+
+    this.fechaHoraActual.set(
+      `${dia}/${mes}/${anio} · ${horas}:${minutos}:${segundos}`
+    );
+  }
+
+
   private fechaDtoAIso(
     fecha: string | undefined
   ): string | null {
 
-    if (!fecha) {
+    if (
+      !fecha
+    ) {
       return null;
     }
 
@@ -845,9 +1048,11 @@ export class ResumenEmpresa implements OnInit {
       anio,
     ] = partes;
 
-    return dia && mes && anio
-      ? `${anio}-${mes}-${dia}`
-      : null;
+    return dia
+      && mes
+      && anio
+        ? `${anio}-${mes}-${dia}`
+        : null;
   }
 
 
@@ -856,8 +1061,7 @@ export class ResumenEmpresa implements OnInit {
   ): void {
 
     if (
-      error
-      instanceof HttpErrorResponse
+      error instanceof HttpErrorResponse
     ) {
 
       this.error.set(
@@ -880,8 +1084,7 @@ export class ResumenEmpresa implements OnInit {
 
     if (
       !(
-        error
-        instanceof HttpErrorResponse
+        error instanceof HttpErrorResponse
       )
     ) {
 
@@ -893,8 +1096,7 @@ export class ResumenEmpresa implements OnInit {
     }
 
     if (
-      error.error
-      instanceof Blob
+      error.error instanceof Blob
     ) {
 
       void this.leerErrorBlob(
