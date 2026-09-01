@@ -1,233 +1,356 @@
-<div class="resumen-trabajador-page">
-
-  <header>
-
-    <h2>
-      {{ trabajador.nombre }}
-      {{ trabajador.apellidos }}
-    </h2>
-
-    <p>
-      {{ trabajador.email }}
-    </p>
-
-  </header>
-
-
-  <nav aria-label="Consulta del resumen del trabajador">
-
-    <button
-      type="button"
-      [disabled]="cargando() || descargando()"
-      [attr.aria-pressed]="modo() === 'HOY'"
-      (click)="consultarHoy()"
-    >
-      Hoy
-    </button>
-
-    <button
-      type="button"
-      [disabled]="cargando() || descargando()"
-      [attr.aria-pressed]="modo() === 'HISTORICO'"
-      (click)="consultarHistorico()"
-    >
-      Histórico
-    </button>
-
-  </nav>
-
-
-  <section>
-
-    <h3>Consultar una fecha</h3>
-
-    <label for="fechaResumenTrabajador">
-      Fecha
-    </label>
-
-    <input
-      id="fechaResumenTrabajador"
-      name="fechaResumenTrabajador"
-      type="date"
-      [(ngModel)]="fecha"
-      [disabled]="cargando() || descargando()"
-    />
-
-    <button
-      type="button"
-      [disabled]="
-        cargando() ||
-        descargando() ||
-        !fecha
-      "
-      (click)="consultarFecha()"
-    >
-      Consultar
-    </button>
-
-  </section>
-
-
-  <section>
-
-    <h3>Consultar un periodo</h3>
-
-    <div>
-
-      <label for="fechaDesdeTrabajador">
-        Desde
-      </label>
-
-      <input
-        id="fechaDesdeTrabajador"
-        name="fechaDesdeTrabajador"
-        type="date"
-        [(ngModel)]="desde"
-        [disabled]="cargando() || descargando()"
-      />
-
-    </div>
-
-    <div>
-
-      <label for="fechaHastaTrabajador">
-        Hasta
-      </label>
-
-      <input
-        id="fechaHastaTrabajador"
-        name="fechaHastaTrabajador"
-        type="date"
-        [(ngModel)]="hasta"
-        [disabled]="cargando() || descargando()"
-      />
-
-    </div>
-
-    <button
-      type="button"
-      [disabled]="
-        cargando() ||
-        descargando() ||
-        !desde ||
-        !hasta
-      "
-      (click)="consultarRango()"
-    >
-      Consultar periodo
-    </button>
-
-  </section>
-
+<div class="resumen-trabajador">
 
   @if (error()) {
 
-    <p-message severity="error">
-      {{ error() }}
-    </p-message>
+    <div class="resumen-mensaje">
+
+      <p-message
+        severity="error"
+        [text]="error() ?? ''"
+      />
+
+    </div>
 
   }
 
 
+  <section
+    class="resumen-consultas"
+    aria-labelledby="consultasTrabajadorTitulo"
+  >
+
+    <div class="resumen-consultas__header">
+
+      <h3 id="consultasTrabajadorTitulo">
+        Consultas
+      </h3>
+
+
+      <span
+        class="descarga-ayuda"
+        [attr.title]="
+          modo() === 'HISTORICO'
+            ? 'La descarga del histórico completo no está disponible.'
+            : null
+        "
+      >
+
+        <button
+          type="button"
+          class="boton-primario"
+          [disabled]="!puedeDescargar()"
+          (click)="descargarPdf()"
+        >
+
+          <i
+            class="pi pi-download"
+            aria-hidden="true"
+          ></i>
+
+          @if (descargando()) {
+            Descargando...
+          } @else {
+            Descargar PDF
+          }
+
+        </button>
+
+      </span>
+
+    </div>
+
+
+    <div class="consultas-barra">
+
+      <div class="consultas-modos">
+
+        <button
+          type="button"
+          [disabled]="cargando() || descargando()"
+          [attr.aria-pressed]="modo() === 'HOY'"
+          (click)="consultarHoy()"
+        >
+          Hoy
+        </button>
+
+        <button
+          type="button"
+          [disabled]="cargando() || descargando()"
+          [attr.aria-pressed]="modo() === 'HISTORICO'"
+          (click)="consultarHistorico()"
+        >
+          Histórico
+        </button>
+
+      </div>
+
+
+      <div class="consultas-separador"></div>
+
+
+      <div class="consulta-fecha">
+
+        <label for="fechaResumenTrabajador">
+          Fecha
+        </label>
+
+        <input
+          id="fechaResumenTrabajador"
+          name="fechaResumenTrabajador"
+          type="date"
+          [(ngModel)]="fecha"
+          [disabled]="cargando() || descargando()"
+        />
+
+        <button
+          type="button"
+          class="boton-secundario"
+          [disabled]="
+            cargando()
+            || descargando()
+            || !fecha
+          "
+          (click)="consultarFecha()"
+        >
+          Consultar
+        </button>
+
+      </div>
+
+
+      <div class="consultas-separador"></div>
+
+
+      <div class="consulta-rango">
+
+        <label for="fechaDesdeTrabajador">
+          Desde
+        </label>
+
+        <input
+          id="fechaDesdeTrabajador"
+          name="fechaDesdeTrabajador"
+          type="date"
+          [(ngModel)]="desde"
+          [disabled]="cargando() || descargando()"
+        />
+
+
+        <label for="fechaHastaTrabajador">
+          Hasta
+        </label>
+
+        <input
+          id="fechaHastaTrabajador"
+          name="fechaHastaTrabajador"
+          type="date"
+          [(ngModel)]="hasta"
+          [disabled]="cargando() || descargando()"
+        />
+
+        <button
+          type="button"
+          class="boton-secundario"
+          [disabled]="
+            cargando()
+            || descargando()
+            || !desde
+            || !hasta
+          "
+          (click)="consultarRango()"
+        >
+          Consultar
+        </button>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
   @if (cargando()) {
 
-    <p>
-      Cargando resumen...
-    </p>
+    <div class="resumen-cargando">
+
+      <i
+        class="pi pi-spin pi-spinner"
+        aria-hidden="true"
+      ></i>
+
+      <span>
+        Cargando resumen...
+      </span>
+
+    </div>
 
   } @else {
 
 
     @if (resumen(); as resumenActual) {
 
-      <section>
+      <section
+        class="resumen-seccion resumen-jornada"
+        aria-labelledby="jornadaTrabajadorTitulo"
+      >
 
-        <h3>
-          Resumen del {{ resumenActual.fecha }}
-        </h3>
+        <header class="resumen-seccion-header">
 
-        <button
-          type="button"
-          [disabled]="!puedeDescargar()"
-          (click)="descargarPdf()"
-        >
-          @if (descargando()) {
-            Descargando PDF...
-          } @else {
-            Descargar PDF
-          }
-        </button>
+          <div class="resumen-seccion-titulo">
+
+            <i
+              class="pi pi-clock"
+              aria-hidden="true"
+            ></i>
+
+            <h3 id="jornadaTrabajadorTitulo">
+              Jornada del {{ resumenActual.fecha }}
+            </h3>
+
+          </div>
+
+        </header>
 
 
-        <dl>
+        <div class="resumen-metricas">
 
-          <div>
-            <dt>Estado</dt>
-            <dd>
+          <article class="resumen-metrica">
+
+            <span>
+              Estado
+            </span>
+
+            <strong>
               {{ resumenActual.situacion }}
-            </dd>
-          </div>
+            </strong>
 
-          <div>
-            <dt>Tiempo trabajado</dt>
-            <dd>
+          </article>
+
+
+          <article class="resumen-metrica">
+
+            <span>
+              Trabajado
+            </span>
+
+            <strong>
               {{ resumenActual.tiempoTrabajado }}
-            </dd>
-          </div>
+            </strong>
 
-          <div>
-            <dt>Jornada</dt>
-            <dd>
+          </article>
+
+
+          <article class="resumen-metrica">
+
+            <span>
+              Jornada
+            </span>
+
+            <strong>
               {{ resumenActual.tiempoJornada }}
-            </dd>
-          </div>
+            </strong>
 
-          <div>
-            <dt>Tiempo restante</dt>
-            <dd>
+          </article>
+
+
+          <article class="resumen-metrica">
+
+            <span>
+              Restante
+            </span>
+
+            <strong>
               {{ resumenActual.tiempoRestante }}
-            </dd>
-          </div>
+            </strong>
 
-          <div>
-            <dt>Tiempo de pausa</dt>
-            <dd>
+          </article>
+
+
+          <article class="resumen-metrica">
+
+            <span>
+              Pausa
+            </span>
+
+            <strong>
               {{ resumenActual.tiempoPausa }}
-            </dd>
-          </div>
+            </strong>
 
-          <div>
-            <dt>Pausa disponible</dt>
-            <dd>
+          </article>
+
+
+          <article class="resumen-metrica">
+
+            <span>
+              Pausa disponible
+            </span>
+
+            <strong>
               {{ resumenActual.tiempoPausaDisponible }}
-            </dd>
-          </div>
+            </strong>
 
-          <div>
-            <dt>Horas extra</dt>
-            <dd>
+          </article>
+
+
+          <article class="resumen-metrica">
+
+            <span>
+              Horas extra
+            </span>
+
+            <strong>
               {{ resumenActual.tiempoExtra }}
-            </dd>
+            </strong>
+
+          </article>
+
+        </div>
+
+      </section>
+
+
+      @if (
+        resumenActual.requiereConfirmacionHorasExtra
+      ) {
+
+        <div class="resumen-aviso">
+
+          <p-message
+            severity="warn"
+            text="La jornada ordinaria está completada y requiere confirmación de horas extra."
+          />
+
+        </div>
+
+      }
+
+
+      <section class="resumen-seccion">
+
+        <header class="resumen-seccion-header">
+
+          <div class="resumen-seccion-titulo">
+
+            <i
+              class="pi pi-sign-out"
+              aria-hidden="true"
+            ></i>
+
+            <h3>
+              Salidas
+            </h3>
+
           </div>
 
-        </dl>
+        </header>
 
+        <div class="resumen-salidas">
 
-        <app-resumen-salidas
-          [salidas]="resumenActual.salidas"
-        />
+          <app-resumen-salidas
+            [salidas]="resumenActual.salidas"
+          />
 
-
-        @if (
-          resumenActual.requiereConfirmacionHorasExtra
-        ) {
-
-          <p-message severity="warn">
-            La jornada ordinaria está completada
-            y requiere confirmación de horas extra.
-          </p-message>
-
-        }
+        </div>
 
       </section>
 
@@ -235,101 +358,111 @@
 
 
     @if (
-      modo() === 'HISTORICO' ||
-      modo() === 'RANGO'
+      modo() === 'HISTORICO'
+      || modo() === 'RANGO'
     ) {
 
-      <section>
+      <section
+        class="resumen-seccion resumen-historico"
+        aria-labelledby="historicoTrabajadorTitulo"
+      >
 
-        <h3>
-          {{
-            modo() === 'RANGO'
-              ? 'Resumen del periodo'
-              : 'Histórico'
-          }}
-        </h3>
+        <header class="resumen-seccion-header">
 
+          <div class="resumen-seccion-titulo">
 
-        @if (modo() === 'RANGO') {
+            <i
+              class="pi pi-history"
+              aria-hidden="true"
+            ></i>
 
-          <button
-            type="button"
-            [disabled]="!puedeDescargar()"
-            (click)="descargarPdf()"
-          >
-            @if (descargando()) {
-              Descargando PDF...
-            } @else {
-              Descargar PDF
-            }
-          </button>
+            <h3 id="historicoTrabajadorTitulo">
 
-        }
+              {{
+                modo() === 'RANGO'
+                  ? 'Resumen del periodo'
+                  : 'Histórico'
+              }}
 
+            </h3>
 
-        <p-table
-          [value]="historico()"
-          [paginator]="true"
-          [rows]="10"
-          [rowsPerPageOptions]="[10, 25, 50]"
-        >
+          </div>
 
-          <ng-template #header>
-
-            <tr>
-              <th scope="col">Fecha</th>
-              <th scope="col">Trabajado</th>
-              <th scope="col">Pausa</th>
-              <th scope="col">Horas extra</th>
-              <th scope="col">Estado</th>
-            </tr>
-
-          </ng-template>
+        </header>
 
 
-          <ng-template
-            #body
-            let-resumen
+        <div class="resumen-tabla">
+
+          <p-table
+            [value]="historico()"
+            [paginator]="true"
+            [rows]="10"
+            [rowsPerPageOptions]="[10, 25, 50]"
           >
 
-            <tr>
+            <ng-template #header>
 
-              <td>
-                {{ resumen.fecha }}
-              </td>
+              <tr>
+                <th scope="col">Fecha</th>
+                <th scope="col">Trabajado</th>
+                <th scope="col">Pausa</th>
+                <th scope="col">Horas extra</th>
+                <th scope="col">Estado</th>
+              </tr>
 
-              <td>
-                {{ resumen.tiempoTrabajado }}
-              </td>
-
-              <td>
-                {{ resumen.tiempoPausa }}
-              </td>
-
-              <td>
-                {{ resumen.tiempoExtra }}
-              </td>
-
-              <td>
-                {{ resumen.situacion }}
-              </td>
-
-            </tr>
-
-          </ng-template>
+            </ng-template>
 
 
-          <ng-template #emptymessage>
+            <ng-template
+              #body
+              let-resumen
+            >
 
-            <tr>
-              <td colspan="5">
-                No hay resúmenes para mostrar.
-              </td>
-            </tr>
+              <tr>
 
-          </ng-template>
+                <td>
+                  {{ resumen.fecha }}
+                </td>
 
-        </p-table>
+                <td>
+                  {{ resumen.tiempoTrabajado }}
+                </td>
+
+                <td>
+                  {{ resumen.tiempoPausa }}
+                </td>
+
+                <td>
+                  {{ resumen.tiempoExtra }}
+                </td>
+
+                <td>
+                  {{ resumen.situacion }}
+                </td>
+
+              </tr>
+
+            </ng-template>
+
+
+            <ng-template #emptymessage>
+
+              <tr>
+
+                <td
+                  colspan="5"
+                  class="resumen-tabla-vacio"
+                >
+                  No hay resúmenes para mostrar.
+                </td>
+
+              </tr>
+
+            </ng-template>
+
+          </p-table>
+
+        </div>
 
       </section>
 

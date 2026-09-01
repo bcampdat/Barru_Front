@@ -1,0 +1,180 @@
+:host {
+  /*
+   * Barru claro:
+   * fondo claro + tarjeta oscura.
+   */
+  --acceso-card-bg: #20262e;
+  --acceso-card-text: #f0f0ed;
+  --acceso-card-secondary: #a9afb6;
+  --acceso-card-border: #353d47;
+
+  --acceso-input-bg: #2a3139;
+  --acceso-input-text: #f0f0ed;
+  --acceso-input-border: #4a5561;
+}
+
+
+/*
+ * Barru oscuro:
+ * fondo oscuro + tarjeta clara.
+ */
+:host-context(.barru-dark) {
+  --acceso-card-bg: #f5f5f2;
+  --acceso-card-text: #363d48;
+  --acceso-card-secondary: #697078;
+  --acceso-card-border: #d2d3cf;
+
+  --acceso-input-bg: #ececea;
+  --acceso-input-text: #363d48;
+  --acceso-input-border: #c8cac6;
+
+  .logo-tarjeta-oscura {
+    display: none;
+  }
+
+  .logo-tarjeta-clara {
+    display: block;
+  }
+}
+
+
+.primer-acceso-page {
+  min-height: 100vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 1.5rem;
+
+  background: var(--barru-bg);
+}
+
+
+.primer-acceso-card {
+  width: 100%;
+  max-width: 357px;
+
+  padding: 2.34rem 2.13rem;
+
+  background: var(--acceso-card-bg);
+
+  border: 1px solid var(--acceso-card-border);
+  border-radius: var(--barru-radius);
+
+  box-shadow: var(--barru-shadow);
+}
+
+
+/* LOGO */
+
+.primer-acceso-logo {
+  margin-bottom: 1.75rem;
+
+  text-align: center;
+}
+
+.logo {
+  width: 280px;
+  max-width: 100%;
+  height: auto;
+
+  margin: 0 auto;
+}
+
+.logo-tarjeta-oscura {
+  display: block;
+}
+
+.logo-tarjeta-clara {
+  display: none;
+}
+
+
+/* TEXTO */
+
+.primer-acceso-header {
+  margin-bottom: 1.75rem;
+
+  text-align: center;
+
+  h1 {
+    margin: 0 0 0.55rem;
+
+    color: var(--acceso-card-text);
+
+    font-size: 1.35rem;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0;
+
+    color: var(--acceso-card-secondary);
+
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+}
+
+
+/* FORMULARIO */
+
+form {
+  display: flex;
+  flex-direction: column;
+
+  gap: 1.4rem;
+}
+
+
+.campo {
+  display: flex;
+  flex-direction: column;
+
+  gap: 0.5rem;
+
+  label {
+    color: var(--acceso-card-text);
+
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  input {
+    width: 100%;
+
+    background: var(--acceso-input-bg);
+    color: var(--acceso-input-text);
+
+    border-color: var(--acceso-input-border);
+  }
+
+  input:focus {
+    border-color: var(--barru-primary);
+
+    box-shadow:
+      0 0 0 1px var(--barru-primary);
+  }
+}
+
+
+:host ::ng-deep .p-button {
+  width: 100%;
+}
+
+
+@media (max-width: 520px) {
+
+  .primer-acceso-page {
+    padding: 1rem;
+  }
+
+  .primer-acceso-card {
+    padding: 1.7rem 1.28rem;
+  }
+
+  .logo {
+    width: 190px;
+  }
+}

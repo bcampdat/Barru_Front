@@ -1,34 +1,142 @@
-<section>
+<div class="zona-admin-page">
 
-  <h1>Zona administrativa</h1>
+  <header class="zona-admin-header">
+
+    <div>
+
+      <h1>
+        Zona administrativa
+      </h1>
+
+      @if (accesoConcedido()) {
+
+        <p>
+          Gestión de administradores del sistema.
+        </p>
+
+      }
+
+    </div>
+
+
+    @if (accesoConcedido()) {
+
+      <button
+        type="button"
+        class="boton-secundario"
+        (click)="salir()"
+        [disabled]="cargando()"
+      >
+
+        <i
+          class="pi pi-sign-out"
+          aria-hidden="true"
+        ></i>
+
+        @if (cargando()) {
+          Saliendo...
+        } @else {
+          Salir de la zona administrativa
+        }
+
+      </button>
+
+    }
+
+  </header>
+
+
+  @if (mensaje()) {
+
+    <div class="mensaje mensaje--correcto">
+
+      <i
+        class="pi pi-check-circle"
+        aria-hidden="true"
+      ></i>
+
+      <span>
+        {{ mensaje() }}
+      </span>
+
+    </div>
+
+  }
+
+
+  @if (error()) {
+
+    <div class="mensaje mensaje--error">
+
+      <i
+        class="pi pi-exclamation-circle"
+        aria-hidden="true"
+      ></i>
+
+      <span>
+        {{ error() }}
+      </span>
+
+    </div>
+
+  }
+
 
   @if (comprobandoContexto()) {
 
-    <p>
-      Comprobando acceso protegido...
-    </p>
+    <div class="estado-cargando">
+
+      <i
+        class="pi pi-spin pi-spinner"
+        aria-hidden="true"
+      ></i>
+
+      <span>
+        Comprobando acceso protegido...
+      </span>
+
+    </div>
 
   } @else if (!accesoConcedido()) {
 
     <app-zona-admin-acceso
       (accesoConcedido)="confirmarAcceso()"
-      (accesoDenegado)="denegarAcceso($event)">
-    </app-zona-admin-acceso>
+      (accesoDenegado)="denegarAcceso($event)"
+    />
 
   } @else {
 
-    <p>
-      Gestión de administradores del sistema.
-    </p>
 
-    <section>
+    <section
+      class="admin-card"
+      aria-labelledby="nuevoAdministradorTitulo"
+    >
 
-      <h2>Nuevo administrador</h2>
+      <header class="admin-card__header">
+
+        <div class="admin-card__titulo">
+
+          <i
+            class="pi pi-user-plus"
+            aria-hidden="true"
+          ></i>
+
+          <h2 id="nuevoAdministradorTitulo">
+            Nuevo administrador
+          </h2>
+
+        </div>
+
+      </header>
+
 
       <form
-        (ngSubmit)="crearAdministrador()">
+        class="admin-form"
+        (ngSubmit)="crearAdministrador()"
+      >
 
-        <div>
+        <div class="campo">
+
           <label for="nombre">
             Nombre
           </label>
@@ -38,10 +146,15 @@
             name="nombre"
             type="text"
             [(ngModel)]="nombre"
-            required>
+            [disabled]="creando()"
+            required
+          />
+
         </div>
 
-        <div>
+
+        <div class="campo">
+
           <label for="apellidos">
             Apellidos
           </label>
@@ -51,10 +164,15 @@
             name="apellidos"
             type="text"
             [(ngModel)]="apellidos"
-            required>
+            [disabled]="creando()"
+            required
+          />
+
         </div>
 
-        <div>
+
+        <div class="campo campo--email">
+
           <label for="email">
             Email
           </label>
@@ -64,12 +182,23 @@
             name="email"
             type="email"
             [(ngModel)]="email"
-            required>
+            [disabled]="creando()"
+            required
+          />
+
         </div>
+
 
         <button
           type="submit"
-          [disabled]="creando()">
+          class="boton-primario admin-form__submit"
+          [disabled]="creando()"
+        >
+
+          <i
+            class="pi pi-user-plus"
+            aria-hidden="true"
+          ></i>
 
           @if (creando()) {
             Creando...
@@ -83,189 +212,265 @@
 
     </section>
 
-    <section>
 
-      <h2>Administradores</h2>
+    <section
+      class="admin-card"
+      aria-labelledby="administradoresTitulo"
+    >
+
+      <header class="admin-card__header">
+
+        <div class="admin-card__titulo">
+
+          <i
+            class="pi pi-shield"
+            aria-hidden="true"
+          ></i>
+
+          <h2 id="administradoresTitulo">
+            Administradores
+          </h2>
+
+        </div>
+
+
+        <span class="admin-contador">
+          {{ administradores().length }}
+        </span>
+
+      </header>
+
 
       @if (
         administradores().length === 0
       ) {
 
-        <p>
-          No hay administradores registrados.
-        </p>
+        <div class="admin-vacio">
+
+          <i
+            class="pi pi-users"
+            aria-hidden="true"
+          ></i>
+
+          <span>
+            No hay administradores registrados.
+          </span>
+
+        </div>
 
       } @else {
 
-        <table>
+        <div class="admin-tabla">
 
-          <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>Email</th>
-              <th>Estado</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
+          <table>
 
-          <tbody>
-
-            @for (
-              administrador
-              of administradores();
-              track administrador.uuid
-            ) {
+            <thead>
 
               <tr>
-
-                <td>
-                  {{ administrador.nombre }}
-                  {{ administrador.apellidos }}
-                </td>
-
-                <td>
-                  {{ administrador.email }}
-                </td>
-
-                <td>
-                  {{ administrador.estado }}
-                </td>
-
-                <td>
-
-                  @if (
-                    administrador.estado ===
-                    'INACTIVO'
-                  ) {
-
-                    <button
-                      type="button"
-                      (click)="activar(
-                        administrador.uuid
-                      )"
-                      [disabled]="
-                        accionEnCurso() ===
-                        administrador.uuid
-                      ">
-                      Activar
-                    </button>
-
-                  }
-
-                  @if (
-                    administrador.estado ===
-                    'ACTIVO'
-                  ) {
-
-                    <button
-                      type="button"
-                      (click)="inactivar(
-                        administrador.uuid
-                      )"
-                      [disabled]="
-                        accionEnCurso() ===
-                        administrador.uuid
-                      ">
-                      Inactivar
-                    </button>
-
-                    <button
-                      type="button"
-                      (click)="bloquear(
-                        administrador.uuid
-                      )"
-                      [disabled]="
-                        accionEnCurso() ===
-                        administrador.uuid
-                      ">
-                      Bloquear
-                    </button>
-
-                  }
-
-                  @if (
-                    administrador.estado ===
-                    'BLOQUEADO'
-                  ) {
-
-                    <button
-                      type="button"
-                      (click)="desbloquear(
-                        administrador.uuid
-                      )"
-                      [disabled]="
-                        accionEnCurso() ===
-                        administrador.uuid
-                      ">
-                      Desbloquear
-                    </button>
-
-                  }
-
-                  @if (
-                    administrador.estado !==
-                    'PENDIENTE'
-                  ) {
-
-                    <button
-                      type="button"
-                      (click)="
-                        eliminarCredencialesWebAuthn(
-                          administrador.uuid
-                        )
-                      "
-                      [disabled]="
-                        accionEnCurso() ===
-                        administrador.uuid
-                      ">
-                      Restablecer WebAuthn
-                    </button>
-
-                  }
-
-                </td>
-
+                <th scope="col">Administrador</th>
+                <th scope="col">Email</th>
+                <th scope="col">Estado</th>
+                <th
+                  scope="col"
+                  class="columna-acciones"
+                >
+                  Acciones
+                </th>
               </tr>
 
-            }
+            </thead>
 
-          </tbody>
 
-        </table>
+            <tbody>
+
+              @for (
+                administrador
+                of administradores();
+                track administrador.uuid
+              ) {
+
+                <tr>
+
+                  <td>
+
+                    <div class="administrador-identidad">
+
+                      <span class="administrador-avatar">
+
+                        <i
+                          class="pi pi-shield"
+                          aria-hidden="true"
+                        ></i>
+
+                      </span>
+
+                      <strong>
+                        {{ administrador.nombre }}
+                        {{ administrador.apellidos }}
+                      </strong>
+
+                    </div>
+
+                  </td>
+
+
+                  <td>
+                    {{ administrador.email }}
+                  </td>
+
+
+                  <td>
+
+                    <span
+                      class="estado"
+                      [class.estado--activo]="
+                        administrador.estado === 'ACTIVO'
+                      "
+                      [class.estado--inactivo]="
+                        administrador.estado === 'INACTIVO'
+                      "
+                      [class.estado--bloqueado]="
+                        administrador.estado === 'BLOQUEADO'
+                      "
+                      [class.estado--pendiente]="
+                        administrador.estado === 'PENDIENTE'
+                      "
+                    >
+                      {{ administrador.estado }}
+                    </span>
+
+                  </td>
+
+
+                  <td class="acciones">
+
+                    @if (
+                      administrador.estado ===
+                      'INACTIVO'
+                    ) {
+
+                      <button
+                        type="button"
+                        class="boton-secundario boton-accion"
+                        (click)="activar(
+                          administrador.uuid
+                        )"
+                        [disabled]="
+                          accionEnCurso() ===
+                          administrador.uuid
+                        "
+                      >
+                        Activar
+                      </button>
+
+                    }
+
+
+                    @if (
+                      administrador.estado ===
+                      'ACTIVO'
+                    ) {
+
+                      <button
+                        type="button"
+                        class="boton-secundario boton-accion"
+                        (click)="inactivar(
+                          administrador.uuid
+                        )"
+                        [disabled]="
+                          accionEnCurso() ===
+                          administrador.uuid
+                        "
+                      >
+                        Inactivar
+                      </button>
+
+
+                      <button
+                        type="button"
+                        class="boton-secundario boton-accion"
+                        (click)="bloquear(
+                          administrador.uuid
+                        )"
+                        [disabled]="
+                          accionEnCurso() ===
+                          administrador.uuid
+                        "
+                      >
+                        Bloquear
+                      </button>
+
+                    }
+
+
+                    @if (
+                      administrador.estado ===
+                      'BLOQUEADO'
+                    ) {
+
+                      <button
+                        type="button"
+                        class="boton-secundario boton-accion"
+                        (click)="desbloquear(
+                          administrador.uuid
+                        )"
+                        [disabled]="
+                          accionEnCurso() ===
+                          administrador.uuid
+                        "
+                      >
+                        Desbloquear
+                      </button>
+
+                    }
+
+
+                    @if (
+                      administrador.estado !==
+                      'PENDIENTE'
+                    ) {
+
+                      <button
+                        type="button"
+                        class="boton-secundario boton-accion"
+                        (click)="
+                          eliminarCredencialesWebAuthn(
+                            administrador.uuid
+                          )
+                        "
+                        [disabled]="
+                          accionEnCurso() ===
+                          administrador.uuid
+                        "
+                      >
+
+                        <i
+                          class="pi pi-key"
+                          aria-hidden="true"
+                        ></i>
+
+                        Restablecer WebAuthn
+
+                      </button>
+
+                    }
+
+                  </td>
+
+                </tr>
+
+              }
+
+            </tbody>
+
+          </table>
+
+        </div>
 
       }
 
     </section>
 
-    <button
-      type="button"
-      (click)="salir()"
-      [disabled]="cargando()">
-
-      @if (cargando()) {
-        Saliendo...
-      } @else {
-        Salir de la zona administrativa
-      }
-
-    </button>
-
   }
 
-  @if (mensaje()) {
-
-    <p>
-      {{ mensaje() }}
-    </p>
-
-  }
-
-  @if (error()) {
-
-    <p>
-      {{ error() }}
-    </p>
-
-  }
-
-</section>
+</div>

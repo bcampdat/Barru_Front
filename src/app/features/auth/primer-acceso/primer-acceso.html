@@ -2,13 +2,33 @@
 
   <div class="primer-acceso-card">
 
+    <div class="primer-acceso-logo">
+
+      <!-- Barru claro: tarjeta oscura -->
+      <img
+        src="/assets/logo-dark.png"
+        alt="Barru"
+        class="logo logo-tarjeta-oscura"
+      />
+
+      <!-- Barru oscuro: tarjeta clara -->
+      <img
+        src="/assets/logo-light.png"
+        alt="Barru"
+        class="logo logo-tarjeta-clara"
+      />
+
+    </div>
+
     <div class="primer-acceso-header">
+
       <h1>Primer acceso</h1>
 
       <p>
         Por seguridad, debes establecer una nueva contraseña
         antes de acceder a Barru.
       </p>
+
     </div>
 
     <form
@@ -32,6 +52,7 @@
         />
 
         @if (nuevaPasswordInvalida()) {
+
           <p-message
             severity="error"
             variant="simple"
@@ -39,6 +60,7 @@
             La contraseña debe tener entre 8 y 100 caracteres,
             e incluir al menos una mayúscula, una minúscula y un número.
           </p-message>
+
         }
 
       </div>
@@ -58,20 +80,24 @@
         />
 
         @if (confirmarPasswordInvalida()) {
+
           <p-message
             severity="error"
             variant="simple"
           >
             Confirma la nueva contraseña.
           </p-message>
+
         }
 
       </div>
 
       @if (error()) {
+
         <p-message severity="error">
           {{ error() }}
         </p-message>
+
       }
 
       <p-button

@@ -13,23 +13,64 @@
       (click)="cerrar()"
       [disabled]="cargando()"
     >
-      ×
+
+      <i
+        class="pi pi-times"
+        aria-hidden="true"
+      ></i>
+
     </button>
+
+
+    <div class="modal-icono">
+
+      <i
+        class="pi pi-shield"
+        aria-hidden="true"
+      ></i>
+
+    </div>
+
 
     <h2 id="zona-admin-titulo">
       Acceso administrativo protegido
     </h2>
 
+
     <p>
-      Verifica tu identidad para acceder
-      a la zona administrativa.
+      Verifica tu identidad. 
     </p>
+
+
+    @if (error()) {
+
+      <div class="modal-error">
+
+        <i
+          class="pi pi-exclamation-circle"
+          aria-hidden="true"
+        ></i>
+
+        <span>
+          {{ error() }}
+        </span>
+
+      </div>
+
+    }
+
 
     <button
       type="button"
+      class="boton-primario modal-verificar"
       (click)="acceder()"
       [disabled]="cargando()"
     >
+
+      <i
+        class="pi pi-key"
+        aria-hidden="true"
+      ></i>
 
       @if (cargando()) {
         Verificando...
@@ -38,14 +79,6 @@
       }
 
     </button>
-
-    @if (error()) {
-
-      <p>
-        {{ error() }}
-      </p>
-
-    }
 
   </dialog>
 
