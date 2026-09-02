@@ -695,8 +695,16 @@ export class PanelProyectos implements OnInit {
       CrearProyectoRequest = {
 
         nombre,
-        fechaInicio,
-        fechaFinEstimada
+
+        fechaInicio:
+          this.convertirFechaParaApi(
+            fechaInicio
+          ),
+
+        fechaFinEstimada:
+          this.convertirFechaParaApi(
+            fechaFinEstimada
+          )
       };
 
     this.error.set(
@@ -843,7 +851,10 @@ export class PanelProyectos implements OnInit {
         prioridad:
           this.nuevaTarea.prioridad,
 
-        fechaLimite,
+        fechaLimite:
+          this.convertirFechaParaApi(
+            fechaLimite
+          ),
 
         usuarioAsignadoUuid:
           this.nuevaTarea.usuarioAsignadoUuid
@@ -1569,6 +1580,21 @@ export class PanelProyectos implements OnInit {
       hoy.getMonth(),
       hoy.getDate()
     ).getTime();
+  }
+
+
+  private convertirFechaParaApi(
+    fecha: string
+  ): string {
+
+    const [
+      anio,
+      mes,
+      dia
+    ] =
+      fecha.split('-');
+
+    return `${dia}/${mes}/${anio}`;
   }
 
 

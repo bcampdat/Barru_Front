@@ -31,6 +31,7 @@ import { ResumenDiarioDTO } from '../../../core/resumenes/resumen-types';
     DialogModule,
   ],
   templateUrl: './aviso-horas-extra.html',
+  styleUrl: './aviso-horas-extra.scss',
 })
 export class AvisoHorasExtra
 implements OnInit, OnDestroy {

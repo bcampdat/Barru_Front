@@ -107,9 +107,7 @@
         <input
           id="fecha-inicio-proyecto"
           name="fechaInicioProyecto"
-          type="text"
-          placeholder="dd/MM/yyyy"
-          autocomplete="off"
+          type="date"
           [(ngModel)]="nuevoProyecto.fechaInicio">
 
       </div>
@@ -123,9 +121,7 @@
         <input
           id="fecha-fin-proyecto"
           name="fechaFinProyecto"
-          type="text"
-          placeholder="dd/MM/yyyy"
-          autocomplete="off"
+          type="date"
           [(ngModel)]="nuevoProyecto.fechaFinEstimada">
 
       </div>
@@ -1081,9 +1077,7 @@
             <input
               [id]="'fecha-estimada-' + proyecto.id"
               [name]="'fechaEstimada-' + proyecto.id"
-              type="text"
-              placeholder="dd/MM/yyyy"
-              autocomplete="off"
+              type="date"
               [(ngModel)]="
                 fechaFinEstimadaPorProyecto[
                   proyecto.id
@@ -1191,9 +1185,7 @@
               <input
                 [id]="'fecha-limite-' + proyecto.id"
                 [name]="'fechaLimite-' + proyecto.id"
-                type="text"
-                placeholder="dd/MM/yyyy"
-                autocomplete="off"
+                type="date"
                 [(ngModel)]="nuevaTarea.fechaLimite">
 
             </div>

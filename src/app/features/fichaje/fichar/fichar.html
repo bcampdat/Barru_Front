@@ -1,31 +1,25 @@
 <div class="fichar-page">
 
   <header class="fichar-header">
-
     <h1>Mi jornada</h1>
 
     <p>
       Registra y consulta el estado de tu jornada de hoy.
     </p>
-
   </header>
 
 
   @if (error()) {
-
     <p-message severity="error">
       {{ error() }}
     </p-message>
-
   }
 
 
   @if (mensaje()) {
-
     <p-message severity="success">
       {{ mensaje() }}
     </p-message>
-
   }
 
 
@@ -34,38 +28,38 @@
     && !resumen()
   ) {
 
-    <p>
+    <div class="jornada-cargando">
       Cargando jornada...
-    </p>
+    </div>
 
   } @else {
 
-    <main>
+    <main class="fichar-contenido">
 
       <section class="jornada-principal">
 
-        <div class="jornada-estado">
+        <div class="jornada-cabecera">
 
-          <span>
-            Estado actual
-          </span>
+          <div class="jornada-estado">
+            <span class="jornada-etiqueta">
+              Estado actual
+            </span>
 
-          <strong>
-            {{ estadoTexto() }}
-          </strong>
+            <strong class="jornada-estado-valor">
+              {{ estadoTexto() }}
+            </strong>
+          </div>
 
-        </div>
 
+          <div class="jornada-reloj">
+            <span class="jornada-etiqueta">
+              Tiempo transcurrido
+            </span>
 
-        <div class="jornada-reloj">
-
-          <span>
-            Tiempo transcurrido
-          </span>
-
-          <strong>
-            {{ tiempoTranscurrido() }}
-          </strong>
+            <strong>
+              {{ tiempoTranscurrido() }}
+            </strong>
+          </div>
 
         </div>
 
@@ -74,8 +68,7 @@
 
           <div class="jornada-progreso">
 
-            <div>
-
+            <div class="jornada-progreso-cabecera">
               <span>
                 Progreso de jornada
               </span>
@@ -83,7 +76,6 @@
               <strong>
                 {{ progresoJornada() }} %
               </strong>
-
             </div>
 
             <progress
@@ -101,7 +93,6 @@
         <div class="jornada-datos">
 
           <article>
-
             <span>
               Trabajado
             </span>
@@ -109,12 +100,10 @@
             <strong>
               {{ tiempoTrabajado() }}
             </strong>
-
           </article>
 
 
           <article>
-
             <span>
               Pausas
             </span>
@@ -122,12 +111,10 @@
             <strong>
               {{ tiempoPausa() }}
             </strong>
-
           </article>
 
 
           <article>
-
             <span>
               Pausa disponible
             </span>
@@ -135,12 +122,10 @@
             <strong>
               {{ tiempoPausaRestante() }}
             </strong>
-
           </article>
 
 
           <article>
-
             <span>
               Jornada
             </span>
@@ -148,12 +133,10 @@
             <strong>
               {{ tiempoJornada() }}
             </strong>
-
           </article>
 
 
           <article>
-
             <span>
               Tiempo restante
             </span>
@@ -161,12 +144,10 @@
             <strong>
               {{ tiempoRestante() }}
             </strong>
-
           </article>
 
 
           <article>
-
             <span>
               Horas extra
             </span>
@@ -174,7 +155,6 @@
             <strong>
               {{ tiempoExtra() }}
             </strong>
-
           </article>
 
         </div>
@@ -194,23 +174,22 @@
               en el navegador y vuelve a intentarlo.
             </p>
 
-            <button
-              type="button"
-              [disabled]="fichando()"
-              (click)="reintentarFichaje()"
-            >
+            <div class="jornada-acciones">
+              <button
+                type="button"
+                class="boton-principal"
+                [disabled]="fichando()"
+                (click)="reintentarFichaje()"
+              >
 
-              @if (fichando()) {
+                @if (fichando()) {
+                  Comprobando ubicación...
+                } @else {
+                  Reintentar fichaje
+                }
 
-                Comprobando ubicación...
-
-              } @else {
-
-                Reintentar fichaje
-
-              }
-
-            </button>
+              </button>
+            </div>
 
           </section>
 
@@ -222,18 +201,15 @@
 
               <button
                 type="button"
+                class="boton-principal"
                 [disabled]="accionesBloqueadas()"
                 (click)="registrarEntrada()"
               >
 
                 @if (fichando()) {
-
                   Registrando...
-
                 } @else {
-
                   Entrada
-
                 }
 
               </button>
@@ -245,18 +221,15 @@
 
               <button
                 type="button"
+                class="boton-secundario"
                 [disabled]="accionesBloqueadas()"
                 (click)="registrarPausa()"
               >
 
                 @if (fichando()) {
-
                   Registrando...
-
                 } @else {
-
                   Iniciar pausa
-
                 }
 
               </button>
@@ -264,18 +237,15 @@
 
               <button
                 type="button"
+                class="boton-principal"
                 [disabled]="accionesBloqueadas()"
                 (click)="registrarSalida()"
               >
 
                 @if (fichando()) {
-
                   Registrando...
-
                 } @else {
-
                   Salida
-
                 }
 
               </button>
@@ -287,18 +257,15 @@
 
               <button
                 type="button"
+                class="boton-principal"
                 [disabled]="accionesBloqueadas()"
                 (click)="finalizarJornada()"
               >
 
                 @if (fichando()) {
-
                   Finalizando...
-
                 } @else {
-
                   Finalizar jornada
-
                 }
 
               </button>
@@ -310,18 +277,15 @@
 
               <button
                 type="button"
+                class="boton-principal"
                 [disabled]="accionesBloqueadas()"
                 (click)="registrarReanudacion()"
               >
 
                 @if (fichando()) {
-
                   Registrando...
-
                 } @else {
-
                   Reanudar
-
                 }
 
               </button>
@@ -337,128 +301,30 @@
 
       @if (resumen(); as resumenActual) {
 
-        <section class="jornada-resumen">
+        <section class="jornada-info-dia">
 
-          <h2>
-            Resumen de hoy
-          </h2>
+          <div>
+            <span>
+              Hoy
+            </span>
 
-          <dl>
+            <strong>
+              {{ resumenActual.fecha }}
+            </strong>
+          </div>
 
-            <div>
 
-              <dt>
-                Fecha
-              </dt>
-
-              <dd>
-                {{ resumenActual.fecha }}
-              </dd>
-
-            </div>
-
+          @if (resumenActual.ultimaActualizacion) {
 
             <div>
+              <span>
+                Última sincronización
+              </span>
 
-              <dt>
-                Situación
-              </dt>
-
-              <dd>
-                {{ estadoTexto() }}
-              </dd>
-
+              <strong>
+                {{ resumenActual.ultimaActualizacion }}
+              </strong>
             </div>
-
-
-            <div>
-
-              <dt>
-                Tiempo trabajado
-              </dt>
-
-              <dd>
-                {{ tiempoTrabajado() }}
-              </dd>
-
-            </div>
-
-
-            <div>
-
-              <dt>
-                Jornada
-              </dt>
-
-              <dd>
-                {{ tiempoJornada() }}
-              </dd>
-
-            </div>
-
-
-            <div>
-
-              <dt>
-                Tiempo restante
-              </dt>
-
-              <dd>
-                {{ tiempoRestante() }}
-              </dd>
-
-            </div>
-
-
-            <div>
-
-              <dt>
-                Tiempo de pausa
-              </dt>
-
-              <dd>
-                {{ tiempoPausa() }}
-              </dd>
-
-            </div>
-
-
-            <div>
-
-              <dt>
-                Pausa disponible
-              </dt>
-
-              <dd>
-                {{ tiempoPausaRestante() }}
-              </dd>
-
-            </div>
-
-
-            <div>
-
-              <dt>
-                Horas extra
-              </dt>
-
-              <dd>
-                {{ tiempoExtra() }}
-              </dd>
-
-            </div>
-
-          </dl>
-
-
-          @if (
-            resumenActual.ultimaActualizacion
-          ) {
-
-            <p>
-              Última sincronización:
-              {{ resumenActual.ultimaActualizacion }}
-            </p>
 
           }
 
@@ -471,15 +337,6 @@
   }
 
 
-  <!--
-    Confirmación previa de salida.
-
-    Aquí todavía no se registra ningún fichaje.
-
-    El trabajador decide si continúa trabajando,
-    sale con intención de volver durante el mismo día
-    o finaliza definitivamente su jornada.
-  -->
   <p-dialog
     header="Registrar salida"
     [modal]="true"
@@ -487,73 +344,76 @@
     [draggable]="false"
     [resizable]="false"
     [visible]="dialogoSalidaVisible()"
+    styleClass="barru-dialog"
   >
 
-    <p>
-      ¿Qué quieres hacer?
-    </p>
+    <div class="dialogo-contenido">
 
-    <p>
-      Si vas a salir, indica si volverás a trabajar
-      hoy o si finalizas tu jornada.
-    </p>
-
-
-    @if (
-      (resumen()?.minutosRestantes ?? 0) > 0
-    ) {
-
-      <p>
-        Todavía te queda tiempo para completar
-        tu jornada:
-        <strong>
-          {{ tiempoRestante() }}
-        </strong>
+      <p class="dialogo-titulo">
+        ¿Qué quieres hacer?
       </p>
 
-    }
+      <p>
+        Si vas a salir, indica si volverás a trabajar
+        hoy o si finalizas tu jornada.
+      </p>
 
 
-    <div class="salida-acciones">
+      @if (
+        (resumen()?.minutosRestantes ?? 0) > 0
+      ) {
 
-      <button
-        type="button"
-        [disabled]="fichando()"
-        (click)="seguirTrabajando()"
-      >
-        Seguir trabajando
-      </button>
+        <div class="dialogo-dato">
+          <span>
+            Tiempo pendiente
+          </span>
 
+          <strong>
+            {{ tiempoRestante() }}
+          </strong>
+        </div>
 
-      <button
-        type="button"
-        [disabled]="fichando()"
-        (click)="seleccionarSalidaIntermedia()"
-      >
-        Salir y volver hoy
-      </button>
+      }
 
 
-      <button
-        type="button"
-        [disabled]="fichando()"
-        (click)="finalizarJornada()"
-      >
-        Finalizar jornada
-      </button>
+      <div class="salida-acciones">
+
+        <button
+          type="button"
+          class="boton-secundario"
+          [disabled]="fichando()"
+          (click)="seguirTrabajando()"
+        >
+          Seguir trabajando
+        </button>
+
+
+        <button
+          type="button"
+          class="boton-secundario"
+          [disabled]="fichando()"
+          (click)="seleccionarSalidaIntermedia()"
+        >
+          Salir y volver hoy
+        </button>
+
+
+        <button
+          type="button"
+          class="boton-principal"
+          [disabled]="fichando()"
+          (click)="finalizarJornada()"
+        >
+          Finalizar jornada
+        </button>
+
+      </div>
 
     </div>
 
   </p-dialog>
 
 
-  <!--
-    Motivo requerido cuando la salida
-    necesita contexto.
-
-    La clasificación definitiva de la salida
-    sigue siendo responsabilidad del backend.
-  -->
   <p-dialog
     header="Motivo de la salida"
     [modal]="true"
@@ -561,83 +421,90 @@
     [draggable]="false"
     [resizable]="false"
     [visible]="dialogoMotivoVisible()"
+    styleClass="barru-dialog"
   >
 
-    @if (
-      modoSalida() === 'FINALIZAR'
-    ) {
+    <div class="dialogo-contenido">
 
-      <p>
-        Vas a finalizar la jornada antes de
-        completar el tiempo previsto.
-        Indica el motivo de la salida.
-      </p>
+      @if (
+        modoSalida() === 'FINALIZAR'
+      ) {
 
-    } @else {
+        <p>
+          Vas a finalizar la jornada antes de
+          completar el tiempo previsto.
+          Indica el motivo de la salida.
+        </p>
 
-      <p>
-        Vas a salir y tienes previsto volver
-        a trabajar hoy.
-        Indica el motivo de la salida.
-      </p>
+      } @else {
 
-    }
+        <p>
+          Vas a salir y tienes previsto volver
+          a trabajar hoy.
+          Indica el motivo de la salida.
+        </p>
+
+      }
 
 
-    <div class="salida-motivo">
+      <div class="salida-motivo">
 
-      <label for="motivoSalida">
-        Motivo
-      </label>
+        <label for="motivoSalida">
+          Motivo
+        </label>
 
-      <select
-        id="motivoSalida"
-        name="motivoSalida"
-        [ngModel]="motivoSalidaSeleccionado()"
-        (ngModelChange)="actualizarMotivoSalida($event)"
-      >
+        <select
+          id="motivoSalida"
+          name="motivoSalida"
+          [ngModel]="motivoSalidaSeleccionado()"
+          (ngModelChange)="actualizarMotivoSalida($event)"
+        >
 
-        <option [ngValue]="null">
-          Selecciona un motivo
-        </option>
-
-        @for (
-          motivo of motivosSalidaDisponibles();
-          track motivo.valor
-        ) {
-
-          <option [ngValue]="motivo.valor">
-            {{ motivo.texto }}
+          <option [ngValue]="null">
+            Selecciona un motivo
           </option>
 
-        }
+          @for (
+            motivo of motivosSalidaDisponibles();
+            track motivo.valor
+          ) {
 
-      </select>
+            <option [ngValue]="motivo.valor">
+              {{ motivo.texto }}
+            </option>
 
-    </div>
+          }
 
+        </select>
 
-    <div class="salida-acciones">
-
-      <button
-        type="button"
-        [disabled]="fichando()"
-        (click)="cancelarMotivoSalida()"
-      >
-        Cancelar
-      </button>
+      </div>
 
 
-      <button
-        type="button"
-        [disabled]="
-          fichando()
-          || !motivoSalidaSeleccionado()
-        "
-        (click)="confirmarMotivoSalida()"
-      >
-        Continuar
-      </button>
+      <div class="salida-acciones">
+
+        <button
+          type="button"
+          class="boton-secundario"
+          [disabled]="fichando()"
+          (click)="cancelarMotivoSalida()"
+        >
+          Cancelar
+        </button>
+
+
+        <button
+          type="button"
+          class="boton-principal"
+          [disabled]="
+            fichando()
+            || !motivoSalidaSeleccionado()
+          "
+          (click)="confirmarMotivoSalida()"
+        >
+          Continuar
+        </button>
+
+      </div>
 
     </div>
 

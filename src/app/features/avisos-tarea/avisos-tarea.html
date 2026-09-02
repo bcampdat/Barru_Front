@@ -2,14 +2,14 @@
 
   <header class="cabecera">
 
-    <div>
+    <div class="cabecera-texto">
 
       <h1>
         Avisos de tareas
       </h1>
 
       <p>
-        Consulta los avisos pendientes relacionados con tus tareas y proyectos.
+        Consulta los avisos pendientes de tus proyectos y tareas.
       </p>
 
     </div>
@@ -17,6 +17,7 @@
     <button
       pButton
       type="button"
+      class="boton-actualizar"
       label="Actualizar"
       icon="pi pi-refresh"
       [loading]="cargando()"
@@ -30,6 +31,7 @@
   @if (error()) {
 
     <p-message
+      class="mensaje-error"
       severity="error"
       [text]="error()">
     </p-message>
@@ -39,7 +41,7 @@
 
   <section class="resumen-avisos">
 
-    <div>
+    <div class="resumen-avisos-dato">
 
       <span>
         Avisos sin leer
@@ -51,11 +53,13 @@
 
     </div>
 
+
     @if (totalSeleccionados() > 0) {
 
       <button
         pButton
         type="button"
+        class="boton-marcar-leidos"
         icon="pi pi-check"
         [label]="
           'Marcar '
@@ -97,160 +101,169 @@
   }
 
 
-  @for (
-    grupo of gruposProyecto();
-    track grupo.proyectoId
-  ) {
+  <div class="grupos-avisos">
 
-    <section class="grupo-proyecto">
+    @for (
+      grupo of gruposProyecto();
+      track grupo.proyectoId
+    ) {
 
-      <header class="grupo-proyecto-cabecera">
+      <section class="grupo-proyecto">
 
-        <div>
+        <header class="grupo-proyecto-cabecera">
 
-          <h2>
-            {{ grupo.proyectoNombre }}
-          </h2>
+          <div class="grupo-proyecto-info">
 
-          <p>
-            {{ grupo.avisos.length }}
+            <h2>
+              {{ grupo.proyectoNombre }}
+            </h2>
 
-            @if (grupo.avisos.length === 1) {
+            <p>
 
-              aviso pendiente
+              {{ grupo.avisos.length }}
 
-            } @else {
+              @if (grupo.avisos.length === 1) {
 
-              avisos pendientes
+                aviso pendiente
 
-            }
-          </p>
+              } @else {
 
-        </div>
+                avisos pendientes
 
+              }
 
-        @if (
-          proyectoCompletoSeleccionado(
-            grupo.avisos
-          )
-        ) {
+            </p>
 
-          <button
-            pButton
-            type="button"
-            label="Deseleccionar"
-            icon="pi pi-times"
-            [disabled]="marcandoLeidos()"
-            (click)="
-              deseleccionarProyecto(
-                grupo.avisos
-              )
-            ">
-          </button>
-
-        } @else {
-
-          <button
-            pButton
-            type="button"
-            label="Seleccionar proyecto"
-            icon="pi pi-check-square"
-            [disabled]="marcandoLeidos()"
-            (click)="
-              seleccionarProyecto(
-                grupo.avisos
-              )
-            ">
-          </button>
-
-        }
-
-      </header>
+          </div>
 
 
-      <div class="lista-avisos">
+          @if (
+            proyectoCompletoSeleccionado(
+              grupo.avisos
+            )
+          ) {
 
-        @for (
-          aviso of grupo.avisos;
-          track aviso.id
-        ) {
+            <button
+              pButton
+              type="button"
+              class="boton-seleccion-proyecto"
+              label="Deseleccionar"
+              icon="pi pi-times"
+              [disabled]="marcandoLeidos()"
+              (click)="
+                deseleccionarProyecto(
+                  grupo.avisos
+                )
+              ">
+            </button>
 
-          <article
-            class="aviso"
-            [class.aviso-seleccionado]="
-              estaSeleccionado(
-                aviso.id
-              )
-            ">
+          } @else {
 
-            <div class="aviso-seleccion">
+            <button
+              pButton
+              type="button"
+              class="boton-seleccion-proyecto"
+              label="Seleccionar proyecto"
+              icon="pi pi-check-square"
+              [disabled]="marcandoLeidos()"
+              (click)="
+                seleccionarProyecto(
+                  grupo.avisos
+                )
+              ">
+            </button>
 
-              <input
-                type="checkbox"
-                [id]="'aviso-' + aviso.id"
-                [checked]="
-                  estaSeleccionado(
-                    aviso.id
-                  )
-                "
-                [disabled]="marcandoLeidos()"
-                (change)="
-                  alternarSeleccion(
-                    aviso.id
-                  )
-                ">
+          }
 
-            </div>
+        </header>
 
 
-            <label
-              class="aviso-contenido"
-              [for]="'aviso-' + aviso.id">
+        <div class="lista-avisos">
 
-              <div class="aviso-cabecera">
+          @for (
+            aviso of grupo.avisos;
+            track aviso.id
+          ) {
 
-                <strong>
-                  {{ aviso.tareaNombre }}
-                </strong>
+            <article
+              class="aviso"
+              [class.aviso-seleccionado]="
+                estaSeleccionado(
+                  aviso.id
+                )
+              ">
 
-                <p-tag
-                  [value]="aviso.tipo">
-                </p-tag>
+              <div class="aviso-seleccion">
+
+                <input
+                  type="checkbox"
+                  [id]="'aviso-' + aviso.id"
+                  [checked]="
+                    estaSeleccionado(
+                      aviso.id
+                    )
+                  "
+                  [disabled]="marcandoLeidos()"
+                  (change)="
+                    alternarSeleccion(
+                      aviso.id
+                    )
+                  ">
 
               </div>
 
 
-              <p>
-                {{
-                  obtenerTextoAviso(
-                    aviso.tipo
-                  )
-                }}
-              </p>
+              <label
+                class="aviso-contenido"
+                [for]="'aviso-' + aviso.id">
+
+                <div class="aviso-cabecera">
+
+                  <strong class="aviso-tarea">
+                    {{ aviso.tareaNombre }}
+                  </strong>
+
+                  <p-tag
+                    class="aviso-tipo"
+                    [value]="aviso.tipo">
+                  </p-tag>
+
+                </div>
 
 
-              <small>
-                {{ aviso.fechaCreacion }}
-              </small>
+                <p class="aviso-texto">
+                  {{
+                    obtenerTextoAviso(
+                      aviso.tipo
+                    )
+                  }}
+                </p>
 
-            </label>
 
-          </article>
+                <small class="aviso-fecha">
+                  {{ aviso.fechaCreacion }}
+                </small>
 
-        }
+              </label>
 
-      </div>
+            </article>
 
-    </section>
+          }
 
-  }
+        </div>
+
+      </section>
+
+    }
+
+  </div>
 
 
   @if (totalSeleccionados() > 0) {
 
     <section class="acciones-avisos">
 
-      <span>
+      <span class="acciones-avisos-resumen">
 
         {{ totalSeleccionados() }}
 
@@ -269,6 +282,7 @@
       <button
         pButton
         type="button"
+        class="boton-marcar-leidos"
         icon="pi pi-check"
         [label]="
           'Marcar '

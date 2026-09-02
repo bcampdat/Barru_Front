@@ -1,6 +1,6 @@
 <div class="notificaciones-page">
 
-  <header>
+  <header class="notificaciones-header">
 
     <h1>
       Notificaciones
@@ -16,18 +16,24 @@
 
   @if (error()) {
 
-    <p>
+    <div
+      class="notificaciones-mensaje"
+      role="alert"
+    >
       {{ error() }}
-    </p>
+    </div>
 
   }
 
 
   @if (mensaje()) {
 
-    <p>
+    <div
+      class="notificaciones-mensaje"
+      aria-live="polite"
+    >
       {{ mensaje() }}
-    </p>
+    </div>
 
   }
 
@@ -37,211 +43,246 @@
     && solicitudes().length === 0
   ) {
 
-    <p>
+    <div class="notificaciones-estado">
       Cargando solicitudes...
-    </p>
+    </div>
 
   } @else {
 
 
     @if (solicitudes().length === 0) {
 
-      <p>
-        No tienes solicitudes pendientes.
-      </p>
+      <section class="notificaciones-vacio">
+
+        <i
+          class="pi pi-inbox"
+          aria-hidden="true"
+        ></i>
+
+        <p>
+          No tienes solicitudes pendientes.
+        </p>
+
+      </section>
 
     } @else {
 
-      <section>
+      <section class="solicitudes-panel">
 
-        <div>
 
-          <input
-            id="seleccionarTodasSolicitudes"
-            type="checkbox"
-            [checked]="todasSeleccionadas()"
-            [disabled]="procesando()"
-            (change)="seleccionarTodas()"
-          />
+        <div class="solicitudes-herramientas">
 
-          <label for="seleccionarTodasSolicitudes">
-            Seleccionar todas
-          </label>
+          <div class="seleccion-todas">
+
+            <input
+              id="seleccionarTodasSolicitudes"
+              type="checkbox"
+              [checked]="todasSeleccionadas()"
+              [disabled]="procesando()"
+              (change)="seleccionarTodas()"
+            />
+
+            <label for="seleccionarTodasSolicitudes">
+              Seleccionar todas
+            </label>
+
+          </div>
+
+
+          <div class="acciones-multiples">
+
+            <button
+              type="button"
+              class="boton-principal"
+              [disabled]="
+                procesando()
+                || !haySeleccionadas()
+              "
+              (click)="autorizarSeleccionadas()"
+            >
+              Autorizar seleccionados
+            </button>
+
+
+            <button
+              type="button"
+              class="boton-secundario"
+              [disabled]="
+                procesando()
+                || !haySeleccionadas()
+              "
+              (click)="rechazarSeleccionadas()"
+            >
+              Rechazar seleccionados
+            </button>
+
+          </div>
 
         </div>
 
 
-        <div>
+        <div class="tabla-contenedor">
 
-          <button
-            type="button"
-            [disabled]="
-              procesando()
-              || !haySeleccionadas()
-            "
-            (click)="autorizarSeleccionadas()"
-          >
-            Autorizar seleccionados
-          </button>
+          <table class="solicitudes-tabla">
+
+            <caption class="solo-lectores">
+              Solicitudes pendientes de autorización
+              de horas extra
+            </caption>
 
 
-          <button
-            type="button"
-            [disabled]="
-              procesando()
-              || !haySeleccionadas()
-            "
-            (click)="rechazarSeleccionadas()"
-          >
-            Rechazar seleccionados
-          </button>
-
-        </div>
-
-
-        <table>
-
-          <thead>
-
-            <tr>
-
-              <th>
-                Seleccionar
-              </th>
-
-              <th>
-                Trabajador
-              </th>
-
-              <th>
-                Fecha
-              </th>
-
-              <th>
-                Solicitud
-              </th>
-
-              <th>
-                Límite
-              </th>
-
-              <th>
-                Estado
-              </th>
-
-              <th>
-                Acciones
-              </th>
-
-            </tr>
-
-          </thead>
-
-
-          <tbody>
-
-            @for (
-              solicitud of solicitudes();
-              track solicitud.id
-            ) {
+            <thead>
 
               <tr>
 
-                <td>
+                <th scope="col">
+                  Seleccionar
+                </th>
 
-                  <input
-                    [id]="
-                      'solicitudHorasExtra-'
-                      + solicitud.id
-                    "
-                    type="checkbox"
-                    [checked]="
-                      estaSeleccionada(
-                        solicitud.id
-                      )
-                    "
-                    [disabled]="procesando()"
-                    (change)="
-                      alternarSeleccion(
-                        solicitud.id
-                      )
-                    "
-                  />
+                <th scope="col">
+                  Trabajador
+                </th>
 
-                  <label
-                    [for]="
-                      'solicitudHorasExtra-'
-                      + solicitud.id
-                    "
-                  >
-                    Seleccionar
-                    {{ solicitud.nombreTrabajador }}
-                  </label>
+                <th scope="col">
+                  Fecha
+                </th>
 
-                </td>
+                <th scope="col">
+                  Solicitud
+                </th>
 
+                <th scope="col">
+                  Límite
+                </th>
 
-                <td>
-                  {{ solicitud.nombreTrabajador }}
-                </td>
+                <th scope="col">
+                  Estado
+                </th>
 
-
-                <td>
-                  {{ solicitud.fecha }}
-                </td>
-
-
-                <td>
-                  {{ solicitud.fechaSolicitud }}
-                </td>
-
-
-                <td>
-                  {{ solicitud.fechaLimite }}
-                </td>
-
-
-                <td>
-                  {{ solicitud.estado }}
-                </td>
-
-
-                <td>
-
-                  <button
-                    type="button"
-                    [disabled]="procesando()"
-                    (click)="
-                      autorizar(
-                        solicitud.id
-                      )
-                    "
-                  >
-                    Autorizar
-                  </button>
-
-
-                  <button
-                    type="button"
-                    [disabled]="procesando()"
-                    (click)="
-                      rechazar(
-                        solicitud.id
-                      )
-                    "
-                  >
-                    Rechazar
-                  </button>
-
-                </td>
+                <th scope="col">
+                  Acciones
+                </th>
 
               </tr>
 
-            }
+            </thead>
 
-          </tbody>
 
-        </table>
+            <tbody>
+
+              @for (
+                solicitud of solicitudes();
+                track solicitud.id
+              ) {
+
+                <tr>
+
+                  <td class="columna-seleccion">
+
+                    <input
+                      [id]="
+                        'solicitudHorasExtra-'
+                        + solicitud.id
+                      "
+                      type="checkbox"
+                      [checked]="
+                        estaSeleccionada(
+                          solicitud.id
+                        )
+                      "
+                      [disabled]="procesando()"
+                      (change)="
+                        alternarSeleccion(
+                          solicitud.id
+                        )
+                      "
+                    />
+
+                    <label
+                      class="solo-lectores"
+                      [for]="
+                        'solicitudHorasExtra-'
+                        + solicitud.id
+                      "
+                    >
+                      Seleccionar
+                      {{ solicitud.nombreTrabajador }}
+                    </label>
+
+                  </td>
+
+
+                  <td class="trabajador">
+                    {{ solicitud.nombreTrabajador }}
+                  </td>
+
+
+                  <td>
+                    {{ solicitud.fecha }}
+                  </td>
+
+
+                  <td>
+                    {{ solicitud.fechaSolicitud }}
+                  </td>
+
+
+                  <td>
+                    {{ solicitud.fechaLimite }}
+                  </td>
+
+
+                  <td>
+                    <span class="estado-solicitud">
+                      {{ solicitud.estado }}
+                    </span>
+                  </td>
+
+
+                  <td>
+
+                    <div class="acciones-fila">
+
+                      <button
+                        type="button"
+                        class="boton-tabla boton-principal"
+                        [disabled]="procesando()"
+                        (click)="
+                          autorizar(
+                            solicitud.id
+                          )
+                        "
+                      >
+                        Autorizar
+                      </button>
+
+
+                      <button
+                        type="button"
+                        class="boton-tabla boton-secundario"
+                        [disabled]="procesando()"
+                        (click)="
+                          rechazar(
+                            solicitud.id
+                          )
+                        "
+                      >
+                        Rechazar
+                      </button>
+
+                    </div>
+
+                  </td>
+
+                </tr>
+
+              }
+
+            </tbody>
+
+          </table>
+
+        </div>
 
       </section>
 

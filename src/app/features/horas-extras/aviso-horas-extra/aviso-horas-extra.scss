@@ -1,0 +1,245 @@
+.aviso-horas-extra {
+  color: var(--barru-text);
+}
+
+
+.aviso-horas-extra__contenido {
+  h2 {
+    margin: 0 0 1rem;
+
+    color: var(--barru-text);
+
+    font-size: 1.25rem;
+    font-weight: 650;
+  }
+
+  p {
+    margin: 0 0 0.9rem;
+
+    color: var(--barru-text-secondary);
+
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+}
+
+
+.aviso-horas-extra__error {
+  margin-bottom: 1rem;
+  padding: 0.85rem 1rem;
+
+  background: var(--barru-bg);
+
+  border: 1px solid var(--barru-border);
+  border-radius: var(--barru-radius);
+
+  p {
+    margin: 0;
+
+    color: var(--barru-text);
+
+    font-size: 0.9rem;
+    line-height: 1.45;
+  }
+}
+
+
+.aviso-horas-extra__cuenta-atras {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: 0.4rem;
+
+  margin: 1.4rem 0;
+  padding: 1.25rem;
+
+  background: var(--barru-bg);
+
+  border: 1px solid var(--barru-border);
+  border-radius: var(--barru-radius);
+
+  span {
+    color: var(--barru-text-secondary);
+
+    font-size: 0.8rem;
+    font-weight: 600;
+
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  strong {
+    color: var(--barru-primary);
+
+    font-size: 2rem;
+    font-weight: 650;
+    line-height: 1;
+
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.03em;
+  }
+}
+
+
+.aviso-horas-extra__acciones {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+
+  gap: 0.65rem;
+
+  margin-top: 1.4rem;
+}
+
+
+.aviso-horas-extra__gestion {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+
+  border-top: 1px solid var(--barru-border);
+
+  p {
+    margin: 0 0 1rem;
+
+    color: var(--barru-text-secondary);
+
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  button {
+    width: 100%;
+  }
+}
+
+
+button {
+  min-height: 42px;
+
+  padding: 0.7rem 1.1rem;
+
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+
+  border-radius: var(--barru-radius);
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    opacity 0.15s ease;
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+
+.boton-principal {
+  color: var(--barru-surface);
+
+  background: var(--barru-primary);
+
+  border: 1px solid var(--barru-primary);
+
+  &:hover:not(:disabled) {
+    background: var(--barru-primary-hover);
+    border-color: var(--barru-primary-hover);
+  }
+}
+
+
+.boton-secundario {
+  color: var(--barru-text);
+
+  background: transparent;
+
+  border: 1px solid var(--barru-border);
+
+  &:hover:not(:disabled) {
+    color: var(--barru-primary);
+
+    border-color: var(--barru-primary);
+  }
+}
+
+
+/*
+ * En modo oscuro usamos el texto claro de Barru
+ * sobre el botón primario.
+ */
+:host-context(.barru-dark) {
+  .boton-principal {
+    color: var(--barru-text);
+  }
+}
+
+
+/*
+ * PrimeNG Dialog.
+ * El selector queda limitado al diálogo de horas extra
+ * mediante styleClass="barru-horas-extra-dialog".
+ */
+:host ::ng-deep .barru-horas-extra-dialog {
+  background: var(--barru-surface);
+
+  border: 1px solid var(--barru-border);
+  border-radius: var(--barru-radius);
+
+  box-shadow: var(--barru-shadow);
+
+  overflow: hidden;
+
+
+  .p-dialog-header {
+    padding: 1.15rem 1.25rem;
+
+    color: var(--barru-text);
+
+    background: var(--barru-surface);
+
+    border-bottom: 1px solid var(--barru-border);
+  }
+
+
+  .p-dialog-title {
+    color: var(--barru-text);
+
+    font-size: 1.1rem;
+    font-weight: 650;
+  }
+
+
+  .p-dialog-content {
+    padding: 1.25rem;
+
+    color: var(--barru-text);
+
+    background: var(--barru-surface);
+  }
+}
+
+
+@media (max-width: 520px) {
+
+  .aviso-horas-extra__acciones {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
+  }
+
+
+  .aviso-horas-extra__cuenta-atras {
+    strong {
+      font-size: 1.8rem;
+    }
+  }
+
+}

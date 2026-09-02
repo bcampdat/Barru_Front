@@ -1,0 +1,493 @@
+.fichar-page {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem;
+  color: var(--barru-text);
+}
+
+
+.fichar-header {
+  margin-bottom: 1.5rem;
+
+  h1 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 650;
+    color: var(--barru-text);
+  }
+
+  p {
+    margin: 0.4rem 0 0;
+    color: var(--barru-text-secondary);
+    font-size: 0.95rem;
+  }
+}
+
+
+.fichar-contenido {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+
+.jornada-principal {
+  padding: 1.75rem;
+
+  background: var(--barru-surface);
+  border: 1px solid var(--barru-border);
+  border-radius: var(--barru-radius);
+  box-shadow: var(--barru-shadow);
+}
+
+
+.jornada-cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2rem;
+
+  padding-bottom: 1.5rem;
+
+  border-bottom: 1px solid var(--barru-border);
+}
+
+
+.jornada-estado,
+.jornada-reloj {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+
+.jornada-reloj {
+  text-align: right;
+
+  strong {
+    font-size: 2.15rem;
+    font-weight: 650;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+  }
+}
+
+
+.jornada-etiqueta {
+  color: var(--barru-text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+
+.jornada-estado-valor {
+  color: var(--barru-primary);
+  font-size: 1.35rem;
+  font-weight: 650;
+}
+
+
+.jornada-progreso {
+  padding: 1.5rem 0;
+
+  border-bottom: 1px solid var(--barru-border);
+
+  progress {
+    display: block;
+    width: 100%;
+    height: 0.5rem;
+
+    margin-top: 0.75rem;
+
+    overflow: hidden;
+
+    border: 0;
+    border-radius: var(--barru-radius);
+
+    appearance: none;
+  }
+
+  progress::-webkit-progress-bar {
+    background: var(--barru-border);
+    border-radius: var(--barru-radius);
+  }
+
+  progress::-webkit-progress-value {
+    background: var(--barru-primary);
+    border-radius: var(--barru-radius);
+  }
+
+  progress::-moz-progress-bar {
+    background: var(--barru-primary);
+    border-radius: var(--barru-radius);
+  }
+}
+
+
+.jornada-progreso-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  color: var(--barru-text-secondary);
+
+  span {
+    font-size: 0.9rem;
+  }
+
+  strong {
+    color: var(--barru-text);
+    font-size: 0.95rem;
+    font-weight: 650;
+  }
+}
+
+
+.jornada-datos {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  gap: 1.5rem 2rem;
+
+  padding: 1.75rem 0;
+
+  article {
+    min-width: 0;
+  }
+
+  span {
+    display: block;
+
+    margin-bottom: 0.35rem;
+
+    color: var(--barru-text-secondary);
+    font-size: 0.85rem;
+  }
+
+  strong {
+    display: block;
+
+    color: var(--barru-text);
+    font-size: 1.15rem;
+    font-weight: 650;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+
+.jornada-acciones {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  gap: 0.75rem;
+
+  padding-top: 0.25rem;
+}
+
+
+button {
+  min-height: 42px;
+
+  padding: 0.7rem 1.25rem;
+
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+
+  border-radius: var(--barru-radius);
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    opacity 0.15s ease;
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+
+.boton-principal {
+  color: var(--barru-surface);
+
+  background: var(--barru-primary);
+  border: 1px solid var(--barru-primary);
+
+  &:hover:not(:disabled) {
+    background: var(--barru-primary-hover);
+    border-color: var(--barru-primary-hover);
+  }
+}
+
+
+.boton-secundario {
+  color: var(--barru-text);
+
+  background: transparent;
+  border: 1px solid var(--barru-border);
+
+  &:hover:not(:disabled) {
+    color: var(--barru-primary);
+    border-color: var(--barru-primary);
+  }
+}
+
+
+.aviso-ubicacion {
+  padding-top: 1rem;
+
+  p {
+    margin: 0.75rem 0 0;
+
+    color: var(--barru-text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .jornada-acciones {
+    margin-top: 1rem;
+  }
+}
+
+
+.jornada-info-dia {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+
+  padding: 0.85rem 1rem;
+
+  color: var(--barru-text-secondary);
+
+  border: 1px solid var(--barru-border);
+  border-radius: var(--barru-radius);
+
+  font-size: 0.82rem;
+
+  div {
+    display: flex;
+    gap: 0.4rem;
+  }
+
+  strong {
+    color: var(--barru-text);
+    font-weight: 600;
+  }
+}
+
+
+.jornada-cargando {
+  padding: 2rem;
+
+  color: var(--barru-text-secondary);
+  text-align: center;
+
+  background: var(--barru-surface);
+  border: 1px solid var(--barru-border);
+  border-radius: var(--barru-radius);
+}
+
+
+.dialogo-contenido {
+  max-width: 32rem;
+
+  color: var(--barru-text);
+
+  p {
+    margin: 0 0 1rem;
+
+    color: var(--barru-text-secondary);
+    line-height: 1.5;
+  }
+
+  .dialogo-titulo {
+    color: var(--barru-text);
+    font-weight: 650;
+  }
+}
+
+
+.dialogo-dato {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 1rem;
+
+  margin: 1.25rem 0;
+  padding: 0.9rem 1rem;
+
+  background: var(--barru-bg);
+  border: 1px solid var(--barru-border);
+  border-radius: var(--barru-radius);
+
+  span {
+    color: var(--barru-text-secondary);
+    font-size: 0.9rem;
+  }
+
+  strong {
+    color: var(--barru-text);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+
+.salida-motivo {
+  display: flex;
+  flex-direction: column;
+
+  gap: 0.45rem;
+
+  margin: 1.25rem 0;
+
+  label {
+    color: var(--barru-text);
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  select {
+    width: 100%;
+    min-height: 42px;
+
+    padding: 0.65rem 0.75rem;
+
+    color: var(--barru-text);
+
+    background: var(--barru-surface);
+    border: 1px solid var(--barru-border);
+    border-radius: var(--barru-radius);
+
+    font: inherit;
+
+    outline: none;
+
+    &:focus {
+      border-color: var(--barru-primary);
+    }
+  }
+}
+
+
+.salida-acciones {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+
+  gap: 0.65rem;
+
+  margin-top: 1.5rem;
+}
+
+
+/*
+ * PrimeNG Dialog:
+ * :host ::ng-deep se limita únicamente
+ * al componente para adaptar el diálogo
+ * a las variables visuales de Barru.
+ */
+:host ::ng-deep .barru-dialog {
+  .p-dialog {
+    background: var(--barru-surface);
+    border: 1px solid var(--barru-border);
+    border-radius: var(--barru-radius);
+    box-shadow: var(--barru-shadow);
+  }
+
+  .p-dialog-header,
+  .p-dialog-content {
+    color: var(--barru-text);
+    background: var(--barru-surface);
+  }
+
+  .p-dialog-header {
+    border-bottom: 1px solid var(--barru-border);
+  }
+}
+
+
+@media (max-width: 700px) {
+
+  .fichar-page {
+    padding: 1rem;
+  }
+
+
+  .jornada-principal {
+    padding: 1.25rem;
+  }
+
+
+  .jornada-cabecera {
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+
+  .jornada-reloj {
+    width: 100%;
+    text-align: left;
+  }
+
+
+  .jornada-datos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 1.25rem;
+  }
+
+
+  .jornada-info-dia {
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+
+  .jornada-info-dia div {
+    justify-content: space-between;
+  }
+
+
+  .salida-acciones {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
+  }
+
+}
+
+
+@media (max-width: 420px) {
+
+  .jornada-datos {
+    grid-template-columns: 1fr;
+  }
+
+
+  .jornada-reloj strong {
+    font-size: 1.85rem;
+  }
+
+
+  .jornada-acciones {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
+  }
+
+}

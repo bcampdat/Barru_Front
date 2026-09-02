@@ -25,6 +25,7 @@ import {
   imports: [],
 
   templateUrl: './notificaciones.html',
+  styleUrl: './notificaciones.scss',
 })
 export class Notificaciones
 implements OnInit, OnDestroy {
