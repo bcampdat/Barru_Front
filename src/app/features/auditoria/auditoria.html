@@ -569,32 +569,31 @@
             >
 
               <i
-                class="pi pi-angle-left"
+                class="pi pi-angle-double-left"
                 aria-hidden="true"
               ></i>
 
-              <span>
-                Anterior
+              <span class="solo-lectura">
+                Página anterior
               </span>
 
             </button>
 
 
-            <span class="pagina-estado">
+            <div
+              class="pagina-indicador"
+              aria-live="polite"
+            >
 
-              Página
-
-              <strong>
+              <span class="pagina-actual">
                 {{ numeroPaginaVisible() }}
-              </strong>
+              </span>
 
-              de
+              <span class="pagina-total">
+                de {{ totalPaginas() }}
+              </span>
 
-              <strong>
-                {{ totalPaginas() }}
-              </strong>
-
-            </span>
+            </div>
 
 
             <button
@@ -608,14 +607,14 @@
               (click)="paginaSiguiente()"
             >
 
-              <span>
-                Siguiente
-              </span>
-
               <i
-                class="pi pi-angle-right"
+                class="pi pi-angle-double-right"
                 aria-hidden="true"
               ></i>
+
+              <span class="solo-lectura">
+                Página siguiente
+              </span>
 
             </button>
 
@@ -670,5 +669,24 @@
     }
 
   }
+
+
+  <!-- Volver a Inicio -->
+  <button
+    type="button"
+    class="volver-inicio"
+    (click)="volver()"
+  >
+
+    <i
+      class="pi pi-angle-double-right"
+      aria-hidden="true"
+    ></i>
+
+    <span class="solo-lectura">
+      Volver a Inicio
+    </span>
+
+  </button>
 
 </div>

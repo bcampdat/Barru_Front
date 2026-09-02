@@ -549,6 +549,14 @@ export class PanelProyectos implements OnInit {
   }
 
 
+  volverInicio(): void {
+
+    void this.router.navigateByUrl(
+      '/inicio'
+    );
+  }
+
+
   seleccionarVista(
     vista: VistaPanel
   ): void {

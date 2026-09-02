@@ -432,6 +432,10 @@
   padding-bottom: 0.5rem;
 }
 
+.dashboard-notificaciones--oculta {
+  display: none;
+}
+
 
 /* CONSULTAS */
 
@@ -452,7 +456,7 @@
 .consultas-barra {
   display: flex;
   align-items: center;
-
+  justify-content: space-between;
   width: 100%;
   min-height: 48px;
 
@@ -540,8 +544,6 @@
   gap: 0.45rem;
 
   flex: 0 0 auto;
-
-  margin-left: auto;
 }
 
 

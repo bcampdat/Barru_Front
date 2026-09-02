@@ -1,10 +1,23 @@
-.auditoria-page {
+:host {
+  display: block;
+
   width: 100%;
+  height: 100%;
+}
+
+
+.auditoria-page {
+  position: relative;
+
+  width: 100%;
+  min-height: 100%;
 
   display: flex;
   flex-direction: column;
 
   gap: 1rem;
+
+  padding-bottom: 4rem;
 }
 
 
@@ -87,7 +100,7 @@
   cursor: pointer;
 }
 
-.ambito-selector button[aria-pressed="true"] {
+.ambito-selector button[aria-pressed='true'] {
   background: var(--barru-primary);
   color: #ffffff;
 }
@@ -247,8 +260,7 @@
 /* ACCIONES */
 
 .boton-primario,
-.boton-secundario,
-.pagina-boton {
+.boton-secundario {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -285,16 +297,14 @@
   border-color: var(--barru-primary-hover);
 }
 
-.boton-secundario,
-.pagina-boton {
+.boton-secundario {
   border: 1px solid var(--barru-border);
 
   background: var(--barru-bg);
   color: var(--barru-text);
 }
 
-.boton-secundario:hover:not(:disabled),
-.pagina-boton:hover:not(:disabled) {
+.boton-secundario:hover:not(:disabled) {
   border-color: var(--barru-primary);
 
   color: var(--barru-primary);
@@ -369,19 +379,81 @@ input:disabled {
   justify-content: center;
   flex-wrap: wrap;
 
-  gap: 0.65rem;
+  gap: 0.4rem;
 
-  margin-top: 0.8rem;
+  margin-top: 0.65rem;
 }
 
-.pagina-estado {
+.pagina-boton {
+  width: 34px;
+  height: 34px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 34px;
+
+  padding: 0;
+
+  border: 1px solid transparent;
+  border-radius: calc(var(--barru-radius) - 3px);
+
+  background: transparent;
+  color: var(--barru-text-secondary);
+
+  font: inherit;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.pagina-boton:hover:not(:disabled) {
+  background: var(--barru-bg);
+  color: var(--barru-text);
+}
+
+.pagina-boton .pi {
+  font-size: 0.8rem;
+}
+
+.pagina-indicador {
+  display: flex;
+  align-items: center;
+
+  gap: 0.4rem;
+}
+
+.pagina-actual {
+  min-width: 34px;
+  height: 34px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 0.5rem;
+
+  border-radius: calc(var(--barru-radius) - 3px);
+
+  background: var(--barru-primary);
+  color: #ffffff;
+
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+.pagina-total {
   color: var(--barru-text-secondary);
 
   font-size: 0.72rem;
-}
 
-.pagina-estado strong {
-  color: var(--barru-text);
+  white-space: nowrap;
 }
 
 .pagina-tamano {
@@ -390,7 +462,7 @@ input:disabled {
 
   gap: 0.4rem;
 
-  margin-left: 0.4rem;
+  margin-left: 0.55rem;
 }
 
 .pagina-tamano label {
@@ -401,7 +473,7 @@ input:disabled {
 
 .pagina-tamano select {
   width: 68px;
-  min-height: 32px;
+  min-height: 34px;
 
   padding: 0.3rem 0.4rem;
 
@@ -425,6 +497,52 @@ input:disabled {
   color: var(--barru-text-secondary);
 
   text-align: center;
+}
+
+
+/* VOLVER A INICIO */
+
+.volver-inicio {
+  position: absolute;
+
+  right: 0.5rem;
+  bottom: 0.5rem;
+
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 1px solid var(--barru-icon);
+  border-radius: 50%;
+
+  background: var(--barru-surface);
+  color: var(--barru-icon);
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.volver-inicio:hover {
+  background: var(--barru-bg);
+  color: var(--barru-icon-hover);
+
+  border-color: var(--barru-icon-hover);
+
+  transform: scale(1.08);
+}
+
+.volver-inicio .pi {
+  font-size: 0.98rem;
 }
 
 
@@ -493,6 +611,8 @@ input:focus-visible {
 
   .auditoria-page {
     gap: 0.7rem;
+
+    padding-bottom: 3rem;
   }
 
   .auditoria-header h1 {
@@ -563,13 +683,9 @@ input:focus-visible {
   /* Paginación */
 
   .auditoria-paginacion {
-    justify-content: space-between;
-  }
+    justify-content: center;
 
-  .pagina-estado {
-    width: 100%;
-
-    text-align: center;
+    gap: 0.35rem;
   }
 
   .pagina-tamano {
@@ -577,7 +693,23 @@ input:focus-visible {
 
     justify-content: center;
 
+    margin-top: 0.2rem;
     margin-left: 0;
+  }
+
+
+  /* Volver */
+
+  .volver-inicio {
+  position: absolute;
+
+  right: 0.5rem;
+  bottom: 1.25rem;
+
+  width: 36px;
+  height: 36px;
+
+  // resto igual
   }
 
 }

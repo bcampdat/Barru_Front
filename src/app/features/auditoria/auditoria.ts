@@ -3,6 +3,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { finalize, Observable } from 'rxjs';
+import { Router } from '@angular/router';
+
 
 import { MessageModule } from 'primeng/message';
 import { TableModule } from 'primeng/table';
@@ -115,7 +117,10 @@ export class Auditoria implements OnInit {
       UsuarioService,
 
     private readonly descargaPdfService:
-      DescargaPdfService
+      DescargaPdfService,
+
+    private readonly router:
+      Router
   ) {}
 
 
@@ -160,9 +165,17 @@ export class Auditoria implements OnInit {
   }
 
 
-  seleccionarAmbitoAdmin(
-    ambito: AmbitoAuditoriaAdmin
-  ): void {
+volver(): void {
+
+  void this.router.navigateByUrl(
+    '/inicio'
+  );
+}
+
+
+seleccionarAmbitoAdmin(
+  ambito: AmbitoAuditoriaAdmin
+): void {
 
     this.ambitoAdmin.set(
       ambito

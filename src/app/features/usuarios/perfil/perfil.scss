@@ -70,8 +70,28 @@
   font-weight: 600;
 }
 
-.campo input {
+.campo .p-inputtext {
   width: 100%;
+
+  border-color: var(--barru-border);
+
+  background: var(--barru-bg);
+  color: var(--barru-text);
+
+  box-shadow: none;
+}
+
+.campo .p-inputtext:enabled:hover {
+  border-color: var(--barru-primary);
+}
+
+.campo .p-inputtext:enabled:focus {
+  border-color: var(--barru-primary);
+
+  box-shadow:
+    0 0 0 1px var(--barru-primary);
+
+  outline: none;
 }
 
 
@@ -323,5 +343,4 @@
     width: 34px;
     height: 34px;
   }
-
-}     
+}

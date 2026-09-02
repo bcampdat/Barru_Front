@@ -2,7 +2,12 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, finalize, forkJoin, switchMap } from 'rxjs';
+import {
+  Observable,
+  finalize,
+  forkJoin,
+  switchMap,
+} from 'rxjs';
 
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -76,30 +81,48 @@ const ACCIONES: Record<AccionUsuario, ConfiguracionAccion> = {
     MessageModule,
     TableModule,
   ],
-  providers: [ConfirmationService],
+  providers: [
+    ConfirmationService,
+  ],
   templateUrl: './listado-usuarios.html',
   styleUrl: './listado-usuarios.scss',
 })
 export class ListadoUsuarios implements OnInit {
 
-  readonly empresas = signal<EmpresaDTO[]>([]);
-  readonly usuarios = signal<UserDTO[]>([]);
-  readonly roles = signal<RolAsignableDTO[]>([]);
-  readonly metodos = signal<MetodoFichajeDTO[]>([]);
+  readonly empresas =
+    signal<EmpresaDTO[]>([]);
 
-  readonly cargando = signal(false);
-  readonly error = signal<string | null>(null);
-  readonly exito = signal<string | null>(null);
-  readonly esAdmin = signal(false);
+  readonly usuarios =
+    signal<UserDTO[]>([]);
 
-  readonly estadoSeleccionado = signal<EstadoUsuario>('ACTIVO');
+  readonly roles =
+    signal<RolAsignableDTO[]>([]);
 
-  readonly estados: readonly EstadoUsuario[] = [
-    'PENDIENTE',
-    'ACTIVO',
-    'INACTIVO',
-    'BLOQUEADO',
-  ];
+  readonly metodos =
+    signal<MetodoFichajeDTO[]>([]);
+
+  readonly cargando =
+    signal(false);
+
+  readonly error =
+    signal<string | null>(null);
+
+  readonly exito =
+    signal<string | null>(null);
+
+  readonly esAdmin =
+    signal(false);
+
+  readonly estadoSeleccionado =
+    signal<EstadoUsuario>('ACTIVO');
+
+  readonly estados:
+    readonly EstadoUsuario[] = [
+      'PENDIENTE',
+      'ACTIVO',
+      'INACTIVO',
+      'BLOQUEADO',
+    ];
 
   empresaId: number | null = null;
 
@@ -113,51 +136,89 @@ export class ListadoUsuarios implements OnInit {
     private readonly confirmationService: ConfirmationService
   ) {}
 
+
   ngOnInit(): void {
+
     this.restaurarEstado();
 
-    const sesion = this.authService.getSesion();
+    const sesion =
+      this.authService.getSesion();
 
     if (!sesion) {
       return;
     }
 
-    this.esAdmin.set(sesion.rol === 'ADMIN_SISTEMA');
+    this.esAdmin.set(
+      sesion.rol === 'ADMIN_SISTEMA'
+    );
 
     if (this.esAdmin()) {
+
       this.inicializarAdmin();
+
       return;
     }
 
-    this.inicializarEncargado(sesion.usuarioUuid);
+    this.inicializarEncargado(
+      sesion.usuarioUuid
+    );
   }
 
+
+  volver(): void {
+
+    void this.router.navigateByUrl(
+      '/inicio'
+    );
+  }
+
+
   seleccionarEmpresa(): void {
+
     this.limpiarMensajes();
 
     if (this.empresaId === null) {
+
       this.usuarios.set([]);
       this.metodos.set([]);
+
       return;
     }
 
-    this.cargarDatosEmpresa(this.empresaId);
+    this.cargarDatosEmpresa(
+      this.empresaId
+    );
   }
 
-  seleccionarEstado(estado: EstadoUsuario): void {
-    if (estado === this.estadoSeleccionado()) {
+
+  seleccionarEstado(
+    estado: EstadoUsuario
+  ): void {
+
+    if (
+      estado ===
+      this.estadoSeleccionado()
+    ) {
       return;
     }
 
-    this.estadoSeleccionado.set(estado);
+    this.estadoSeleccionado.set(
+      estado
+    );
+
     this.limpiarMensajes();
 
     if (this.empresaId !== null) {
-      this.cargarUsuarios(this.empresaId);
+
+      this.cargarUsuarios(
+        this.empresaId
+      );
     }
   }
 
+
   nuevoUsuario(): void {
+
     if (this.empresaId === null) {
       return;
     }
@@ -173,13 +234,25 @@ export class ListadoUsuarios implements OnInit {
     );
   }
 
-  modificarUsuario(usuario: UserDTO): void {
-    if (!usuario.uuid || this.empresaId === null) {
+
+  modificarUsuario(
+    usuario: UserDTO
+  ): void {
+
+    if (
+      !usuario.uuid
+      ||
+      this.empresaId === null
+    ) {
       return;
     }
 
     void this.router.navigate(
-      ['/usuarios', usuario.uuid, 'editar'],
+      [
+        '/usuarios',
+        usuario.uuid,
+        'editar',
+      ],
       {
         queryParams: {
           empresaId: this.empresaId,
@@ -189,136 +262,274 @@ export class ListadoUsuarios implements OnInit {
     );
   }
 
-  confirmarCambio(usuario: UserDTO, accion: AccionUsuario): void {
-  const uuid = usuario.uuid;
 
-  if (!uuid) {
-    return;
+  confirmarCambio(
+    usuario: UserDTO,
+    accion: AccionUsuario
+  ): void {
+
+    const uuid =
+      usuario.uuid;
+
+    if (!uuid) {
+      return;
+    }
+
+    const config =
+      ACCIONES[accion];
+
+    const nombreCompleto =
+      `${usuario.nombre} ${usuario.apellidos}`;
+
+    this.confirmationService.confirm({
+      header: config.header,
+      message:
+        `¿Quieres ${config.verbo} a ${nombreCompleto}?`,
+      icon: config.icono,
+      acceptLabel: config.boton,
+      rejectLabel: 'Cancelar',
+      accept: () =>
+        this.cambiarEstado(
+          uuid,
+          accion
+        ),
+    });
   }
 
-  const config = ACCIONES[accion];
-  const nombreCompleto = `${usuario.nombre} ${usuario.apellidos}`;
 
-  this.confirmationService.confirm({
-    header: config.header,
-    message: `¿Quieres ${config.verbo} a ${nombreCompleto}?`,
-    icon: config.icono,
-    acceptLabel: config.boton,
-    rejectLabel: 'Cancelar',
-    accept: () => this.cambiarEstado(uuid, accion),
-  });
+  nombreRol(
+    rolId: number
+  ): string {
+
+    return this.roles()
+      .find(
+        rol =>
+          rol.id === rolId
+      )
+      ?.nombre ?? '—';
   }
 
-  nombreRol(rolId: number): string {
-    return this.roles().find(rol => rol.id === rolId)?.nombre ?? '—';
-  }
 
-  nombreMetodo(metodoId: number | null | undefined): string {
+  nombreMetodo(
+    metodoId:
+      number
+      | null
+      | undefined
+  ): string {
+
     if (metodoId == null) {
       return 'Sin asignar';
     }
 
-    return this.metodos().find(metodo => metodo.id === metodoId)?.nombre ?? '—';
+    return this.metodos()
+      .find(
+        metodo =>
+          metodo.id === metodoId
+      )
+      ?.nombre ?? '—';
   }
 
-  etiquetaEstado(estado: EstadoUsuario): string {
+
+  etiquetaEstado(
+    estado: EstadoUsuario
+  ): string {
+
     switch (estado) {
+
       case 'PENDIENTE':
         return 'Pendiente';
+
       case 'ACTIVO':
         return 'Activo';
+
       case 'INACTIVO':
         return 'Inactivo';
+
       case 'BLOQUEADO':
         return 'Bloqueado';
     }
   }
 
+
   private inicializarAdmin(): void {
+
     this.cargando.set(true);
 
     forkJoin({
-      empresas: this.empresaService.obtenerTodasLasEmpresas(),
-      roles: this.usuarioService.listarRolesAsignables(),
-    }).subscribe({
-      next: respuesta => {
-        this.empresas.set(respuesta.empresas);
-        this.roles.set(respuesta.roles);
-        this.cargando.set(false);
+      empresas:
+        this.empresaService
+          .obtenerTodasLasEmpresas(),
 
-        const empresaId = this.obtenerEmpresaRuta();
-
-        if (
-          empresaId !== null &&
-          respuesta.empresas.some(empresa => empresa.id === empresaId)
-        ) {
-          this.empresaId = empresaId;
-          this.cargarDatosEmpresa(empresaId);
-        }
-      },
-      error: error => {
-        this.cargando.set(false);
-        this.mostrarError(error);
-      },
-    });
-  }
-
-  private inicializarEncargado(uuid: string): void {
-    this.cargando.set(true);
-
-    forkJoin({
-      usuario: this.usuarioService.buscarPorUuid(uuid),
-      roles: this.usuarioService.listarRolesAsignables(),
-    }).subscribe({
-      next: respuesta => {
-        this.roles.set(respuesta.roles);
-
-        const empresaId = respuesta.usuario.empresaId;
-
-        if (empresaId == null) {
-          this.cargando.set(false);
-          this.error.set('El usuario no tiene una empresa asociada.');
-          return;
-        }
-
-        this.empresaId = empresaId;
-        this.cargando.set(false);
-        this.cargarDatosEmpresa(empresaId);
-      },
-      error: error => {
-        this.cargando.set(false);
-        this.mostrarError(error);
-      },
-    });
-  }
-
-  private cargarDatosEmpresa(empresaId: number): void {
-    this.cargando.set(true);
-    this.limpiarMensajes();
-
-    forkJoin({
-      usuarios: this.usuarioService.listarPorEmpresaYEstado(
-        empresaId,
-        this.estadoSeleccionado()
-      ),
-      metodos: this.metodoFichajeService.listarPorEmpresa(empresaId),
+      roles:
+        this.usuarioService
+          .listarRolesAsignables(),
     })
-      .pipe(finalize(() => this.cargando.set(false)))
       .subscribe({
+
         next: respuesta => {
-          this.usuarios.set(respuesta.usuarios);
-          this.metodos.set(respuesta.metodos);
+
+          this.empresas.set(
+            respuesta.empresas
+          );
+
+          this.roles.set(
+            respuesta.roles
+          );
+
+          this.cargando.set(false);
+
+          const empresaId =
+            this.obtenerEmpresaRuta();
+
+          if (
+            empresaId !== null
+            &&
+            respuesta.empresas.some(
+              empresa =>
+                empresa.id === empresaId
+            )
+          ) {
+
+            this.empresaId =
+              empresaId;
+
+            this.cargarDatosEmpresa(
+              empresaId
+            );
+          }
         },
+
         error: error => {
-          this.usuarios.set([]);
-          this.metodos.set([]);
-          this.mostrarError(error);
+
+          this.cargando.set(false);
+
+          this.mostrarError(
+            error
+          );
         },
       });
   }
 
-  private cargarUsuarios(empresaId: number): void {
+
+  private inicializarEncargado(
+    uuid: string
+  ): void {
+
     this.cargando.set(true);
+
+    forkJoin({
+      usuario:
+        this.usuarioService
+          .buscarPorUuid(uuid),
+
+      roles:
+        this.usuarioService
+          .listarRolesAsignables(),
+    })
+      .subscribe({
+
+        next: respuesta => {
+
+          this.roles.set(
+            respuesta.roles
+          );
+
+          const empresaId =
+            respuesta.usuario.empresaId;
+
+          if (empresaId == null) {
+
+            this.cargando.set(false);
+
+            this.error.set(
+              'El usuario no tiene una empresa asociada.'
+            );
+
+            return;
+          }
+
+          this.empresaId =
+            empresaId;
+
+          this.cargando.set(false);
+
+          this.cargarDatosEmpresa(
+            empresaId
+          );
+        },
+
+        error: error => {
+
+          this.cargando.set(false);
+
+          this.mostrarError(
+            error
+          );
+        },
+      });
+  }
+
+
+  private cargarDatosEmpresa(
+    empresaId: number
+  ): void {
+
+    this.cargando.set(true);
+
+    this.limpiarMensajes();
+
+    forkJoin({
+      usuarios:
+        this.usuarioService
+          .listarPorEmpresaYEstado(
+            empresaId,
+            this.estadoSeleccionado()
+          ),
+
+      metodos:
+        this.metodoFichajeService
+          .listarPorEmpresa(
+            empresaId
+          ),
+    })
+      .pipe(
+        finalize(
+          () =>
+            this.cargando.set(false)
+        )
+      )
+      .subscribe({
+
+        next: respuesta => {
+
+          this.usuarios.set(
+            respuesta.usuarios
+          );
+
+          this.metodos.set(
+            respuesta.metodos
+          );
+        },
+
+        error: error => {
+
+          this.usuarios.set([]);
+          this.metodos.set([]);
+
+          this.mostrarError(
+            error
+          );
+        },
+      });
+  }
+
+
+  private cargarUsuarios(
+    empresaId: number
+  ): void {
+
+    this.cargando.set(true);
+
     this.limpiarMensajes();
 
     this.usuarioService
@@ -326,104 +537,198 @@ export class ListadoUsuarios implements OnInit {
         empresaId,
         this.estadoSeleccionado()
       )
-      .pipe(finalize(() => this.cargando.set(false)))
+      .pipe(
+        finalize(
+          () =>
+            this.cargando.set(false)
+        )
+      )
       .subscribe({
-        next: usuarios => this.usuarios.set(usuarios),
+
+        next: usuarios => {
+
+          this.usuarios.set(
+            usuarios
+          );
+        },
+
         error: error => {
+
           this.usuarios.set([]);
-          this.mostrarError(error);
+
+          this.mostrarError(
+            error
+          );
         },
       });
   }
 
-  private cambiarEstado(uuid: string, accion: AccionUsuario): void {
-    const empresaId = this.empresaId;
+
+  private cambiarEstado(
+    uuid: string,
+    accion: AccionUsuario
+  ): void {
+
+    const empresaId =
+      this.empresaId;
 
     if (empresaId === null) {
       return;
     }
 
-    const config = ACCIONES[accion];
+    const config =
+      ACCIONES[accion];
 
     this.cargando.set(true);
+
     this.limpiarMensajes();
 
-    this.obtenerOperacionEstado(uuid, accion)
+    this.obtenerOperacionEstado(
+      uuid,
+      accion
+    )
       .pipe(
-        switchMap(() =>
-          this.usuarioService.listarPorEmpresaYEstado(
-            empresaId,
-            this.estadoSeleccionado()
-          )
+        switchMap(
+          () =>
+            this.usuarioService
+              .listarPorEmpresaYEstado(
+                empresaId,
+                this.estadoSeleccionado()
+              )
         ),
-        finalize(() => this.cargando.set(false))
+        finalize(
+          () =>
+            this.cargando.set(false)
+        )
       )
       .subscribe({
+
         next: usuarios => {
-          this.usuarios.set(usuarios);
-          this.exito.set(config.exito);
+
+          this.usuarios.set(
+            usuarios
+          );
+
+          this.exito.set(
+            config.exito
+          );
         },
-        error: error => this.mostrarError(error),
+
+        error: error => {
+
+          this.mostrarError(
+            error
+          );
+        },
       });
   }
+
 
   private obtenerOperacionEstado(
     uuid: string,
     accion: AccionUsuario
   ): Observable<UserDTO> {
+
     switch (accion) {
+
       case 'ACTIVAR':
-        return this.usuarioService.activar(uuid);
+        return this.usuarioService
+          .activar(uuid);
+
       case 'INACTIVAR':
-        return this.usuarioService.inactivar(uuid);
+        return this.usuarioService
+          .inactivar(uuid);
+
       case 'BLOQUEAR':
-        return this.usuarioService.bloquear(uuid);
+        return this.usuarioService
+          .bloquear(uuid);
+
       case 'DESBLOQUEAR':
-        return this.usuarioService.desbloquear(uuid);
+        return this.usuarioService
+          .desbloquear(uuid);
     }
   }
+
 
   private restaurarEstado(): void {
-    const estado = this.route.snapshot.queryParamMap.get('estado');
+
+    const estado =
+      this.route.snapshot
+        .queryParamMap
+        .get('estado');
 
     if (
-      estado === 'PENDIENTE' ||
-      estado === 'ACTIVO' ||
-      estado === 'INACTIVO' ||
+      estado === 'PENDIENTE'
+      ||
+      estado === 'ACTIVO'
+      ||
+      estado === 'INACTIVO'
+      ||
       estado === 'BLOQUEADO'
     ) {
-      this.estadoSeleccionado.set(estado);
+
+      this.estadoSeleccionado.set(
+        estado
+      );
     }
   }
 
-  private obtenerEmpresaRuta(): number | null {
-    const valor = this.route.snapshot.queryParamMap.get('empresaId');
+
+  private obtenerEmpresaRuta():
+    number | null {
+
+    const valor =
+      this.route.snapshot
+        .queryParamMap
+        .get('empresaId');
 
     if (valor === null) {
       return null;
     }
 
-    const empresaId = Number(valor);
+    const empresaId =
+      Number(valor);
 
-    return Number.isInteger(empresaId) && empresaId > 0
+    return (
+      Number.isInteger(
+        empresaId
+      )
+      &&
+      empresaId > 0
+    )
       ? empresaId
       : null;
   }
 
+
   private limpiarMensajes(): void {
+
     this.error.set(null);
+
     this.exito.set(null);
   }
 
-  private mostrarError(error: unknown): void {
-    if (error instanceof HttpErrorResponse) {
+
+  private mostrarError(
+    error: unknown
+  ): void {
+
+    if (
+      error instanceof HttpErrorResponse
+    ) {
+
       this.error.set(
-        error.error?.message ??
+        error.error?.message
+        ??
         'No se ha podido completar la operación.'
       );
+
       return;
     }
 
-    this.error.set('No se ha podido completar la operación.');
+    this.error.set(
+      'No se ha podido completar la operación.'
+    );
   }
+
 }

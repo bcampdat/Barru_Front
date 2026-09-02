@@ -1229,22 +1229,29 @@
 
             </div>
 
-            <button
-              pButton
-              type="button"
-              label="Crear tarea"
-              [loading]="estaCreandoTarea(proyecto.id)"
-              [disabled]="estaCreandoTarea(proyecto.id)"
-              (click)="crearTarea(proyecto.id)">
-            </button>
+            <div class="formulario-tarea-acciones">
 
-            <button
-              pButton
-              type="button"
-              label="Cancelar"
-              [disabled]="estaCreandoTarea(proyecto.id)"
-              (click)="alternarFormularioTarea(proyecto.id)">
-            </button>
+              <button
+                pButton
+                type="button"
+                class="boton-cancelar"
+                label="Cancelar"
+                icon="pi pi-times"
+                [disabled]="estaCreandoTarea(proyecto.id)"
+                (click)="alternarFormularioTarea(proyecto.id)">
+              </button>
+
+              <button
+                pButton
+                type="button"
+                label="Crear tarea"
+                icon="pi pi-check"
+                [loading]="estaCreandoTarea(proyecto.id)"
+                [disabled]="estaCreandoTarea(proyecto.id)"
+                (click)="crearTarea(proyecto.id)">
+              </button>
+
+            </div>
 
           </section>
 
@@ -1541,5 +1548,19 @@
     }
 
   }
+
+  <button
+    type="button"
+    class="volver-inicio"
+    aria-label="Volver a Inicio"
+    (click)="volverInicio()">
+
+    <i
+      class="pi pi-angle-double-right"
+      aria-hidden="true">
+    </i>
+
+  </button>
+
 
 </section>

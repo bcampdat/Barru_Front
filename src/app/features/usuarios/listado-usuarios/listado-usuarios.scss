@@ -1,11 +1,19 @@
 :host {
   display: block;
+
   width: 100%;
+  height: 100%;
 }
 
 .usuarios-page {
+  position: relative;
+
   width: 100%;
-  padding-top: 2rem;  
+  min-height: 100%;
+
+  padding-top: 2rem;
+  padding-bottom: 3rem;
+
   color: var(--barru-text);
 }
 
@@ -14,12 +22,15 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+
   margin-bottom: 1.25rem;
 }
 
 .usuarios-header h1 {
   margin: 0;
+
   color: var(--barru-text);
+
   font-size: 1.75rem;
   font-weight: 700;
   line-height: 1.2;
@@ -33,21 +44,27 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   gap: 2rem;
+
   width: 100%;
+
   margin-bottom: 1.25rem;
 }
 
 .usuarios-empresa {
   display: flex;
   align-items: center;
+
   gap: 0.7rem;
+
   flex: 0 0 auto;
 }
 
 .usuarios-empresa label,
 .usuarios-busqueda label {
   color: var(--barru-text);
+
   font-size: 0.82rem;
   font-weight: 600;
 }
@@ -55,6 +72,7 @@
 .usuarios-empresa select {
   min-width: 240px;
   min-height: 36px;
+
   padding: 0.45rem 2rem 0.45rem 0.7rem;
 
   border: 1px solid var(--barru-border);
@@ -67,6 +85,7 @@
   font-size: 0.82rem;
 
   outline: none;
+
   cursor: pointer;
 }
 
@@ -76,12 +95,14 @@
 
 .usuarios-empresa select:focus {
   border-color: var(--barru-primary);
+
   outline: 2px solid var(--barru-primary);
   outline-offset: 1px;
 }
 
 .usuarios-empresa select:disabled {
   opacity: 0.55;
+
   cursor: not-allowed;
 }
 
@@ -93,7 +114,9 @@
 .usuarios-estados {
   display: inline-flex;
   align-items: center;
+
   gap: 0.25rem;
+
   margin-left: auto;
   padding: 0.25rem;
 
@@ -105,6 +128,7 @@
 
 .usuarios-estados button {
   min-height: 32px;
+
   padding: 0.4rem 0.8rem;
 
   border: 1px solid transparent;
@@ -131,6 +155,7 @@
 
 .usuarios-estados button[aria-pressed='true'] {
   border-color: var(--barru-primary);
+
   background: var(--barru-primary);
   color: #ffffff;
 }
@@ -142,6 +167,7 @@
 
 .usuarios-estados button:disabled {
   opacity: 0.5;
+
   cursor: not-allowed;
 }
 
@@ -150,9 +176,11 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+
   gap: 0.45rem;
 
   min-height: 36px;
+
   padding: 0.5rem 0.85rem;
 
   border: 1px solid transparent;
@@ -173,23 +201,27 @@
 
 .boton-primario {
   border-color: var(--barru-primary);
+
   background: var(--barru-primary);
   color: #ffffff;
 }
 
 .boton-primario:hover:not(:disabled) {
   border-color: var(--barru-primary-hover);
+
   background: var(--barru-primary-hover);
 }
 
 .boton-secundario {
   border-color: var(--barru-border);
+
   background: var(--barru-surface);
   color: var(--barru-text);
 }
 
 .boton-secundario:hover:not(:disabled) {
   border-color: var(--barru-primary);
+
   color: var(--barru-primary);
 }
 
@@ -202,23 +234,27 @@
 .boton-primario:disabled,
 .boton-secundario:disabled {
   opacity: 0.5;
+
   cursor: not-allowed;
 }
 
 .usuarios-tabla {
   width: 100%;
+
   overflow: hidden;
 
   border: 1px solid var(--barru-border);
   border-radius: var(--barru-radius);
 
   background: var(--barru-surface);
+
   box-shadow: var(--barru-shadow);
 }
 
 .usuarios-busqueda {
   display: flex;
   align-items: center;
+
   gap: 0.7rem;
 }
 
@@ -251,13 +287,16 @@
 
 .usuarios-busqueda input:focus {
   border-color: var(--barru-primary);
+
   outline: 2px solid var(--barru-primary);
   outline-offset: 1px;
+
   box-shadow: none;
 }
 
 .usuarios-busqueda input:disabled {
   opacity: 0.5;
+
   cursor: not-allowed;
 }
 
@@ -292,27 +331,87 @@
 .usuarios-acciones {
   display: flex;
   align-items: center;
+
   gap: 0.45rem;
+
   white-space: nowrap;
 }
 
 .usuarios-acciones .boton-primario,
 .usuarios-acciones .boton-secundario {
   min-height: 32px;
+
   padding: 0.4rem 0.65rem;
+
   font-size: 0.78rem;
 }
 
 .usuarios-pendiente {
   color: var(--barru-text-secondary);
+
   font-size: 0.78rem;
 }
 
 .usuarios-vacio {
   padding: 2rem 1rem !important;
+
   color: var(--barru-text-secondary);
+
   text-align: center;
 }
+
+
+/* VOLVER A INICIO */
+
+.volver-inicio {
+  position: absolute;
+
+  right: 0.5rem;
+  bottom: 0.5rem;
+
+  width: 36px;
+  height: 36px;
+  min-height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 1px solid var(--barru-icon);
+  border-radius: 50%;
+
+  background: var(--barru-surface);
+  color: var(--barru-icon);
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.volver-inicio:hover {
+  border-color: var(--barru-icon-hover);
+
+  background: var(--barru-bg);
+  color: var(--barru-icon-hover);
+
+  transform: scale(1.08);
+}
+
+.volver-inicio .pi {
+  font-size: 0.98rem;
+}
+
+.volver-inicio:focus-visible {
+  outline: 2px solid var(--barru-primary);
+  outline-offset: 2px;
+}
+
 
 :host ::ng-deep .usuarios-tabla {
 
@@ -336,6 +435,7 @@
 
   .p-datatable-table {
     min-width: 940px;
+
     background: var(--barru-surface);
   }
 
@@ -375,6 +475,7 @@
 
   .p-paginator {
     gap: 0.25rem;
+
     padding: 0.65rem 0.9rem;
 
     border: 0;
@@ -390,6 +491,7 @@
   .p-paginator-next,
   .p-paginator-last {
     border-radius: calc(var(--barru-radius) - 3px);
+
     color: var(--barru-text-secondary);
   }
 
@@ -411,10 +513,35 @@
   .p-select,
   .p-dropdown {
     border-color: var(--barru-border);
+
     background: var(--barru-bg);
     color: var(--barru-text);
   }
 }
+
+
+/* SOLO LECTORES DE PANTALLA */
+
+.solo-lectores {
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+
+  padding: 0;
+  margin: -1px;
+
+  overflow: hidden;
+
+  clip: rect(0, 0, 0, 0);
+
+  white-space: nowrap;
+
+  border: 0;
+}
+
+
+/* RESPONSIVE */
 
 @media (max-width: 1000px) {
 
@@ -433,10 +560,12 @@
 
 }
 
+
 @media (max-width: 700px) {
 
   .usuarios-page {
     padding-top: 0.85rem;
+    padding-bottom: 3rem;
   }
 
   .usuarios-header {
@@ -455,6 +584,7 @@
   .usuarios-empresa {
     align-items: stretch;
     flex-direction: column;
+
     width: 100%;
   }
 
@@ -465,7 +595,9 @@
 
   .usuarios-estados {
     display: grid;
+
     grid-template-columns: 1fr 1fr;
+
     width: 100%;
   }
 
@@ -476,11 +608,18 @@
   .usuarios-busqueda {
     align-items: stretch;
     flex-direction: column;
+
     gap: 0.5rem;
   }
 
   .usuarios-busqueda input {
     width: 100%;
+  }
+
+  .volver-inicio {
+    width: 34px;
+    height: 34px;
+    min-height: 34px;
   }
 
 }

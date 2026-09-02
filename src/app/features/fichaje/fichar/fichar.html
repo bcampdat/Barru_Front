@@ -2,24 +2,24 @@
 
   <header class="fichar-header">
     <h1>Mi jornada</h1>
-
-    <p>
-      Registra y consulta el estado de tu jornada de hoy.
-    </p>
   </header>
 
 
   @if (error()) {
+
     <p-message severity="error">
       {{ error() }}
     </p-message>
+
   }
 
 
   @if (mensaje()) {
+
     <p-message severity="success">
       {{ mensaje() }}
     </p-message>
+
   }
 
 
@@ -34,13 +34,14 @@
 
   } @else {
 
-    <main class="fichar-contenido">
+    <div class="fichar-contenido">
 
       <section class="jornada-principal">
 
         <div class="jornada-cabecera">
 
           <div class="jornada-estado">
+
             <span class="jornada-etiqueta">
               Estado actual
             </span>
@@ -48,10 +49,12 @@
             <strong class="jornada-estado-valor">
               {{ estadoTexto() }}
             </strong>
+
           </div>
 
 
           <div class="jornada-reloj">
+
             <span class="jornada-etiqueta">
               Tiempo transcurrido
             </span>
@@ -59,6 +62,7 @@
             <strong>
               {{ tiempoTranscurrido() }}
             </strong>
+
           </div>
 
         </div>
@@ -69,6 +73,7 @@
           <div class="jornada-progreso">
 
             <div class="jornada-progreso-cabecera">
+
               <span>
                 Progreso de jornada
               </span>
@@ -76,7 +81,9 @@
               <strong>
                 {{ progresoJornada() }} %
               </strong>
+
             </div>
+
 
             <progress
               [value]="progresoJornada()"
@@ -93,6 +100,7 @@
         <div class="jornada-datos">
 
           <article>
+
             <span>
               Trabajado
             </span>
@@ -100,10 +108,12 @@
             <strong>
               {{ tiempoTrabajado() }}
             </strong>
+
           </article>
 
 
           <article>
+
             <span>
               Pausas
             </span>
@@ -111,10 +121,12 @@
             <strong>
               {{ tiempoPausa() }}
             </strong>
+
           </article>
 
 
           <article>
+
             <span>
               Pausa disponible
             </span>
@@ -122,10 +134,12 @@
             <strong>
               {{ tiempoPausaRestante() }}
             </strong>
+
           </article>
 
 
           <article>
+
             <span>
               Jornada
             </span>
@@ -133,10 +147,12 @@
             <strong>
               {{ tiempoJornada() }}
             </strong>
+
           </article>
 
 
           <article>
+
             <span>
               Tiempo restante
             </span>
@@ -144,10 +160,12 @@
             <strong>
               {{ tiempoRestante() }}
             </strong>
+
           </article>
 
 
           <article>
+
             <span>
               Horas extra
             </span>
@@ -155,6 +173,7 @@
             <strong>
               {{ tiempoExtra() }}
             </strong>
+
           </article>
 
         </div>
@@ -175,6 +194,7 @@
             </p>
 
             <div class="jornada-acciones">
+
               <button
                 type="button"
                 class="boton-principal"
@@ -189,6 +209,7 @@
                 }
 
               </button>
+
             </div>
 
           </section>
@@ -304,6 +325,7 @@
         <section class="jornada-info-dia">
 
           <div>
+
             <span>
               Hoy
             </span>
@@ -311,12 +333,14 @@
             <strong>
               {{ resumenActual.fecha }}
             </strong>
+
           </div>
 
 
           @if (resumenActual.ultimaActualizacion) {
 
             <div>
+
               <span>
                 Última sincronización
               </span>
@@ -324,6 +348,7 @@
               <strong>
                 {{ resumenActual.ultimaActualizacion }}
               </strong>
+
             </div>
 
           }
@@ -332,9 +357,28 @@
 
       }
 
-    </main>
+    </div>
 
   }
+
+
+  <!-- Volver a Inicio -->
+  <button
+    type="button"
+    class="volver-inicio"
+    (click)="volver()"
+  >
+
+    <i
+      class="pi pi-angle-double-right"
+      aria-hidden="true"
+    ></i>
+
+    <span class="solo-lectura">
+      Volver a Inicio
+    </span>
+
+  </button>
 
 
   <p-dialog
@@ -364,6 +408,7 @@
       ) {
 
         <div class="dialogo-dato">
+
           <span>
             Tiempo pendiente
           </span>
@@ -371,6 +416,7 @@
           <strong>
             {{ tiempoRestante() }}
           </strong>
+
         </div>
 
       }

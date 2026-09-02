@@ -1,5 +1,46 @@
 @mixin responsive {
 
+   /* ESCRITORIO CON POCA ALTURA */
+
+  @media (max-height: 700px) and (min-width: 761px) {
+
+    .sidebar {
+      padding-block: 0.9rem;
+    }
+
+    .sidebar-logo {
+      min-height: 52px;
+      margin-bottom: 0.75rem;
+    }
+
+    .sidebar-usuario {
+      gap: 0.15rem;
+      padding: 0.4rem 0 0.65rem;
+    }
+
+    .avatar {
+      width: 46px;
+      height: 46px;
+      margin-bottom: 0.3rem;
+    }
+
+    .avatar .pi {
+      font-size: 1.25rem;
+    }
+
+    .sidebar-separador {
+      margin: 0.3rem 0 0.65rem;
+    }
+
+    .sidebar-menu {
+      gap: 0.18rem;
+    }
+
+    .menu-item {
+      padding-block: 0.48rem;
+    }
+  }
+
   /* TABLET / PANTALLA INTERMEDIA */
 
   @media (max-width: 900px) {

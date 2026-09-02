@@ -147,6 +147,10 @@ implements OnInit, OnDestroy {
     ReturnType<typeof setInterval> | null =
       null;
 
+  private mensajeTimeout:
+    ReturnType<typeof setTimeout> | null =
+      null;
+
   private sincronizadoEn =
     Date.now();
 
@@ -163,7 +167,9 @@ implements OnInit, OnDestroy {
 
 
   ngOnInit(): void {
+
     this.cargarResumenHoy();
+
     this.iniciarReloj();
   }
 
@@ -173,6 +179,18 @@ implements OnInit, OnDestroy {
     if (this.reloj !== null) {
       clearInterval(this.reloj);
     }
+
+    this.limpiarMensaje();
+  }
+
+
+  /* NAVEGACIÓN */
+
+  volver(): void {
+
+    void this.router.navigateByUrl(
+      '/inicio'
+    );
   }
 
 
@@ -209,7 +227,8 @@ implements OnInit, OnDestroy {
     }
 
     this.error.set(null);
-    this.mensaje.set(null);
+
+    this.limpiarMensaje();
 
     this.limpiarSeleccionSalida();
 
@@ -220,6 +239,7 @@ implements OnInit, OnDestroy {
 
 
   seguirTrabajando(): void {
+
     this.cerrarDialogosSalida();
   }
 
@@ -323,6 +343,7 @@ implements OnInit, OnDestroy {
 
 
   cancelarMotivoSalida(): void {
+
     this.cerrarDialogosSalida();
   }
 
@@ -594,6 +615,7 @@ implements OnInit, OnDestroy {
   ): void {
 
     this.cargando.set(true);
+
     this.error.set(null);
 
     this.resumenService
@@ -604,6 +626,7 @@ implements OnInit, OnDestroy {
         )
       )
       .subscribe({
+
         next: resumen => {
 
           this.aplicarResumen(
@@ -620,6 +643,7 @@ implements OnInit, OnDestroy {
             error.status === 404
           ) {
             this.reiniciar();
+
             return;
           }
 
@@ -649,7 +673,8 @@ implements OnInit, OnDestroy {
     this.fichando.set(true);
 
     this.error.set(null);
-    this.mensaje.set(null);
+
+    this.limpiarMensaje();
 
     const ubicacion =
       await this.obtenerUbicacion();
@@ -686,6 +711,7 @@ implements OnInit, OnDestroy {
         )
       )
       .subscribe({
+
         next: () => {
 
           this.ubicacionRequerida.set(
@@ -706,7 +732,7 @@ implements OnInit, OnDestroy {
             return;
           }
 
-          this.mensaje.set(
+          this.mostrarMensajeTemporal(
             'Fichaje registrado correctamente.'
           );
 
@@ -761,6 +787,7 @@ implements OnInit, OnDestroy {
     this.authService
       .logout()
       .subscribe({
+
         next: () => {
 
           void this.router.navigateByUrl(
@@ -784,6 +811,54 @@ implements OnInit, OnDestroy {
           );
         },
       });
+  }
+
+
+  /* MENSAJES */
+
+  private mostrarMensajeTemporal(
+    texto: string
+  ): void {
+
+    this.limpiarMensaje();
+
+    this.mensaje.set(
+      texto
+    );
+
+    this.mensajeTimeout =
+      setTimeout(
+        () => {
+
+          this.mensaje.set(
+            null
+          );
+
+          this.mensajeTimeout =
+            null;
+        },
+        5000
+      );
+  }
+
+
+  private limpiarMensaje(): void {
+
+    if (
+      this.mensajeTimeout !== null
+    ) {
+
+      clearTimeout(
+        this.mensajeTimeout
+      );
+
+      this.mensajeTimeout =
+        null;
+    }
+
+    this.mensaje.set(
+      null
+    );
   }
 
 
