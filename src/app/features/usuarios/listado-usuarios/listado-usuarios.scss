@@ -346,6 +346,23 @@
   font-size: 0.78rem;
 }
 
+.usuarios-acciones .boton-eliminar {
+  color: var(--barru-text);
+}
+
+.usuarios-acciones .boton-eliminar .pi {
+  color: #8a4448;
+}
+
+.usuarios-acciones .boton-eliminar:hover:not(:disabled) {
+  border-color: #8a4448;
+  color: #8a4448;
+}
+
+.usuarios-acciones .boton-eliminar:focus-visible {
+  outline-color: #8a4448;
+}
+
 .usuarios-pendiente {
   color: var(--barru-text-secondary);
 
@@ -538,6 +555,137 @@
   white-space: nowrap;
 
   border: 0;
+}
+
+/* =========================================================
+   CONFIRMACIÓN BARRU
+   ========================================================= */
+
+:host ::ng-deep .barru-confirmacion {
+  overflow: hidden;
+
+  border: 1px solid var(--barru-border);
+  border-radius: var(--barru-radius);
+
+  background: var(--barru-surface);
+  color: var(--barru-text);
+
+  box-shadow: var(--barru-shadow);
+}
+
+
+:host ::ng-deep .barru-confirmacion .p-dialog-header {
+  padding: 1.15rem 1.25rem;
+
+  border-bottom: 1px solid var(--barru-border);
+
+  background: var(--barru-surface);
+  color: var(--barru-text);
+}
+
+
+:host ::ng-deep .barru-confirmacion .p-dialog-title {
+  color: var(--barru-text);
+
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+
+:host ::ng-deep .barru-confirmacion .p-dialog-header-actions button {
+  color: var(--barru-text-secondary);
+}
+
+
+:host ::ng-deep .barru-confirmacion .p-dialog-header-actions button:hover {
+  background: var(--barru-bg);
+  color: var(--barru-text);
+}
+
+
+:host ::ng-deep .barru-confirmacion .p-dialog-content {
+  gap: 1rem;
+
+  padding: 1.3rem 1.25rem 1rem;
+
+  background: var(--barru-surface);
+  color: var(--barru-text);
+
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+
+:host ::ng-deep .barru-confirmacion .p-confirmdialog-icon {
+  color: #8a4448;
+
+  font-size: 1.5rem;
+}
+
+
+:host ::ng-deep .barru-confirmacion .p-dialog-footer {
+  gap: 0.55rem;
+
+  padding: 0 1.25rem 1.25rem;
+
+  background: var(--barru-surface);
+}
+
+
+/* CANCELAR */
+
+:host ::ng-deep
+.barru-confirmacion
+.p-dialog-footer
+.p-button:first-child {
+  border: 1px solid var(--barru-border);
+
+  background: var(--barru-surface);
+  color: var(--barru-text);
+}
+
+
+:host ::ng-deep
+.barru-confirmacion
+.p-dialog-footer
+.p-button:first-child:hover {
+  border-color: var(--barru-primary);
+
+  background: var(--barru-bg);
+  color: var(--barru-primary);
+}
+
+
+/* ELIMINAR */
+
+:host ::ng-deep
+.barru-confirmacion
+.p-dialog-footer
+.p-button:last-child {
+  border: 1px solid #8a4448;
+
+  background: #8a4448;
+  color: #ffffff;
+}
+
+
+:host ::ng-deep
+.barru-confirmacion
+.p-dialog-footer
+.p-button:last-child:hover {
+  border-color: #753a3e;
+
+  background: #753a3e;
+  color: #ffffff;
+}
+
+
+:host ::ng-deep
+.barru-confirmacion
+.p-dialog-footer
+.p-button:focus-visible {
+  outline: 2px solid var(--barru-primary);
+  outline-offset: 2px;
 }
 
 

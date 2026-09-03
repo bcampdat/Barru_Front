@@ -430,6 +430,70 @@
 
 
 /* =========================================================
+   COLORES DE PRIORIDAD
+   ========================================================= */
+
+.dashboard-prioridades .prioridad-alta {
+  border-color:
+    color-mix(
+      in srgb,
+      #8a4448 58%,
+      var(--barru-border)
+    );
+}
+
+.dashboard-prioridades .prioridad-alta span,
+.dashboard-prioridades .prioridad-alta strong {
+  color:
+    color-mix(
+      in srgb,
+      #8a4448 78%,
+      var(--barru-text)
+    );
+}
+
+
+.dashboard-prioridades .prioridad-media {
+  border-color:
+    color-mix(
+      in srgb,
+      #9a6b2f 58%,
+      var(--barru-border)
+    );
+}
+
+.dashboard-prioridades .prioridad-media span,
+.dashboard-prioridades .prioridad-media strong {
+  color:
+    color-mix(
+      in srgb,
+      #9a6b2f 78%,
+      var(--barru-text)
+    );
+}
+
+
+.dashboard-prioridades .prioridad-baja {
+  border-color:
+    color-mix(
+      in srgb,
+      #4f7463 58%,
+      var(--barru-border)
+    );
+}
+
+.dashboard-prioridades .prioridad-baja span,
+.dashboard-prioridades .prioridad-baja strong {
+  color:
+    color-mix(
+      in srgb,
+      #4f7463 78%,
+      var(--barru-text)
+    );
+}
+
+
+/* =========================================================
    PROYECTOS
    ========================================================= */
 
@@ -844,6 +908,70 @@ table {
 
 
 /* =========================================================
+   ENLACE DE TAREA
+   ========================================================= */
+
+.enlace-tarea {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 0.45rem;
+
+  margin: 0;
+  padding: 0.18rem 0.3rem;
+
+  border: 0;
+  border-radius: 5px;
+
+  background: transparent;
+  color: var(--barru-text);
+
+  font: inherit;
+  font-weight: 650;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.enlace-tarea .pi {
+  color: var(--barru-text-secondary);
+
+  font-size: 0.82rem;
+
+  transition:
+    color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.enlace-tarea:hover {
+  background:
+    color-mix(
+      in srgb,
+      var(--barru-primary) 10%,
+      transparent
+    );
+
+  color: var(--barru-primary);
+}
+
+.enlace-tarea:hover .pi {
+  color: var(--barru-primary);
+
+  transform: translateX(2px);
+}
+
+.enlace-tarea:focus-visible {
+  outline: 2px solid var(--barru-primary);
+  outline-offset: 2px;
+}
+
+
+/* =========================================================
    PRIMENG
    ========================================================= */
 
@@ -911,6 +1039,81 @@ table {
 
     font-size: 0.75rem;
     font-weight: 600;
+  }
+
+
+  .prioridad-alta.p-tag,
+  .prioridad-alta .p-tag {
+    color:
+      color-mix(
+        in srgb,
+        #8a4448 78%,
+        var(--barru-text)
+      );
+
+    background:
+      color-mix(
+        in srgb,
+        #8a4448 14%,
+        var(--barru-surface)
+      );
+
+    border-color:
+      color-mix(
+        in srgb,
+        #8a4448 72%,
+        var(--barru-border)
+      );
+  }
+
+
+  .prioridad-media.p-tag,
+  .prioridad-media .p-tag {
+    color:
+      color-mix(
+        in srgb,
+        #9a6b2f 78%,
+        var(--barru-text)
+      );
+
+    background:
+      color-mix(
+        in srgb,
+        #9a6b2f 14%,
+        var(--barru-surface)
+      );
+
+    border-color:
+      color-mix(
+        in srgb,
+        #9a6b2f 72%,
+        var(--barru-border)
+      );
+  }
+
+
+  .prioridad-baja.p-tag,
+  .prioridad-baja .p-tag {
+    color:
+      color-mix(
+        in srgb,
+        #4f7463 78%,
+        var(--barru-text)
+      );
+
+    background:
+      color-mix(
+        in srgb,
+        #4f7463 14%,
+        var(--barru-surface)
+      );
+
+    border-color:
+      color-mix(
+        in srgb,
+        #4f7463 72%,
+        var(--barru-border)
+      );
   }
 
 

@@ -332,6 +332,7 @@
 
           <button
             type="button"
+            class="prioridad-alta"
             (click)="seleccionarVista('PRIORIDAD_ALTA')">
 
             <span>
@@ -347,6 +348,7 @@
 
           <button
             type="button"
+            class="prioridad-media"
             (click)="seleccionarVista('PRIORIDAD_MEDIA')">
 
             <span>
@@ -362,6 +364,7 @@
 
           <button
             type="button"
+            class="prioridad-baja"
             (click)="seleccionarVista('PRIORIDAD_BAJA')">
 
             <span>
@@ -856,9 +859,20 @@
 
                   <td>
 
-                    <strong>
-                      {{ tarea.nombre }}
-                    </strong>
+                    <button
+                      type="button"
+                      class="enlace-tarea"
+                      (click)="abrirProyecto(tarea.proyectoId)"
+                    >
+                      <span>
+                        {{ tarea.nombre }}
+                      </span>
+
+                      <i
+                        class="pi pi-eye"
+                        aria-hidden="true"
+                      ></i>
+                    </button>
 
                     @if (tarea.notas) {
 
@@ -885,7 +899,11 @@
                   <td>
 
                     <p-tag
-                      [value]="tarea.prioridad">
+                      [value]="tarea.prioridad"
+                      [class.prioridad-alta]="tarea.prioridad === 'ALTA'"
+                      [class.prioridad-media]="tarea.prioridad === 'MEDIA'"
+                      [class.prioridad-baja]="tarea.prioridad === 'BAJA'"
+                    >
                     </p-tag>
 
                   </td>
@@ -1500,7 +1518,11 @@
                       <td>
 
                         <p-tag
-                          [value]="tarea.prioridad">
+                          [value]="tarea.prioridad"
+                          [class.prioridad-alta]="tarea.prioridad === 'ALTA'"
+                          [class.prioridad-media]="tarea.prioridad === 'MEDIA'"
+                          [class.prioridad-baja]="tarea.prioridad === 'BAJA'"
+                        >
                         </p-tag>
 
                       </td>

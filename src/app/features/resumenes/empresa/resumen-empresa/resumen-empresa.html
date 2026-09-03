@@ -3,7 +3,25 @@
   <header class="dashboard-header">
 
     <h1>
-      Resumen de empresa
+      @if (
+        esAdmin()
+        && empresaId() !== null
+      ) {
+
+        @for (
+          empresa of empresas();
+          track empresa.id ?? empresa.nombre
+        ) {
+
+          @if (empresa.id === empresaId()) {
+            Resumen de {{ empresa.nombre }}
+          }
+
+        }
+
+      } @else {
+        Resumen de empresa
+      }
     </h1>
 
     <div class="dashboard-reloj">
@@ -40,7 +58,10 @@
 
     @if (esAdmin()) {
 
-      <div class="dashboard-empresa">
+      <div
+        class="dashboard-empresa"
+        [class.dashboard-empresa--activa]="empresaId() !== null"
+      >
 
         <label for="empresaResumen">
           Empresa

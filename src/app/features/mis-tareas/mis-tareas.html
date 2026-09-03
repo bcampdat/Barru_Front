@@ -735,7 +735,10 @@
 
                   <p-tag
                     class="tag-prioridad"
-                    [value]="tarea.prioridad">
+                    [value]="tarea.prioridad"
+                    [class.prioridad-alta]="tarea.prioridad === 'ALTA'"
+                    [class.prioridad-media]="tarea.prioridad === 'MEDIA'"
+                    [class.prioridad-baja]="tarea.prioridad === 'BAJA'">
                   </p-tag>
 
                 </td>

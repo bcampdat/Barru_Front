@@ -7,6 +7,10 @@ import {
 } from '@angular/core';
 
 import {
+  Router
+} from '@angular/router';
+
+import {
   finalize,
   forkJoin
 } from 'rxjs';
@@ -49,6 +53,9 @@ export class AvisosTarea implements OnInit {
 
   private readonly avisoTareaService =
     inject(AvisoTareaService);
+
+  private readonly router =
+    inject(Router);
 
 
   readonly avisos =
@@ -137,6 +144,20 @@ export class AvisosTarea implements OnInit {
   ngOnInit(): void {
 
     this.cargarAvisos();
+  }
+
+
+  /*
+   * =========================================================
+   * NAVEGACIÓN
+   * =========================================================
+   */
+
+  volverInicio(): void {
+
+    void this.router.navigateByUrl(
+      '/inicio'
+    );
   }
 
 

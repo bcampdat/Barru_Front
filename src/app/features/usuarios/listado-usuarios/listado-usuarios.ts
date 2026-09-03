@@ -297,6 +297,35 @@ export class ListadoUsuarios implements OnInit {
   }
 
 
+  confirmarEliminacion(
+    usuario: UserDTO
+  ): void {
+
+    const uuid =
+      usuario.uuid;
+
+    if (!uuid) {
+      return;
+    }
+
+    const nombreCompleto =
+      `${usuario.nombre} ${usuario.apellidos}`;
+
+    this.confirmationService.confirm({
+      header: 'Eliminar usuario pendiente',
+      message:
+        `¿Quieres eliminar definitivamente a ${nombreCompleto}?`,
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Eliminar',
+      rejectLabel: 'Cancelar',
+      accept: () =>
+        this.eliminarPendiente(
+          uuid
+        ),
+    });
+  }
+
+
   nombreRol(
     rolId: number
   ): string {
@@ -611,6 +640,62 @@ export class ListadoUsuarios implements OnInit {
 
           this.exito.set(
             config.exito
+          );
+        },
+
+        error: error => {
+
+          this.mostrarError(
+            error
+          );
+        },
+      });
+  }
+
+
+  private eliminarPendiente(
+    uuid: string
+  ): void {
+
+    const empresaId =
+      this.empresaId;
+
+    if (empresaId === null) {
+      return;
+    }
+
+    this.cargando.set(true);
+
+    this.limpiarMensajes();
+
+    this.usuarioService
+      .eliminarPendiente(
+        uuid
+      )
+      .pipe(
+        switchMap(
+          () =>
+            this.usuarioService
+              .listarPorEmpresaYEstado(
+                empresaId,
+                'PENDIENTE'
+              )
+        ),
+        finalize(
+          () =>
+            this.cargando.set(false)
+        )
+      )
+      .subscribe({
+
+        next: usuarios => {
+
+          this.usuarios.set(
+            usuarios
+          );
+
+          this.exito.set(
+            'Usuario pendiente eliminado correctamente.'
           );
         },
 

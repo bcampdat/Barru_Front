@@ -1,6 +1,8 @@
 <div class="usuarios-page">
 
-  <p-confirmdialog />
+  <p-confirmdialog 
+    styleClass="barru-confirmacion"
+  />
 
   <header class="usuarios-header">
 
@@ -269,6 +271,20 @@
 
                 @case ('PENDIENTE') {
 
+                  <button
+                    type="button"
+                    class="boton-secundario boton-eliminar"
+                    [disabled]="cargando()"
+                    (click)="confirmarEliminacion(usuario)"
+                  >
+                    <i
+                      class="pi pi-trash"
+                      aria-hidden="true"
+                    ></i>
+
+                    Eliminar
+                  </button>
+
                   <span class="usuarios-pendiente">
                     Pendiente de primer acceso
                   </span>
@@ -389,7 +405,6 @@
   </div>
 
 
-  <!-- Volver a Inicio -->
   <button
     type="button"
     class="volver-inicio"

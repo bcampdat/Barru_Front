@@ -1,5 +1,19 @@
 :host {
   display: block;
+
+  --tareas-interior:
+    color-mix(
+      in srgb,
+      var(--barru-bg) 72%,
+      var(--barru-surface)
+    );
+
+  --tareas-hover:
+    color-mix(
+      in srgb,
+      var(--barru-primary) 7%,
+      var(--barru-surface)
+    );
 }
 
 
@@ -41,18 +55,10 @@
 
     color: var(--barru-text);
 
-    font-size: 1.65rem;
-    font-weight: 650;
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.2;
   }
-}
-
-
-.mis-tareas-subtitulo {
-  margin: 0.35rem 0 0;
-
-  color: var(--barru-text-secondary);
-
-  font-size: 0.92rem;
 }
 
 
@@ -80,13 +86,14 @@
   margin-left: 0.25rem;
   padding: 0 0.3rem;
 
-  color: var(--barru-surface);
-  background: var(--barru-primary);
-
   border-radius: 999px;
+
+  background: var(--barru-primary);
+  color: #ffffff;
 
   font-size: 0.7rem;
   font-weight: 700;
+  line-height: 1;
 }
 
 
@@ -119,7 +126,7 @@
   color: var(--barru-text);
 
   font-size: 1.15rem;
-  font-weight: 650;
+  font-weight: 700;
 }
 
 
@@ -146,11 +153,11 @@
 
   padding: 1rem 1.1rem;
 
-  color: var(--barru-text);
-  background: var(--barru-surface);
-
   border: 1px solid var(--barru-border);
   border-radius: var(--barru-radius);
+
+  background: var(--barru-surface);
+  color: var(--barru-text);
 
   box-shadow: var(--barru-shadow);
 
@@ -159,24 +166,29 @@
   cursor: pointer;
 
   transition:
+    background-color 0.15s ease,
     border-color 0.15s ease,
     transform 0.15s ease;
+}
 
-  &:hover {
-    border-color: var(--barru-primary);
 
-    transform: translateY(-1px);
-  }
+.panel-tarjeta:hover {
+  border-color: var(--barru-primary);
 
-  &:focus-visible {
-    outline: 2px solid var(--barru-primary);
-    outline-offset: 2px;
-  }
+  background: var(--tareas-hover);
+
+  transform: translateY(-1px);
+}
+
+
+.panel-tarjeta:focus-visible {
+  outline: 2px solid var(--barru-primary);
+  outline-offset: 2px;
 }
 
 
 .panel-tarjeta-etiqueta {
-  color: var(--barru-text-secondary);
+  color: var(--barru-text);
 
   font-size: 0.82rem;
   font-weight: 600;
@@ -189,7 +201,7 @@
   color: var(--barru-primary);
 
   font-size: 1.75rem;
-  font-weight: 650;
+  font-weight: 700;
 
   line-height: 1;
 }
@@ -214,10 +226,10 @@
 .vista-tareas {
   padding: 1.15rem;
 
-  background: var(--barru-surface);
-
   border: 1px solid var(--barru-border);
   border-radius: var(--barru-radius);
+
+  background: var(--barru-surface);
 
   box-shadow: var(--barru-shadow);
 }
@@ -232,7 +244,7 @@
   color: var(--barru-text);
 
   font-size: 1rem;
-  font-weight: 650;
+  font-weight: 700;
 }
 
 
@@ -274,40 +286,114 @@
 
   padding: 0.75rem 0.9rem;
 
-  color: var(--barru-text);
-  background: var(--barru-bg);
-
   border: 1px solid var(--barru-border);
   border-radius: var(--barru-radius);
+
+  background: var(--tareas-interior);
+  color: var(--barru-text);
 
   cursor: pointer;
 
   transition:
-    border-color 0.15s ease,
-    background-color 0.15s ease;
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
 
-  span {
-    color: var(--barru-text-secondary);
 
-    font-size: 0.82rem;
-    font-weight: 600;
-  }
+.dashboard-opcion span {
+  color: var(--barru-text-secondary);
 
-  strong {
-    color: var(--barru-text);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
 
-    font-size: 1rem;
-    font-weight: 650;
-  }
 
-  &:hover {
-    border-color: var(--barru-primary);
-  }
+.dashboard-opcion strong {
+  color: var(--barru-text);
 
-  &:focus-visible {
-    outline: 2px solid var(--barru-primary);
-    outline-offset: 2px;
-  }
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+
+.dashboard-opcion:hover {
+  border-color: var(--barru-primary);
+
+  background: var(--tareas-hover);
+}
+
+
+.dashboard-opcion:focus-visible {
+  outline: 2px solid var(--barru-primary);
+  outline-offset: 2px;
+}
+
+
+/* =========================================================
+   PRIORIDADES
+   ========================================================= */
+
+.dashboard-opcion.prioridad-alta {
+  border-color:
+    color-mix(
+      in srgb,
+      #8a4448 58%,
+      var(--barru-border)
+    );
+}
+
+.dashboard-opcion.prioridad-alta span,
+.dashboard-opcion.prioridad-alta strong {
+  color:
+    color-mix(
+      in srgb,
+      #8a4448 78%,
+      var(--barru-text)
+    );
+}
+
+.dashboard-opcion.prioridad-media {
+  border-color:
+    color-mix(
+      in srgb,
+      #9a6b2f 58%,
+      var(--barru-border)
+    );
+}
+
+.dashboard-opcion.prioridad-media span,
+.dashboard-opcion.prioridad-media strong {
+  color:
+    color-mix(
+      in srgb,
+      #9a6b2f 78%,
+      var(--barru-text)
+    );
+}
+
+.dashboard-opcion.prioridad-baja {
+  border-color:
+    color-mix(
+      in srgb,
+      #4f7463 58%,
+      var(--barru-border)
+    );
+}
+
+.dashboard-opcion.prioridad-baja span,
+.dashboard-opcion.prioridad-baja strong {
+  color:
+    color-mix(
+      in srgb,
+      #4f7463 78%,
+      var(--barru-text)
+    );
+}
+
+.dashboard-opcion.prioridad-alta:hover,
+.dashboard-opcion.prioridad-media:hover,
+.dashboard-opcion.prioridad-baja:hover {
+  background: var(--tareas-hover);
 }
 
 
@@ -364,10 +450,10 @@
 
   padding: 0.9rem 1rem;
 
-  background: var(--barru-bg);
-
   border: 1px solid var(--barru-border);
   border-radius: var(--barru-radius);
+
+  background: var(--tareas-interior);
 }
 
 
@@ -380,7 +466,7 @@
     color: var(--barru-text);
 
     font-size: 0.95rem;
-    font-weight: 650;
+    font-weight: 700;
   }
 }
 
@@ -401,7 +487,8 @@
 
   strong {
     color: var(--barru-text);
-    font-weight: 650;
+
+    font-weight: 700;
   }
 }
 
@@ -441,37 +528,45 @@
 
   padding: 0.8rem 0.9rem;
 
-  color: var(--barru-text);
-  background: var(--barru-bg);
-
   border: 1px solid var(--barru-border);
   border-radius: var(--barru-radius);
 
+  background: var(--tareas-interior);
+  color: var(--barru-text);
+
   cursor: pointer;
 
-  transition: border-color 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
 
-  strong {
-    color: var(--barru-primary);
 
-    font-size: 1.15rem;
-    font-weight: 650;
-  }
+.atencion-opcion strong {
+  color: var(--barru-primary);
 
-  span {
-    color: var(--barru-text-secondary);
+  font-size: 1.15rem;
+  font-weight: 700;
+}
 
-    font-size: 0.82rem;
-  }
 
-  &:hover {
-    border-color: var(--barru-primary);
-  }
+.atencion-opcion span {
+  color: var(--barru-text-secondary);
 
-  &:focus-visible {
-    outline: 2px solid var(--barru-primary);
-    outline-offset: 2px;
-  }
+  font-size: 0.82rem;
+}
+
+
+.atencion-opcion:hover {
+  border-color: var(--barru-primary);
+
+  background: var(--tareas-hover);
+}
+
+
+.atencion-opcion:focus-visible {
+  outline: 2px solid var(--barru-primary);
+  outline-offset: 2px;
 }
 
 
@@ -523,7 +618,10 @@
   h2 {
     margin: 0;
 
+    color: var(--barru-text);
+
     font-size: 1.1rem;
+    font-weight: 700;
   }
 
   p {
@@ -549,11 +647,11 @@
   margin: 0;
   padding: 1rem;
 
-  color: var(--barru-text-secondary);
-  background: var(--barru-bg);
-
   border: 1px solid var(--barru-border);
   border-radius: var(--barru-radius);
+
+  background: var(--tareas-interior);
+  color: var(--barru-text-secondary);
 
   font-size: 0.88rem;
 }
@@ -588,7 +686,7 @@
   color: var(--barru-text);
 
   font-size: 0.88rem;
-  font-weight: 650;
+  font-weight: 700;
 }
 
 
@@ -622,7 +720,7 @@
   color: var(--barru-primary);
 
   font-size: 0.74rem;
-  font-weight: 650;
+  font-weight: 700;
 }
 
 
@@ -647,6 +745,12 @@
 .aclaracion-actual {
   margin: 0 0 0.6rem;
 
+  padding: 0.65rem 0.7rem;
+
+  border: 1px solid var(--barru-border);
+  border-radius: var(--barru-radius);
+
+  background: var(--tareas-interior);
   color: var(--barru-text-secondary);
 
   font-size: 0.8rem;
@@ -676,11 +780,11 @@
 
   padding: 0.6rem 0.7rem;
 
-  color: var(--barru-text);
-  background: var(--barru-bg);
-
   border: 1px solid var(--barru-border);
   border-radius: var(--barru-radius);
+
+  background: var(--tareas-interior);
+  color: var(--barru-text);
 
   font: inherit;
   font-size: 0.82rem;
@@ -689,16 +793,31 @@
 
   outline: none;
 
-  transition: border-color 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
 
-  &:focus {
-    border-color: var(--barru-primary);
-  }
 
-  &:disabled {
-    cursor: not-allowed;
-    opacity: 0.65;
-  }
+.aclaracion-input:hover:not(:disabled) {
+  border-color: var(--barru-primary);
+}
+
+
+.aclaracion-input:focus {
+  border-color: var(--barru-primary);
+
+  background: var(--barru-surface);
+
+  outline: 2px solid var(--barru-primary);
+  outline-offset: 1px;
+}
+
+
+.aclaracion-input:disabled {
+  opacity: 0.55;
+
+  cursor: not-allowed;
 }
 
 
@@ -734,25 +853,31 @@
   min-width: 190px;
 }
 
+
 .columna-proyecto {
   min-width: 150px;
 }
+
 
 .columna-prioridad {
   width: 110px;
 }
 
+
 .columna-estado {
   width: 130px;
 }
+
 
 .columna-fecha {
   width: 120px;
 }
 
+
 .columna-aclaracion {
   min-width: 240px;
 }
+
 
 .columna-acciones {
   width: 130px;
@@ -765,99 +890,314 @@
 
 :host ::ng-deep {
 
-  .p-button {
-    border-radius: var(--barru-radius);
+  .mis-tareas {
 
-    font-size: 0.84rem;
-    font-weight: 600;
+    .p-button {
+      border-radius: var(--barru-radius);
 
-    box-shadow: none;
-  }
+      font-size: 0.84rem;
+      font-weight: 600;
 
+      box-shadow: none;
 
-  .p-button:not(:disabled) {
-    transition:
-      background-color 0.15s ease,
-      border-color 0.15s ease;
-  }
-
-
-  .p-button:not(:disabled):focus-visible {
-    outline: 2px solid var(--barru-primary);
-    outline-offset: 2px;
-  }
+      transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+    }
 
 
-  .p-tag {
-    color: var(--barru-text);
-    background: var(--barru-bg);
-
-    border: 1px solid var(--barru-border);
-    border-radius: var(--barru-radius);
-
-    font-size: 0.72rem;
-    font-weight: 600;
-  }
+    .p-button:not(:disabled):focus-visible {
+      outline: 2px solid var(--barru-primary);
+      outline-offset: 2px;
+    }
 
 
-  .tabla-tareas {
+    /*
+     * Avisos:
+     * secundario para evitar dos bloques petrol
+     * iguales en la cabecera.
+     */
 
-    .p-datatable {
-      background: transparent;
+    .boton-avisos.p-button {
+      border-color: var(--barru-border);
 
+      background: var(--barru-surface);
+      color: var(--barru-text);
+    }
+
+
+    .boton-avisos.p-button .pi {
+      color: var(--barru-primary);
+    }
+
+
+    .boton-avisos.p-button:hover {
+      border-color: var(--barru-primary);
+
+      background: var(--barru-surface);
+      color: var(--barru-primary);
+    }
+
+
+    /*
+     * Actualizar:
+     * acción principal.
+     */
+
+    .boton-actualizar.p-button {
+      border-color: var(--barru-primary);
+
+      background: var(--barru-primary);
+      color: #ffffff;
+    }
+
+
+    .boton-actualizar.p-button:hover:not(:disabled) {
+      border-color: var(--barru-primary-hover);
+
+      background: var(--barru-primary-hover);
+      color: #ffffff;
+    }
+
+
+    /*
+     * Botones principales de bloques.
+     */
+
+    .bloque-cabecera > .p-button,
+    .historico > .p-button {
+      border-color: var(--barru-primary);
+
+      background: var(--barru-primary);
+      color: #ffffff;
+    }
+
+
+    .bloque-cabecera > .p-button:hover:not(:disabled),
+    .historico > .p-button:hover:not(:disabled) {
+      border-color: var(--barru-primary-hover);
+
+      background: var(--barru-primary-hover);
+      color: #ffffff;
+    }
+
+
+    /*
+     * Acciones interiores:
+     * tratamiento secundario.
+     */
+
+    .proyecto-resumen-accion.p-button,
+    .boton-volver.p-button,
+    .boton-guardar-aclaracion.p-button,
+    .boton-pausar.p-button,
+    .boton-finalizar.p-button {
+      border-color: var(--barru-border);
+
+      background: var(--barru-surface);
+      color: var(--barru-text);
+    }
+
+
+    .proyecto-resumen-accion.p-button:hover:not(:disabled),
+    .boton-volver.p-button:hover:not(:disabled),
+    .boton-guardar-aclaracion.p-button:hover:not(:disabled),
+    .boton-pausar.p-button:hover:not(:disabled),
+    .boton-finalizar.p-button:hover:not(:disabled) {
+      border-color: var(--barru-primary);
+
+      background: var(--barru-surface);
+      color: var(--barru-primary);
+    }
+
+
+    /*
+     * Iniciar / reanudar:
+     * acción principal de trabajo.
+     */
+
+    .boton-iniciar.p-button,
+    .boton-reanudar.p-button {
+      border-color: var(--barru-primary);
+
+      background: var(--barru-primary);
+      color: #ffffff;
+    }
+
+
+    .boton-iniciar.p-button:hover:not(:disabled),
+    .boton-reanudar.p-button:hover:not(:disabled) {
+      border-color: var(--barru-primary-hover);
+
+      background: var(--barru-primary-hover);
+      color: #ffffff;
+    }
+
+
+    /*
+     * TAGS
+     */
+
+    .p-tag {
       border: 1px solid var(--barru-border);
       border-radius: var(--barru-radius);
 
-      overflow: hidden;
-    }
-
-
-    .p-datatable-table {
-      width: 100%;
-
-      border-collapse: collapse;
-    }
-
-
-    .p-datatable-thead > tr > th {
-      padding: 0.75rem 0.8rem;
-
-      color: var(--barru-text-secondary);
-      background: var(--barru-bg);
-
-      border-bottom: 1px solid var(--barru-border);
-
-      font-size: 0.73rem;
-      font-weight: 650;
-
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-
-      white-space: nowrap;
-    }
-
-
-    .p-datatable-tbody > tr {
-      background: var(--barru-surface);
-
-      transition: background-color 0.15s ease;
-    }
-
-
-    .p-datatable-tbody > tr > td {
-      padding: 0.8rem;
-
+      background: var(--tareas-interior);
       color: var(--barru-text);
 
-      border-bottom: 1px solid var(--barru-border);
-
-      font-size: 0.82rem;
-      vertical-align: top;
+      font-size: 0.72rem;
+      font-weight: 600;
     }
 
 
-    .p-datatable-tbody > tr:last-child > td {
-      border-bottom: 0;
+    .prioridad-alta.p-tag,
+    .prioridad-alta .p-tag {
+      color:
+        color-mix(
+          in srgb,
+          #8a4448 78%,
+          var(--barru-text)
+        );
+
+      background:
+        color-mix(
+          in srgb,
+          #8a4448 14%,
+          var(--barru-surface)
+        );
+
+      border-color:
+        color-mix(
+          in srgb,
+          #8a4448 72%,
+          var(--barru-border)
+        );
+    }
+
+
+    .prioridad-media.p-tag,
+    .prioridad-media .p-tag {
+      color:
+        color-mix(
+          in srgb,
+          #9a6b2f 78%,
+          var(--barru-text)
+        );
+
+      background:
+        color-mix(
+          in srgb,
+          #9a6b2f 14%,
+          var(--barru-surface)
+        );
+
+      border-color:
+        color-mix(
+          in srgb,
+          #9a6b2f 72%,
+          var(--barru-border)
+        );
+    }
+
+
+    .prioridad-baja.p-tag,
+    .prioridad-baja .p-tag {
+      color:
+        color-mix(
+          in srgb,
+          #4f7463 78%,
+          var(--barru-text)
+        );
+
+      background:
+        color-mix(
+          in srgb,
+          #4f7463 14%,
+          var(--barru-surface)
+        );
+
+      border-color:
+        color-mix(
+          in srgb,
+          #4f7463 72%,
+          var(--barru-border)
+        );
+    }
+
+
+    /*
+     * TABLA
+     */
+
+    .tabla-tareas {
+
+      .p-datatable {
+        overflow: hidden;
+
+        border: 1px solid var(--barru-border);
+        border-radius: var(--barru-radius);
+
+        background: var(--barru-surface);
+      }
+
+
+      .p-datatable-table {
+        width: 100%;
+
+        border-collapse: collapse;
+
+        background: var(--barru-surface);
+      }
+
+
+      .p-datatable-thead > tr > th {
+        padding: 0.75rem 0.8rem;
+
+        border-bottom: 1px solid var(--barru-border);
+
+        background: var(--tareas-interior);
+        color: var(--barru-text-secondary);
+
+        font-size: 0.73rem;
+        font-weight: 700;
+
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+
+        white-space: nowrap;
+      }
+
+
+      .p-datatable-tbody > tr {
+        background: var(--barru-surface);
+
+        transition:
+          background-color 0.15s ease;
+      }
+
+
+      .p-datatable-tbody > tr:hover {
+        background: var(--tareas-hover);
+      }
+
+
+      .p-datatable-tbody > tr > td {
+        padding: 0.8rem;
+
+        border-bottom: 1px solid var(--barru-border);
+
+        color: var(--barru-text);
+
+        font-size: 0.82rem;
+        vertical-align: top;
+      }
+
+
+      .p-datatable-tbody > tr:last-child > td {
+        border-bottom: 0;
+      }
+
     }
 
   }

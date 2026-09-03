@@ -74,6 +74,15 @@ export class UsuarioService {
     );
   }
 
+  eliminarPendiente(
+  uuid: string
+): Observable<void> {
+
+  return this.http.delete<void>(
+    `${this.apiUrl}/${uuid}`
+  );
+}
+
   activar(
     uuid: string
   ): Observable<UserDTO> {

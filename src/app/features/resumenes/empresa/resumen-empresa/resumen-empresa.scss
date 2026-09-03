@@ -111,6 +111,36 @@
   cursor: not-allowed;
 }
 
+
+/* EMPRESA SELECCIONADA */
+
+.dashboard-empresa--activa label {
+  color: var(--barru-primary);
+}
+
+.dashboard-empresa--activa select {
+  border-color: var(--barru-primary);
+
+  background: var(--barru-bg);
+  color: var(--barru-primary);
+
+  font-weight: 600;
+}
+
+.dashboard-empresa--activa select:hover:not(:disabled) {
+  border-color: var(--barru-primary-hover);
+
+  background: var(--barru-bg);
+  color: var(--barru-primary-hover);
+}
+
+.dashboard-empresa--activa select:focus {
+  border-color: var(--barru-primary);
+
+  outline: 2px solid var(--barru-primary);
+  outline-offset: 1px;
+}
+
 .dashboard-empresa option {
   background: var(--barru-surface);
   color: var(--barru-text);
